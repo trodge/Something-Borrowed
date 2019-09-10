@@ -6,7 +6,7 @@ module.exports = function(app) {
     db.Example.findAll({}).then(function(dbExamples) {
       res.render('index', {
         msg: 'Welcome!',
-        examples: dbExamples
+        items: dbExamples
       });
     });
   });
