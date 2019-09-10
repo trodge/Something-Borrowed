@@ -1,8 +1,8 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "exampledb",
+    "username": "nodeuser",
+    "password": "password",
+    "database": "somethingBorrowed_db",
     "host": "localhost",
     "dialect": "mysql"
   },
