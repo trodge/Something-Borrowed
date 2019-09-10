@@ -15,3 +15,6 @@
     background-position: top center;
     height: 500px;
 }
+#handshake > h1 {
+    margin-top: 200px;
+}

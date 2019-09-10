@@ -1,16 +1,37 @@
 <div class="container">
-    <div class="row">
+    <header class="row">
         <div class="col-2 offset-1">
-            <img src="">
+            <img src="../public/images/logo-desktop.png">
         </div>
-        <div class="col-2 offset-2">
-            <button class="btn-light">Login</button>
-            <button class="btn-primary">Sign Up</button>
+        <div class="col-1 offset-2">
+            <button class="btn btn-light">Login</button>
+        </div>
+        <div class="col-1">
+            <button class="btn btn-primary">Sign Up</button>
         </div>
         <div class="col-1 offset-4">
-            -<br>-<br>-
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+    <div class="row">
+        <div class="col-12 text-white text-center" id="handshake">
+            <h1>Borrow from friends.</h1>
         </div>
     </div>
+    <div class="row">
+        <div class="col-6">
+            <h3>{{items.length}} Borrowed Item{{#if items.length "-" 1}}s{{/if}} Near You</h3>
+            <h2>Your Location: <span class="text-success">{{location}}</span></h2>
+        </div>
+    </div>
+    <hr>
+    {{#each items}}
+    <div class="row">
+        <div class="col-4">
+            {{this}}
+        </div>
+    </div>
+    {{/each}}
 </div>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
