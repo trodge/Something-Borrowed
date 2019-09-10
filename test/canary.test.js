@@ -1,4 +1,4 @@
-var expect = require('chai');
+var expect = require('chai').expect;
 
 describe('canary test', function() {
   /*
