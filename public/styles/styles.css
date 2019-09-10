@@ -1,3 +1,14 @@
-.list-group-item {
-  line-height: 2.5;
+.container {
+    margin:20px;
+}
+.btn {
+    margin-top: 20px;
+}
+.fa-bars {
+    font-size: 72px;
+}
+#handshake {
+    background-image: url("../images/hand-shake-1-pixabay.jpg");
+    background-size: cover;
+    height: 500px;
 }
