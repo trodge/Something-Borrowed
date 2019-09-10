@@ -1,5 +1,6 @@
 .container {
-    margin:20px;
+    margin:auto;
+    max-width: 960px;
 }
 .btn {
     margin-top: 20px;
@@ -8,7 +9,9 @@
     font-size: 72px;
 }
 #handshake {
-    background-image: url("../images/hand-shake-1-pixabay.jpg");
+    background-image: url("../images/hand-shake-1-pixabay-cropped.png");
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top center;
     height: 500px;
 }
