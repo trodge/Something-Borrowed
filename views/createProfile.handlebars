@@ -1,28 +1,24 @@
-<div>This is where a new user would create a profile</div>
-<a href="#" onclick="signOut();">Sign out</a>
-<h2>Create Profile</h2>
-<form class="clearfix mb-4" action="POST">
-    <div class="form-group">
+{{>header}}
+<h1>New Profile</h1>
+<form>
+    <div class="formGroup">
         <label for="userName">Name: </label>
-        <input type="text" id="userName" class="form-control" placeholder="Name" value="{{user.userName}}">
+        <input type="text" id="userName" class="formInput" placeholder="Name" value="{{user.userName}}">
     </div>
-    <div class="form-group">
+    <div class="formGroup">
         <label for="userEmail">Email: </label>
-        <input type="text" id="userEmail" class="form-control" placeholder="Email" value="{{user.userEmail}}">
+        <input type="text" id="userEmail" class="formInput" placeholder="Email" value="{{user.userEmail}}">
     </div>
-    <div class="form-group">
+    <div class="formGroup">
         <label for="userImage">Profile Image URL: </label>
-        <input type="text" id="userImage" class="form-control" placeholder="Profile Image URL" value="{{user.userImage}}">
+        <input type="text" id="userImage" class="formInput" placeholder="Profile Image URL" value="{{user.userImage}}">
     </div>
-    <button id="submit" class="btn btn-primary float-right">Submit</button>
+    <button id="createProfile">Create</button>
 </form>
-
-
-<div id="map"></div>
-
+{{>footer}}
 
 <script src="https://apis.google.com/js/platform.js" async defer></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/newProfile.js"></script>
-<script src="/js/map.js"></script>
+<script type="text/javascript" src="/js/auth.js"></script>
+<script type="text/javascript" src="/js/search.js"></script>
+<script type="text/javascript" src="/js/newProfile.js"></script>

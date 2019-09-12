@@ -7,9 +7,24 @@ module.exports = function(sequelize, DataTypes) {
           len: [1]
         }
       },
+      itemImage: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        validate: {
+          len: [1]
+        }
+      },
+      itemDescription: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validate: {
+          len: [1]
+        }
+      },
       itemCategory: {
         type: DataTypes.STRING,
         allowNull: false,
+        defaultValue: 'Miscellaneous',
         validate: {
           len: [1]
         }
@@ -17,17 +32,21 @@ module.exports = function(sequelize, DataTypes) {
       groupAvailableTo: {
         type: DataTypes.STRING,
         allowNull: false,
+        defaultValue: 'Public',
         validate: {
           len: [1]
         }
+      },
+      userIdToken: {
+        type: DataTypes.STRING,
+        allowNull: false
       }
     });
-    // Item.associate = function(models) {
-    //     Item.belongsTo(models.User, {
-    //       foreignKey: {
-    //         allowNull: false
-    //       }
-    //     });
-    //   };
+    Item.associate = function(models) {
+        Item.belongsTo(models.User, {
+          foreignKey: 'userIdToken'
+        }
+        );
+      };
     return Item;
   };

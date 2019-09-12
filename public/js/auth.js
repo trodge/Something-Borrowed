@@ -16,7 +16,7 @@ function onSignIn(googleUser) {
     if (response.registeredUser) {
       window.location.href = '/profile';
     } else if (response.newUser) {
-        window.location.href = '/createProfile/';
+        window.location.href = '/profile/new';
     }
   });
 }

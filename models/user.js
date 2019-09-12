@@ -1,8 +1,9 @@
 module.exports = function(sequelize, DataTypes) {
   let User = sequelize.define('User', {
-    userId: {
+    userIdToken: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true,
       validate: {
         len: [1]
       }
@@ -29,15 +30,15 @@ module.exports = function(sequelize, DataTypes) {
       }
     }
   });
-  // User.associate = function(models) {
-  //   User.hasMany(models.Item, {
-  //     onDelete: "cascade"
-  //   });
-    // User.belongsTo(models.Group, {
-    //   foreignKey: {
-    //     allowNull: false
-    //   }
-    // });
-  // };
+  User.associate = function(models) {
+    User.hasMany(models.Item, {
+      onDelete: "cascade"
+    });
+  //   // User.belongsTo(models.Group, {
+  //   //   foreignKey: {
+  //   //     allowNull: false
+  //   //   }
+  //   // });
+  };
   return User;
 };
