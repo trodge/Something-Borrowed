@@ -1,3 +1,4 @@
+/* eslint no-unused-vars: 0 */
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
   var idToken = googleUser.getAuthResponse().id_token;
@@ -7,16 +8,16 @@ function onSignIn(googleUser) {
   $.ajax('/api/login', {
     type: 'POST',
     data: { 
-        token: idToken, 
-        name: userName,
-        email: userEmail,
-        image: userImage
+      token: idToken, 
+      name: userName,
+      email: userEmail,
+      image: userImage
     }
   }).then(function(response) {
     if (response.registeredUser) {
       window.location.href = '/profile';
     } else if (response.newUser) {
-        window.location.href = '/profile/new';
+      window.location.href = '/profile/new';
     }
   });
 }
@@ -34,7 +35,7 @@ function signOut() {
 }
 
 function doSignOut(auth2) {
-  document.cookie = 'userid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
+  document.cookie = 'userid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   auth2.signOut().then(function() {
     console.log('User signed out.');
     window.location.href = '/';

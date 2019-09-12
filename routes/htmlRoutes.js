@@ -11,7 +11,7 @@ module.exports = function (app) {
         keywords: 'lending, borrow, friend-to-friend, save'
       };
       let desiredMenu;
-      if (req.cookies['userid']) {
+      if (req.cookies.userid) {
         desiredMenu = {
           profile: '<button><a href="/profile">Profile</a>',
           items: '<button><a href="/items">Items</a></button>',
@@ -37,7 +37,7 @@ module.exports = function (app) {
   });
 
   app.get('/profile', function (req, res) {
-    const userId = req.cookies['userid'];
+    const userId = req.cookies.userid;
     db.User.findAll({ where: { userIdToken: userId }, include: [db.Item]}).then(function (dbUser) {
       console.log('all results'+ JSON.stringify(dbUser[0].dataValues.Items));
       console.log('returned' + dbUser[0].dataValues.userName);
@@ -66,7 +66,7 @@ module.exports = function (app) {
   });
 
   app.get('/profile/new', function (req, res) {
-    const userId = req.cookies['userid'];
+    const userId = req.cookies.userid;
     db.User.findAll({ where: { userIdToken: userId } }).then(function (dbUser) {
       res.locals.metaTags = {
         title: 'Create Profile',
@@ -96,7 +96,7 @@ module.exports = function (app) {
   });
 
   app.get('/items', function (req, res) {
-    const userId = req.cookies['userid'];
+    const userId = req.cookies.userid;
     db.Item.findAll({}).then(function (dbItems) {
       let desiredMenu;
       if (userId) {
@@ -123,7 +123,7 @@ module.exports = function (app) {
   });
 
   app.get('/search/:query', function (req, res) {
-    const userId = req.cookies['userid'];
+    const userId = req.cookies.userid;
     const searchQuery = req.params.query;
     console.log(`html route ${searchQuery}`);
     db.Item.findAll({ where: { itemName: searchQuery } }).then(function (dbSearch) {
@@ -169,30 +169,30 @@ module.exports = function (app) {
     });
   });
 
-app.get('*', function (req, res) {
-  res.locals.metaTags = {
-    title: 'Error',
-    description: 'Page not found.',
-    keywords: 'error'
-  };
-  let desiredMenu;
-  if (req.cookies['userid']) {
-    desiredMenu = {
-      home: '<button><a href="/">Home</a>',
-      profile: '<button><a href="/profile">Profile</a></button>',
-      items: '<button><a href="/items">Items</a></button>',
-      signOut: '<button onclick="signOut();">Sign Out</button>'
+  app.get('*', function (req, res) {
+    res.locals.metaTags = {
+      title: 'Error',
+      description: 'Page not found.',
+      keywords: 'error'
     };
-    res.render('404', { navData: desiredMenu });
-  } else {
-    desiredMenu = {
-      home: '<button><a href="/">Home</a>',
-      items: '<button><a href="/items">Items</a></button>',
-      signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-    };
-    res.render('404', { navData: desiredMenu });
-  }
-});
+    let desiredMenu;
+    if (req.cookies.userid) {
+      desiredMenu = {
+        home: '<button><a href="/">Home</a>',
+        profile: '<button><a href="/profile">Profile</a></button>',
+        items: '<button><a href="/items">Items</a></button>',
+        signOut: '<button onclick="signOut();">Sign Out</button>'
+      };
+      res.render('404', { navData: desiredMenu });
+    } else {
+      desiredMenu = {
+        home: '<button><a href="/">Home</a>',
+        items: '<button><a href="/items">Items</a></button>',
+        signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
+      };
+      res.render('404', { navData: desiredMenu });
+    }
+  });
 
 
 
