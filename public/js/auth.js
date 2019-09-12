@@ -1,14 +1,14 @@
 /* eslint no-unused-vars: 0 */
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
-  var idToken = googleUser.getAuthResponse().id_token;
+  var userIdToken = googleUser.getAuthResponse().id_token;
   let userName = profile.getName();
   let userEmail = profile.getEmail();
   let userImage = profile.getImageUrl();
   $.ajax('/api/login', {
     type: 'POST',
     data: { 
-      token: idToken, 
+      token: userIdToken, 
       name: userName,
       email: userEmail,
       image: userImage

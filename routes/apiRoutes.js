@@ -6,7 +6,7 @@ module.exports = function (app) {
   const client = new OAuth2Client('286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com');
   async function verify(token) {
     const ticket = await client.verifyIdToken({
-      idToken: token,
+      userIdToken: token,
       audience: '286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com'
     });
     const payload = ticket.getPayload();
@@ -68,7 +68,7 @@ module.exports = function (app) {
     const groupInfo = req.body;
     console.log(req.body);
     //const userId = req.cookies.userid;
-    db.Grouping.create(groupInfo).then(function (dbResult) {
+    db.Group.create(groupInfo).then(function (dbResult) {
       res.json(dbResult);
     });
   });

@@ -12,19 +12,10 @@ module.exports = function (sequelize, DataTypes) {
             validate: {
                 len: [1]
             }
-        },
-        groupAdmin: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                len: [1]
-            }
         }
     });
-    Group.associate = function(models) {
-      Group.hasMany(models.User, {
-          foreignKey: 'groupId'
-      });
+    Group.associate = function (models) {
+        Group.belongsToMany(models.User, { through: 'UserGroup' });
     };
     return Group;
 };
