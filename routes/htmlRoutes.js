@@ -13,9 +13,9 @@ module.exports = function (app) {
       let desiredMenu;
       if (req.cookies.userid) {
         desiredMenu = {
-          profile: '<button><a href='/profile'>Profile</a>',
-          items: '<button><a href='/items'>Items</a></button>',
-          signOut: '<button onclick='signOut();'>Sign Out</button>'
+          profile: '<button><a href="/profile">Profile</a>',
+          items: '<button><a href="/items">Items</a></button>',
+          signOut: '<button onclick="signOut();">Sign Out</button>'
         };
         res.render('index', {
           navData: desiredMenu, 
@@ -24,8 +24,8 @@ module.exports = function (app) {
         });
       } else {
         desiredMenu = {
-          items: '<button><a href='/items'>Items</a></button>',
-          signIn: '<button data-toggle='modal' data-target='#signInModal'>Sign In</button>'
+          items: '<button><a href="/items">Items</a></button>',
+          signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
         };
         res.render('index', {
           navData: desiredMenu,
@@ -49,16 +49,16 @@ module.exports = function (app) {
       let desiredMenu;
       if (userId) {
         desiredMenu = {
-          home: '<button><a href='/'>Home</a>',
-          items: '<button><a href='/items'>Items</a></button>',
-          signOut: '<button onclick='signOut();'>Sign Out</button>'
+          home: '<button><a href="/">Home</a>',
+          items: '<button><a href="/items">Items</a></button>',
+          signOut: '<button onclick="signOut();">Sign Out</button>'
         };
         res.render('profile', { navData: desiredMenu, user: dbUser[0].dataValues });
       } else {
         desiredMenu = {
-          home: '<button><a href='/'>Home</a>',
-          items: '<button><a href='/items'>Items</a></button>',
-          signIn: '<button data-toggle='modal' data-target='#signInModal'>Sign In</button>'
+          home: '<button><a href="/">Home</a>',
+          items: '<button><a href="/items">Items</a></button>',
+          signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
         };
         res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.', user: dbUser[0].dataValues });
       }
@@ -76,9 +76,9 @@ module.exports = function (app) {
       let desiredMenu;
       if (userId) {
         desiredMenu = {
-          home: '<button><a href='/'>Home</a>',
-          items: '<button><a href='/items'>Items</a></button>',
-          signOut: '<button onclick='signOut();'>Sign Out</button>'
+          home: '<button><a href="/">Home</a>',
+          items: '<button><a href="/items">Items</a></button>',
+          signOut: '<button onclick="signOut();">Sign Out</button>'
         };
         res.render('createProfile', {
           navData: desiredMenu,
@@ -86,9 +86,9 @@ module.exports = function (app) {
         });
       } else {
         desiredMenu = {
-          home: '<button><a href='/'>Home</a>',
-          items: '<button><a href='/items'>Items</a></button>',
-          signIn: '<button data-toggle='modal' data-target='#signInModal'>Sign In</button>'
+          home: '<button><a href="/">Home</a>',
+          items: '<button><a href="/items">Items</a></button>',
+          signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
         };
         res.render('unauthorized', { navData: desiredMenu, msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
       }
@@ -101,9 +101,9 @@ module.exports = function (app) {
       let desiredMenu;
       if (userId) {
         desiredMenu = {
-          home: '<button><a href='/'>Home</a>',
-          profile: '<button><a href='/profile'>Profile</a>',
-          signOut: '<button onclick='signOut();'>Sign Out</button>'
+          home: '<button><a href="/">Home</a>',
+          profile: '<button><a href="/profile">Profile</a>',
+          signOut: '<button onclick="signOut();">Sign Out</button>'
         };
         res.render('items', {
           navData: desiredMenu,
@@ -111,8 +111,8 @@ module.exports = function (app) {
         });
       } else {
         desiredMenu = {
-          home: '<button><a href='/'>Home</a>',
-          signIn: '<button data-toggle='modal' data-target='#signInModal'>Sign In</button>'
+          home: '<button><a href="/">Home</a>',
+          signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
         };
         res.render('items', {
           navData: desiredMenu,
@@ -130,10 +130,10 @@ module.exports = function (app) {
       let desiredMenu;
       if (userId) {
         desiredMenu = {
-          home: '<button><a href='/'>Home</a>',
-          profile: '<button><a href='/profile'>Profile</a>',
-          items: '<button><a href='/items'>Items</a></button>',
-          signOut: '<button onclick='signOut();'>Sign Out</button>'
+          home: '<button><a href="/">Home</a>',
+          profile: '<button><a href="/profile">Profile</a>',
+          items: '<button><a href="/items">Items</a></button>',
+          signOut: '<button onclick="signOut();">Sign Out</button>'
         };
         if (dbSearch.length > 0) {
           console.log(dbSearch);
@@ -149,9 +149,9 @@ module.exports = function (app) {
         }
       } else {
         desiredMenu = {
-          home: '<button><a href='/'>Home</a>',
-          items: '<button><a href='/items'>Items</a></button>',
-          signIn: '<button data-toggle='modal' data-target='#signInModal'>Sign In</button>'
+          home: '<button><a href="/">Home</a>',
+          items: '<button><a href="/items">Items</a></button>',
+          signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
         };
         if (dbSearch.length > 0) {
           console.log(dbSearch);
@@ -178,17 +178,17 @@ module.exports = function (app) {
     let desiredMenu;
     if (req.cookies.userid) {
       desiredMenu = {
-        home: '<button><a href='/'>Home</a>',
-        profile: '<button><a href='/profile'>Profile</a></button>',
-        items: '<button><a href='/items'>Items</a></button>',
-        signOut: '<button onclick='signOut();'>Sign Out</button>'
+        home: '<button><a href="/">Home</a>',
+        profile: '<button><a href="/profile">Profile</a></button>',
+        items: '<button><a href="/items">Items</a></button>',
+        signOut: '<button onclick="signOut();">Sign Out</button>'
       };
       res.render('404', { navData: desiredMenu });
     } else {
       desiredMenu = {
-        home: '<button><a href='/'>Home</a>',
-        items: '<button><a href='/items'>Items</a></button>',
-        signIn: '<button data-toggle='modal' data-target='#signInModal'>Sign In</button>'
+        home: '<button><a href="/">Home</a>',
+        items: '<button><a href="/items">Items</a></button>',
+        signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
       };
       res.render('404', { navData: desiredMenu });
     }
