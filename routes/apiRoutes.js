@@ -3,11 +3,11 @@ const db = require('../models');
 module.exports = function (app) {
   //https://developers.google.com/identity/sign-in/web/backend-auth
   const { OAuth2Client } = require('google-auth-library');
-  const client = new OAuth2Client("286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com");
+  const client = new OAuth2Client('286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com');
   async function verify(token) {
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: "286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com"
+      audience: '286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com'
     });
     const payload = ticket.getPayload();
     const verifiedUserId = payload.sub;
@@ -25,10 +25,10 @@ module.exports = function (app) {
     };
     db.User.findAll({ where: { userIdToken: userId } }).then(function (pastUser) {
       if (pastUser.length > 0) {
-        res.cookie("userid", userId).send({ registeredUser: userId });
+        res.cookie('userid', userId).send({ registeredUser: userId });
       } else {
         db.User.create(userInfo).then(function () {
-          res.cookie("userid", userId).send({ newUser: userId });
+          res.cookie('userid', userId).send({ newUser: userId });
         });
       }
     });
