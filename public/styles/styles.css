@@ -1,5 +1,22 @@
-.list-group-item {
-  line-height: 2.5;
+.container {
+    margin:auto;
+    max-width: 960px;
+}
+.btn {
+    margin-top: 20px;
+}
+.fa-bars {
+    font-size: 72px;
+}
+#handshake {
+    background-image: url("../images/hand-shake-1-pixabay-cropped.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top center;
+    height: 500px;
+}
+#handshake > h1 {
+    margin-top: 200px;
 }
 #map {
   height: 100%;
