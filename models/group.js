@@ -1,5 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    let Group = sequelize.define('Grouping', {
+    let Group = sequelize.define('Group', {
         groupId: {
             type: DataTypes.INTEGER,
             allowNull: false,
