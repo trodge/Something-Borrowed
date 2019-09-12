@@ -1,36 +1,26 @@
 require('dotenv').config();
 var express = require('express');
 var exphbs = require('express-handlebars');
+var cookieParser = require('cookie-parser');
 
-var db = require('./models'),
-  app = express(),
-  PORT = process.env.PORT || 3000;
+var db = require('./models');
+
+var app = express();
+var PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static('public'));
+app.use(cookieParser());
 
 // Handlebars
 app.engine(
   'handlebars',
   exphbs({
     defaultLayout: 'main',
-    helpers: {
-      // Function to do basic mathematical operation in handlebar
-      math: function(lvalue, operator, rvalue) {
-        lvalue = parseFloat(lvalue);
-        rvalue = parseFloat(rvalue);
-
-        return {
-          '+': lvalue + rvalue,
-          '-': lvalue - rvalue,
-          '*': lvalue * rvalue,
-          '/': lvalue / rvalue,
-          '%': lvalue % rvalue
-        }[operator];
-      }
-    }
+    layoutsDir: __dirname + '/views/layouts/',
+    partialsDir: __dirname + '/views/partials/'
   })
 );
 app.set('view engine', 'handlebars');
