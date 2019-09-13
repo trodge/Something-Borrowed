@@ -28,7 +28,7 @@
         "camelcase": "error",
         "indent": [
             "error",
-            2
+            4
         ],
         "semi": [
             "error",
