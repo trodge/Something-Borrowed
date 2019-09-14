@@ -36,7 +36,8 @@ module.exports = function (sequelize, DataTypes) {
             onDelete: 'cascade'
         });
         User.belongsToMany(models.Group, {
-            through: 'UserGroup'
+            through: 'UserGroup', 
+            foreignKey: 'userIdToken'
         });
     };
     return User;

@@ -258,10 +258,22 @@ module.exports = function (app) {
         }
     });
 
+    app.get('/groups', function (req, res) {
+      db.User.findAll({ where: { userIdToken: userId }, include: [{all: true}]}).then(function (dbUser) {
+        console.log(JSON.stringify(dbUser));
+        res.render('profile');
+      });
+    });
+
     app.get('/groupCheck', function (req, res) {
         const userId = req.cookies.userid;
+        db.User.getGroups().then(function(groupCheck) {
+          console.log(JSON.stringify(groupCheck));
+        });
         db.Group.findAll({}).then(function (dbGroup) {
-            let desiredMenu;
+          console.log(JSON.stringify(dbGroup));
+
+            // let desiredMenu;
             // if (userId) {
             //   desiredMenu = {
             //     home: '<button><a href="/">Home</a>',
