@@ -64,18 +64,8 @@ module.exports = function (app) {
     });
 
     app.post('/api/items', function (req, res) {
-        const itemInfo = req.body;
-        console.log(req.body);
-        const userId = req.cookies.userid;
-        console.log('userId' + userId);
-        const item = {
-            itemName: itemInfo.itemName,
-            itemImage: itemInfo.itemImage,
-            itemDescription: itemInfo.itemDescription,
-            itemCategory: itemInfo.itemCategory,
-            groupAvailableTo: itemInfo.groupAvailableTo,
-            userIdToken: userId
-        };
+        let item = req.body;
+        item.userIdToken = req.cookies.userid;
         db.Item.create(item).then(function (dbResult) {
             res.json(dbResult);
         });
