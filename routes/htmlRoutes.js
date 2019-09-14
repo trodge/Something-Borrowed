@@ -48,7 +48,7 @@ module.exports = function (app) {
         db.User.findAll({ where: { userIdToken: userId }, include: db.Item}).then(function (dbUser) {
             console.log('all results'+ JSON.stringify(dbUser[0].dataValues.Items));
             console.log('returned' + dbUser[0].dataValues.userName);
-            db.Request.findAll({ where: {owner: userId}}).then(function (dbRequest) {
+            db.itemRequest.findAll({ where: {owner: userId}}).then(function (dbRequest) {
                 console.log(JSON.stringify(dbRequest));
                 let pendingRequests = [];
                 let confirmedRequests = [];

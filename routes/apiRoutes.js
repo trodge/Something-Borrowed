@@ -118,7 +118,7 @@ module.exports = function (app) {
                 exchange3: requestInfo.exchange3,
                 confirmed: false
             };
-            db.Request.create(requestObject).then(function (dbRequest) {
+            db.itemRequest.create(requestObject).then(function (dbRequest) {
                 console.log(JSON.stringify(dbRequest));
                 db.User.findOne({where: {userIdToken: dbItem.userIdToken}}).then(function(dbOwner) {
                     let to = dbOwner.userEmail;
@@ -150,11 +150,11 @@ module.exports = function (app) {
             confirmed: confirmedStatus,
             denied: deniedStatus,
         };
-        db.Request.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
+        db.itemRequest.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
             if (dbRequest.changedRows === 0) {
                 return res.status(404).end();
             }
-            db.Request.findOne({where: {id: requestId}}).then(function(dbRequestInfo) {
+            db.itemRequest.findOne({where: {id: requestId}}).then(function(dbRequestInfo) {
                 let status;
                 if (dbRequestInfo.denied === true) {
                     status = 'Denied';
