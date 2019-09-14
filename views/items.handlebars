@@ -1,18 +1,24 @@
 {{>header}}
 <main>
+    <h2>View by Category</h2>
+    {{>categorySelect}}
+
     <div id="resultsHolder">
+        <h2>All Items</h2>
         {{#each items}}
         <div class="row">
             <div class="col-4">
                 <img src="{{this.itemImage}}">
             </div>
             <div class="col-8">
-                <h2>{{this.itemName}}</h2>
+                <h2 data-itemId="{{this.id}}">{{this.itemName}}</h2>
             </div>
+            <button id="request" data-itemId="{{this.id}}" data-toggle="modal" data-target="#requestModal">Request this Item</button>
         </div>
         {{/each}}
     </div>
 </main>
+{{>requestModal}}
 {{>footer}}
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -25,3 +31,4 @@
 <script src="https://apis.google.com/js/platform.js" async defer></script>
 <script type="text/javascript" src="/js/auth.js"></script>
 <script type="text/javascript" src="/js/search.js"></script>
+<script type="text/javascript" src="/js/requests.js"></script>

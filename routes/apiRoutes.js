@@ -1,5 +1,15 @@
 const db = require('../models');
 
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'mail.somethingborrowed@gmail.com',
+        pass: 'yy*V3W336o^I%VlE'
+    }
+});
+
 module.exports = function (app) {
     //https://developers.google.com/identity/sign-in/web/backend-auth
     const { OAuth2Client } = require('google-auth-library');
@@ -23,15 +33,22 @@ module.exports = function (app) {
             userEmail: signIn.email,
             userImage: signIn.image
         };
-        db.User.findAll({ where: { userIdToken: userId } }).then(function (pastUser) {
-            if (pastUser.length > 0) {
-                res.cookie('userid', userId).send({ registeredUser: userId });
-            } else {
-                db.User.create(userInfo).then(function () {
-                    res.cookie('userid', userId).send({ newUser: userId });
-                });
-            }
-        });
+        const userIdCookie = req.cookies.userid;
+        console.log('serverReadCookie' + userIdCookie);
+        console.log('verifyResult' + userId);
+        if (userIdCookie === userId) {
+            res.send({signedIn : true});
+        } else {
+            db.User.findAll({ where: { userIdToken: userId } }).then(function (pastUser) {
+                if (pastUser.length > 0) {
+                    res.cookie('userid', userId).send({ registeredUser: userId });
+                } else {
+                    db.User.create(userInfo).then(function () {
+                        res.cookie('userid', userId).send({ newUser: userId });
+                    });
+                }
+            });
+        }
     });
 
 
@@ -70,5 +87,108 @@ module.exports = function (app) {
             defer.reject(error);
         });
     });
-};
 
+
+
+    app.post('/api/requests', function (req, res) {
+        const requestInfo = req.body;
+        console.log(req.body);
+        const userId = req.cookies.userid;
+        db.Item.findOne({ where: {id: requestInfo.itemId}}).then(function(dbItem) {
+            console.log(JSON.stringify(dbItem));
+            let itemName = dbItem.itemName;
+            const requestObject = {
+                owner: dbItem.userIdToken,
+                requester: userId, 
+                item: requestInfo.itemId,
+                itemName: dbItem.itemName,
+                duration: requestInfo.duration,
+                exchange1: requestInfo.exchange1,
+                exchange2: requestInfo.exchange2,
+                exchange3: requestInfo.exchange3,
+                confirmed: false
+            };
+            db.Request.create(requestObject).then(function (dbRequest) {
+                console.log(JSON.stringify(dbRequest));
+                db.User.findOne({where: {userIdToken: dbItem.userIdToken}}).then(function(dbOwner) {
+                    let to = dbOwner.userEmail;
+                    const mailOptions = {
+                        from: 'mail.somethingborrowed@gmail.com',
+                        to: to,
+                        subject: 'Pending Item Request',
+                        text: `Your ${itemName} has been requested. Go to your profile on Something Borrowed to view the request.`,
+                        html: `<p>Your ${itemName} has been requested. Click <a href="https://project-2-uwcoding.herokuapp.com/profile">here</a> to go to your profile and view the request.</p>`
+                    };
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    });
+                    res.json(dbRequest);
+                });
+            });
+        });
+    });
+
+    app.put('/api/requests/confirm', function (req, res) {
+        let requestId = req.body.requestId;
+        let updatedStatus = {
+            confirmed: true
+        };
+        db.Request.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
+            if (dbRequest.changedRows === 0) {
+                return res.status(404).end();
+            }
+            db.User.findOne({where: {userIdToken: dbRequest.requester}}).then(function(dbRequester) {
+                let to = dbRequester.userEmail;
+                const mailOptions = {
+                    from: 'mail.somethingborrowed@gmail.com',
+                    to: to,
+                    subject: 'Item Request Confirmed',
+                    text: `Your request to borrow ${db.Request.itemName} has been confirmed.`,
+                    html: `<p>Your request to borrow ${db.Request.itemName} has been confirmed.</p>`
+                };
+                transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
+                res.status(204).end();
+            });
+        });
+    });
+
+    app.put('/api/requests/deny', function (req, res) {
+        let requestId = req.body.requestId;
+        let updatedStatus = {
+            denied: true
+        };
+        db.Request.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
+            if (dbRequest.changedRows === 0) {
+                return res.status(404).end();
+            }
+            db.User.findOne({where: {userIdToken: dbRequest.requester}}).then(function(dbRequester) {
+                let to = dbRequester.userEmail;
+                const mailOptions = {
+                    from: 'mail.somethingborrowed@gmail.com',
+                    to: to,
+                    subject: 'Item Request Denied',
+                    text: `Your request to borrow ${db.Request.itemName} has been denied.`,
+                    html: `<p>Your request to borrow ${db.Request.itemName} has been denied.</p>`
+                };
+                transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
+            res.status(204).end();
+        });
+    });
+});
+};

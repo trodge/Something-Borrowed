@@ -27,4 +27,38 @@ $(document).ready(function () {
             location.reload();
         });
     });
+
+    $('.confirmRequest').on('click', function (event) {
+        event.preventDefault();
+        // console.log(requestInfo);
+        let requestId = event.target.dataset.requestid;
+        console.log(event);
+        console.log(requestId);
+        let requestInfo = {
+            requestId: requestId
+        };
+        $.ajax('/api/requests/confirm', {
+            type: 'PUT',
+            data: requestInfo
+        }).then(function (/*response*/) {
+            location.reload();
+        });
+    });
+
+    $('.denyRequest').on('click', function (event) {
+        event.preventDefault();
+        // console.log(requestInfo);
+        let requestId = event.target.dataset.requestid;
+        console.log(event);
+        console.log(requestId);
+        let requestInfo = {
+            requestId: requestId
+        };
+        $.ajax('/api/requests/deny', {
+            type: 'PUT',
+            data: requestInfo
+        }).then(function (/*response*/) {
+            location.reload();
+        });
+    });
 });

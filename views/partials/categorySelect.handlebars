@@ -1,0 +1,6 @@
+<select onchange="location = this.value;">
+    <option value="/items">All Categories</option>
+    {{#each categories}}
+    <option value="/items/{{this}}">{{this}}</option>
+    {{/each}}
+</select>
