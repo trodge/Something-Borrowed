@@ -3,8 +3,12 @@
 
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css">
-    <script src="https://kit.fontawesome.com/14c0965668.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/style.css">
 
     <title>Something Borrowed</title>
@@ -16,8 +20,8 @@
         <nav class="navbar">
             <img class="navbar-brand" src="../public/images/logo-desktop.png">
             <div class="inline p-3">
-                <button class="btn btn-light border-primary m-2"> <a href="">About</a></button>
-                <button class="btn btn-primary m-2">Sign In</button>
+                <button class="btn btn-light blue-border m-2 "> <a href="">About</a></button>
+                <button class="btn btn-primary m-2 blue-background blue-border">Login / Sign Up</button>
             </div>
         </nav>
 
@@ -36,26 +40,87 @@
 
         <div class="row">
             <div class="col-6">
-                <h3># Borrowed Items Near You</h3>
-                <h2>Your Location: <span class="text-success">Washington</span></h2>
+                <p class="font-weight-light mt-2"><span class="orange-text">3</span> Borrowed Items Near You</p>
+                <p class="font-weight-light">Your Location: <span class="orange-text">Bellevue, Washington</span></p>
             </div>
         </div>
         <hr>
 
-        <div class="row">
-            <div class="col-4">
-                <img src="">
+        <div class="section">
+            <h2>Borrowed Items</h2>
+            <p>
+                <a class="btn btn-primary orange-btn" data-toggle="collapse" href="#borrowedItems" role="button"
+                    aria-expanded="false" aria-controls="borrowedItems">
+                    Show/Hide Items
+                </a>
+
+            </p>
+            <div class="collapse" id="borrowedItems">
+                <div class="card card-body">
+
+                    <div class="row">
+                        <div class="col-4">
+                            <img id="item" src="../public/images/Large-Stainless-Steel-Washtub-Basin-Pot.jpg">
+                        </div>
+                        <div class="col-8">
+                            <h2>Large Stainless Steel Bowl</h2>
+                            <p>This is a large bowl you can put stuff in. Wow.</p>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-            <div class="col-8">
-                <h2>Placeholder name of item</h2>
+
+        </div>
+<hr>
+        <div class="section">
+            <h2>Owned Items</h2>
+            <p>
+                <a class="btn btn-primary orange-btn" data-toggle="collapse" href="#ownedItems" role="button"
+                    aria-expanded="false" aria-controls="ownedItems">
+                    Show/Hide Items
+                </a>
+
+            </p>
+            <div class="collapse" id="ownedItems">
+                <div class="card card-body">
+
+                    <div class="row">
+                        <div class="col-4">
+                            <img id="item" src="../public/images/grill.jpg">
+                        </div>
+                        <div class="col-8">
+                            <h2>Barbeque Grill</h2>
+                            <p>Great for summer days and making burgers and hotdogs.</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-4">
+                                <img id="item" src="../public/images/guitar.jpg">
+                            </div>
+                            <div class="col-8">
+                                <h2>My dad's old guitar</h2>
+                                <p>Jam out in your garage.</p>
+                            </div>
+                        </div>
+
+                </div>
             </div>
+
         </div>
 
     </div>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/js/index.js"></script>
+
+
 
 </body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
 
 </html>

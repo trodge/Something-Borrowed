@@ -5,6 +5,7 @@
 .btn {
     margin-top: 20px;
 }
+
 .fa-bars {
     font-size: 72px;
 }
@@ -27,3 +28,38 @@
     background-position: center;
     background-repeat: no-repeat;
   }
+
+ #item{
+      height: 150px;
+  }
+
+.blue-background,
+.blue-background:hover {
+      background-color: #004c56;
+      border: 1px solid #004c56;
+  }
+
+.blue-border,
+.blue-border:hover {
+      border: 1px solid #004c56;
+  }
+
+a,
+a:hover{
+      color: #004c56;
+      text-decoration: none;
+  }
+
+.orange-text{
+      color: #f4841a;
+  }
+
+.orange-btn,
+.orange-btn:hover {
+      background-color: #f4841a;
+      border: 1px solid #f4841a;
+  }
+
+.card{
+    background-color: #b0b5b5;
+}
