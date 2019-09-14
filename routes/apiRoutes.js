@@ -142,63 +142,45 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/requests/confirm', function (req, res) {
+    app.put('/api/requests', function (req, res) {
         let requestId = req.body.requestId;
+        let confirmedStatus = req.body.confirmed;
+        let deniedStatus = req.body.denied;
         let updatedStatus = {
-            confirmed: true
+            confirmed: confirmedStatus,
+            denied: deniedStatus,
         };
         db.Request.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
             if (dbRequest.changedRows === 0) {
                 return res.status(404).end();
             }
-            db.User.findOne({where: {userIdToken: dbRequest.requester}}).then(function(dbRequester) {
-                let to = dbRequester.userEmail;
-                const mailOptions = {
-                    from: 'mail.somethingborrowed@gmail.com',
-                    to: to,
-                    subject: 'Item Request Confirmed',
-                    text: `Your request to borrow ${db.Request.itemName} has been confirmed.`,
-                    html: `<p>Your request to borrow ${db.Request.itemName} has been confirmed.</p>`
-                };
-                transporter.sendMail(mailOptions, function(error, info){
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log('Email sent: ' + info.response);
-                    }
+            db.Request.findOne({where: {id: requestId}}).then(function(dbRequestInfo) {
+                let status;
+                if (dbRequestInfo.denied === true) {
+                    status = 'Denied';
+                } else {
+                    status = 'Confirmed';
+                }
+                db.User.findOne({where: {userIdToken: dbRequestInfo.requester}}).then(function(dbRequester) {
+                    let to = dbRequester.userEmail;
+                    const mailOptions = {
+                        from: 'mail.somethingborrowed@gmail.com',
+                        to: to,
+                        subject: `Item Request ${status}`,
+                        text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status.toLowerCase()}.`,
+                        html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status.toLowerCase()}</p>`
+                    };
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    });
+                    res.status(204).end();
                 });
-                res.status(204).end();
             });
         });
     });
 
-    app.put('/api/requests/deny', function (req, res) {
-        let requestId = req.body.requestId;
-        let updatedStatus = {
-            denied: true
-        };
-        db.Request.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
-            if (dbRequest.changedRows === 0) {
-                return res.status(404).end();
-            }
-            db.User.findOne({where: {userIdToken: dbRequest.requester}}).then(function(dbRequester) {
-                let to = dbRequester.userEmail;
-                const mailOptions = {
-                    from: 'mail.somethingborrowed@gmail.com',
-                    to: to,
-                    subject: 'Item Request Denied',
-                    text: `Your request to borrow ${db.Request.itemName} has been denied.`,
-                    html: `<p>Your request to borrow ${db.Request.itemName} has been denied.</p>`
-                };
-                transporter.sendMail(mailOptions, function(error, info){
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log('Email sent: ' + info.response);
-                    }
-                });
-            res.status(204).end();
-        });
-    });
-});
 };

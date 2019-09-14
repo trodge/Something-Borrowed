@@ -36,9 +36,11 @@ $(document).ready(function () {
         console.log(event);
         console.log(requestId);
         let requestInfo = {
-            requestId: requestId
+            requestId: requestId,
+            confirmed: true,
+            denied: false
         };
-        $.ajax('/api/requests/confirm', {
+        $.ajax('/api/requests', {
             type: 'PUT',
             data: requestInfo
         }).then(function (/*response*/) {
@@ -53,9 +55,11 @@ $(document).ready(function () {
         console.log(event);
         console.log(requestId);
         let requestInfo = {
-            requestId: requestId
+            requestId: requestId,
+            confirmed: true,
+            denied: true
         };
-        $.ajax('/api/requests/deny', {
+        $.ajax('/api/requests', {
             type: 'PUT',
             data: requestInfo
         }).then(function (/*response*/) {
