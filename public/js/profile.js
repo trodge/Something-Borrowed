@@ -5,7 +5,7 @@ $(document).ready(function () {
             itemName: $('#itemName').val().trim(),
             itemImage: $('#itemImage').val().trim(),
             itemDescription: $('#itemDesc').val().trim(),
-            itemCategory: $('#itemCategory').val().trim(),
+            itemCategory: $('#itemCategory').val().trim()
         };
         $.ajax('/api/items', {
             type: 'POST',

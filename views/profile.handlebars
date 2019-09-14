@@ -29,12 +29,16 @@
                 <input type="text" id="itemImage" class="formInput" placeholder="Image URL">
             </div>
             <div class="formGroup">
-                <label for="itemImage">Category: </label>
+                <label for="itemCategory">Category: </label>
                 <input type="text" id="itemCategory" class="formInput" placeholder="Miscellaneous">
             </div>
             <div class="formGroup">
-                <label for="itemImage">Available To: </label>
-                <input type="text" id="availableTo" class="formInput" placeholder="Public">
+                <label for="availableTo">Available To: </label>
+                    {{#each groups}}
+                        <option value={{this.groupId}}>{{this.groupName}}</option>
+                    {{/each}}
+                <select id="availableTo" class="formInput">
+                </select>
             </div>
         </form>
         <button id="addItem">Add</button>

@@ -1,10 +1,10 @@
 
-const db = require('../models');
+const models = require('../models');
 
 module.exports = function (app) {
     app.get('/', function (req, res) {
-        db.Item.findAll({}).then(function (dbItems) {
-            console.log(dbItems);
+        models.Item.findAll({}).then(function (item) {
+            console.log(item);
             res.locals.metaTags = {
                 title: 'Something Borrowed',
                 description: 'Helping you save money through friend-to-friend lending; don\'t buy when you can borrow!',
@@ -20,7 +20,7 @@ module.exports = function (app) {
                 res.render('index', {
                     navData: desiredMenu, 
                     location: 'Bellevue, WA',
-                    items: dbItems
+                    items: item
                 });
             } else {
                 desiredMenu = {
@@ -30,7 +30,7 @@ module.exports = function (app) {
                 res.render('index', {
                     navData: desiredMenu,
                     location: 'Bellevue, WA',
-                    items: dbItems
+                    items: item
                 });
             }
         });
@@ -38,11 +38,12 @@ module.exports = function (app) {
 
     app.get('/profile', function (req, res) {
         const userId = req.cookies.userid;
-        db.User.findAll({ where: { userIdToken: userId }, include: [db.Item]}).then(function (dbUser) {
-            console.log('all results'+ JSON.stringify(dbUser[0].dataValues.Items));
-            console.log('returned' + dbUser[0].dataValues.userName);
+        models.User.findAll({ where: { userIdToken: userId }, include: [models.Item, {
+            model: models.Group}]}).then(function (modelsUser) {
+            console.log('all results'+ JSON.stringify(modelsUser[0].dataValues.Items));
+            console.log('returned' + modelsUser[0].dataValues.userName);
             res.locals.metaTags = {
-                title: dbUser[0].dataValues.userName + '\'s Profile',
+                title: modelsUser[0].dataValues.userName + '\'s Profile',
                 description: 'See all your items available to borrow and add new items',
                 keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
             };
@@ -53,21 +54,21 @@ module.exports = function (app) {
                     items: '<button><a href="/items">Items</a></button>',
                     signOut: '<button onclick="signOut();">Sign Out</button>'
                 };
-                res.render('profile', { navData: desiredMenu, user: dbUser[0].dataValues });
+                res.render('profile', { navData: desiredMenu, user: modelsUser[0].dataValues });
             } else {
                 desiredMenu = {
                     home: '<button><a href="/">Home</a>',
                     items: '<button><a href="/items">Items</a></button>',
                     signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
                 };
-                res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.', user: dbUser[0].dataValues });
+                res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.', user: modelsUser[0].dataValues });
             }
         });
     });
 
     app.get('/profile/new', function (req, res) {
         const userId = req.cookies.userid;
-        db.User.findAll({ where: { userIdToken: userId } }).then(function (dbUser) {
+        models.User.findAll({ where: { userIdToken: userId } }).then(function (modelsUser) {
             res.locals.metaTags = {
                 title: 'Create Profile',
                 description: 'Complete your new profile so you can save money through friend-to-friend lending',
@@ -82,7 +83,7 @@ module.exports = function (app) {
                 };
                 res.render('createProfile', {
                     navData: desiredMenu,
-                    user: dbUser[0].dataValues
+                    user: modelsUser[0].dataValues
                 });
             } else {
                 desiredMenu = {
@@ -90,14 +91,14 @@ module.exports = function (app) {
                     items: '<button><a href="/items">Items</a></button>',
                     signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
                 };
-                res.render('unauthorized', { navData: desiredMenu, msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
+                res.render('unauthorized', { navData: desiredMenu, msg: 'You must sign in with Google before being able to complete your profile.', user: modelsUser[0].dataValues });
             }
         });
     });
 
     app.get('/items', function (req, res) {
         const userId = req.cookies.userid;
-        db.Item.findAll({}).then(function (dbItems) {
+        models.Item.findAll({}).then(function (item) {
             let desiredMenu;
             if (userId) {
                 desiredMenu = {
@@ -107,7 +108,7 @@ module.exports = function (app) {
                 };
                 res.render('items', {
                     navData: desiredMenu,
-                    items: dbItems
+                    items: item
                 });
             } else {
                 desiredMenu = {
@@ -116,7 +117,7 @@ module.exports = function (app) {
                 };
                 res.render('items', {
                     navData: desiredMenu,
-                    items: dbItems
+                    items: item
                 });
             }
         });
@@ -126,7 +127,7 @@ module.exports = function (app) {
         const userId = req.cookies.userid;
         const searchQuery = req.params.query;
         console.log(`html route ${searchQuery}`);
-        db.Item.findAll({ where: { itemName: searchQuery } }).then(function (dbSearch) {
+        models.Item.findAll({ where: { itemName: searchQuery } }).then(function (modelsSearch) {
             let desiredMenu;
             if (userId) {
                 desiredMenu = {
@@ -135,11 +136,11 @@ module.exports = function (app) {
                     items: '<button><a href="/items">Items</a></button>',
                     signOut: '<button onclick="signOut();">Sign Out</button>'
                 };
-                if (dbSearch.length > 0) {
-                    console.log(dbSearch);
+                if (modelsSearch.length > 0) {
+                    console.log(modelsSearch);
                     res.render('searchResults', {
                         navData: desiredMenu,
-                        searchResults: dbSearch
+                        searchResults: modelsSearch
                     });
                 } else {
                     res.render('searchResults', {
@@ -153,11 +154,11 @@ module.exports = function (app) {
                     items: '<button><a href="/items">Items</a></button>',
                     signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
                 };
-                if (dbSearch.length > 0) {
-                    console.log(dbSearch);
+                if (modelsSearch.length > 0) {
+                    console.log(modelsSearch);
                     res.render('searchResults', {
                         navData: desiredMenu,
-                        searchResults: dbSearch
+                        searchResults: modelsSearch
                     });
                 } else {
                     res.render('searchResults', {
