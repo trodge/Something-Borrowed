@@ -15,12 +15,11 @@ $(document).ready(function () {
             location.reload();
         });
     });
-
     $('#addGroup').on('click', function (event) {
         event.preventDefault();
         const groupInfo = {
             groupName: $('#groupName').val().trim(),
-            groupAdmin: $('#groupAdmin').val().trim()
+            groupDescription: $('#groupDescription').val().trim()
         };
         $.ajax('/api/groups', {
             type: 'POST',

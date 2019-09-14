@@ -12,10 +12,13 @@ module.exports = function (sequelize, DataTypes) {
             validate: {
                 len: [1]
             }
+        },
+        groupDescription: {
+            type: DataTypes.STRING
         }
     });
     Group.associate = function (models) {
-        Group.belongsToMany(models.User, { through: 'UserGroup'});
+        Group.belongsToMany(models.User, { through: models.UserGroup });
     };
     return Group;
 };

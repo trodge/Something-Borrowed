@@ -82,13 +82,23 @@ module.exports = function (app) {
     });
 
     app.post('/api/groups', function (req, res) {
-        const groupInfo = req.body;
-        console.log(req.body);
-        //const userId = req.cookies.userid;
-        db.Group.create(groupInfo).then(function (dbResult) {
-            res.json(dbResult);
+        db.Group.create(req.body).then(group => {
+            db.User.findOne({
+                where: {
+                    userIdToken: req.cookies.userid
+                }
+            }).then(user => {
+                user.addGroup(group, { through: { isAdmin: true }});
+                res.json(group);
+            }).catch(error => {
+                defer.reject(error);
+            });
+        }).catch(error => {
+            defer.reject(error);
         });
     });
+
+
 
     app.post('/api/requests', function (req, res) {
         const requestInfo = req.body;
@@ -191,5 +201,4 @@ module.exports = function (app) {
         });
     });
 });
-}
-
+};
