@@ -108,6 +108,19 @@ module.exports = function (app) {
 
     app.get('/items', function (req, res) {
         const userId = req.cookies.userid;
+        db.User.findOne({ include: db.Group }).then(dbUser => {
+            const groupIds = dbUser.Groups.map(group => group.groupId);
+            console.log(groupIds);
+            db.Group.findAll({
+                where: {
+                    groupId: groupIds
+                },
+                include: db.Item
+            }).then(dbGroups => {
+                console.log(dbGroups);
+                // Render here. dbGroups is an array of groups. Groups has an array of Items.
+            });
+        });
         db.Item.findAll({}).then(function (dbItems) {
             console.log('check here ' + JSON.stringify(dbItems));
             for (let i = 0; i < dbItems.length; i++) {
