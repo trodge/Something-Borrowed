@@ -141,7 +141,24 @@ module.exports = function (app) {
             if (dbRequest.changedRows === 0) {
                 return res.status(404).end();
             }
-            res.status(204).end();
+            db.User.findOne({where: {userIdToken: dbRequest.requester}}).then(function(dbRequester) {
+                let to = dbRequester.userEmail;
+                const mailOptions = {
+                    from: 'mail.somethingborrowed@gmail.com',
+                    to: to,
+                    subject: 'Item Request Confirmed',
+                    text: `Your request to borrow ${db.Request.itemName} has been confirmed.`,
+                    html: `<p>Your request to borrow ${db.Request.itemName} has been confirmed.</p>`
+                };
+                transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
+                res.status(204).end();
+            });
         });
     });
 
@@ -154,50 +171,25 @@ module.exports = function (app) {
             if (dbRequest.changedRows === 0) {
                 return res.status(404).end();
             }
+            db.User.findOne({where: {userIdToken: dbRequest.requester}}).then(function(dbRequester) {
+                let to = dbRequester.userEmail;
+                const mailOptions = {
+                    from: 'mail.somethingborrowed@gmail.com',
+                    to: to,
+                    subject: 'Item Request Denied',
+                    text: `Your request to borrow ${db.Request.itemName} has been denied.`,
+                    html: `<p>Your request to borrow ${db.Request.itemName} has been denied.</p>`
+                };
+                transporter.sendMail(mailOptions, function(error, info){
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
+                });
             res.status(204).end();
         });
     });
-};
-
-
-// app.post('/api/createProfileInfo', function (req, res) {
-//   console.log()
-// });
-
-// app.post('/api/profile', async function (req, res) {
-//   console.log(req.body);
-//   let userId = await verify(req.body.token).catch(console.error);
-
-//   db.User.findAll({ where: { userId: userId} }).then(function(pastUser) {
-//     console.log(pastUser);
-//     if (pastUser.length > 0) {
-//       res.send('registeredUser');
-//     } else {
-//       res.send('newUser');
-//     }
-// })});
-
-
-// // Get all examples
-// app.get('/api/examples', function(req, res) {
-//   db.Example.findAll({}).then(function(dbExamples) {
-//     res.json(dbExamples);
-//   });
-// });
-
-// // Create a new example
-// app.post('/api/examples', function(req, res) {
-//   db.Example.create(req.body).then(function(dbExample) {
-//     res.json(dbExample);
-//   });
-// });
-
-// // Delete an example by id
-// app.delete('/api/examples/:id', function(req, res) {
-//   db.Example.destroy({ where: { id: req.params.id } }).then(function(
-//     dbExample
-//   ) {
-//     res.json(dbExample);
-//   });
-// });
+});
+}
 
