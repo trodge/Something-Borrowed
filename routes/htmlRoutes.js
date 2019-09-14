@@ -4,55 +4,43 @@ module.exports = function (app) {
     let currentCategories = [];
 
     app.get('/', function (req, res) {
-        db.Item.findAll({}).then(function (dbItems) {
-            console.log(dbItems);
-            for (let i = 0; i < dbItems.length; i++) {
-                if (currentCategories.includes(dbItems[i].itemCategory) === false) {
-                    currentCategories.push(dbItems[i].itemCategory);
-                }
-            }
-            res.locals.metaTags = {
-                title: 'Something Borrowed',
-                description: 'Helping you save money through friend-to-friend lending; don\'t buy when you can borrow!',
-                keywords: 'lending, borrow, friend-to-friend, save'
+        res.locals.metaTags = {
+            title: 'Something Borrowed',
+            description: 'Helping you save money through friend-to-friend lending; don\'t buy when you can borrow!',
+            keywords: 'lending, borrow, friend-to-friend, save'
+        };
+        let desiredMenu;
+        if (req.cookies.userid) {
+            desiredMenu = {
+                profile: '<button><a href="/profile">Profile</a>',
+                items: '<button><a href="/items">Items</a></button>',
+                signOut: '<button onclick="signOut();">Sign Out</button>'
             };
-            let desiredMenu;
-            if (req.cookies.userid) {
-                desiredMenu = {
-                    profile: '<button><a href="/profile">Profile</a>',
-                    items: '<button><a href="/items">Items</a></button>',
-                    signOut: '<button onclick="signOut();">Sign Out</button>'
-                };
-                res.render('index', {
-                    navData: desiredMenu, 
-                    location: 'Bellevue, WA',
-                    items: item
-                });
-            } else {
-                desiredMenu = {
-                    items: '<button><a href="/items">Items</a></button>',
-                    signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                };
-                res.render('index', {
-                    navData: desiredMenu,
-                    location: 'Bellevue, WA',
-                    items: item
-                });
-            }
-        });
+            res.render('index', {
+                navData: desiredMenu
+            });
+        } else {
+            desiredMenu = {
+                items: '<button><a href="/items">Items</a></button>',
+                signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
+            };
+            res.render('index', {
+                navData: desiredMenu
+            });
+        }
     });
 
     app.get('/profile', function (req, res) {
         const userId = req.cookies.userid;
-        db.User.findAll({ where: { userIdToken: userId }, include: [db.Item]}).then(function (dbUser) {
-            console.log('all results'+ JSON.stringify(dbUser[0].dataValues.Items));
+        db.User.findAll({ where: { userIdToken: userId }, include: [db.Item] }).then(function (dbUser) {
+            console.log('all results' + JSON.stringify(dbUser[0].dataValues.Items));
             console.log('returned' + dbUser[0].dataValues.userName);
-            db.Request.findAll({ where: {owner: userId}}).then(function (dbRequest) {
+            db.Request.findAll({ where: { owner: userId } }).then(function (dbRequest) {
                 console.log(JSON.stringify(dbRequest));
                 let pendingRequests = [];
                 let confirmedRequests = [];
                 let deniedRequests = [];
-                for (let i=0; i<dbRequest.length; i++) {
+                for (let i = 0; i < dbRequest.length; i++) {
                     if (dbRequest[i].dataValues.confirmed === false) {
                         pendingRequests.push(dbRequest[i].dataValues);
                     } else if (dbRequest[i].dataValues.confirmed === true || dbRequest[i].dataValues.denied === true) {
@@ -61,7 +49,7 @@ module.exports = function (app) {
                         deniedRequests.push(dbRequest[i].dataValues);
                     }
                 }
-                console.log('pending '+ JSON.stringify(pendingRequests));
+                console.log('pending ' + JSON.stringify(pendingRequests));
                 res.locals.metaTags = {
                     title: dbUser[0].dataValues.userName + '\'s Profile',
                     description: 'See all your items available to borrow and add new items',
@@ -81,7 +69,7 @@ module.exports = function (app) {
                         items: '<button><a href="/items">Items</a></button>',
                         signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
                     };
-                    res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.'});
+                    res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.' });
                 }
             });
 
@@ -158,7 +146,7 @@ module.exports = function (app) {
         const userId = req.cookies.userid;
         const selectedCategory = req.params.category;
         console.log(selectedCategory);
-        db.Item.findAll({ where: {itemCategory: selectedCategory}}).then(function (dbItems) {
+        db.Item.findAll({ where: { itemCategory: selectedCategory } }).then(function (dbItems) {
             let desiredMenu;
             if (userId) {
                 desiredMenu = {
@@ -206,7 +194,7 @@ module.exports = function (app) {
                     });
                 } else {
                     res.render('searchResults', {
-                        navData: desiredMenu, 
+                        navData: desiredMenu,
                         noResults: '<h3>Your query returned no results.</h3>'
                     });
                 }
