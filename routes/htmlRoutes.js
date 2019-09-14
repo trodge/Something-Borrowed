@@ -1,6 +1,5 @@
 
-const models = require('../models');
-
+const db = require('../models');
 module.exports = function (app) {
     let currentCategories = [];
 
@@ -190,7 +189,7 @@ module.exports = function (app) {
         const userId = req.cookies.userid;
         const searchQuery = req.params.query;
         console.log(`html route ${searchQuery}`);
-        models.Item.findAll({ where: { itemName: searchQuery } }).then(function (modelsSearch) {
+        db.Item.findAll({ where: { itemName: searchQuery } }).then(function (dbSearch) {
             let desiredMenu;
             if (userId) {
                 desiredMenu = {
@@ -199,11 +198,11 @@ module.exports = function (app) {
                     items: '<button><a href="/items">Items</a></button>',
                     signOut: '<button onclick="signOut();">Sign Out</button>'
                 };
-                if (modelsSearch.length > 0) {
-                    console.log(modelsSearch);
+                if (dbSearch.length > 0) {
+                    console.log(dbSearch);
                     res.render('searchResults', {
                         navData: desiredMenu,
-                        searchResults: modelsSearch
+                        searchResults: dbSearch
                     });
                 } else {
                     res.render('searchResults', {
@@ -217,11 +216,11 @@ module.exports = function (app) {
                     items: '<button><a href="/items">Items</a></button>',
                     signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
                 };
-                if (modelsSearch.length > 0) {
-                    console.log(modelsSearch);
+                if (dbSearch.length > 0) {
+                    console.log(dbSearch);
                     res.render('searchResults', {
                         navData: desiredMenu,
-                        searchResults: modelsSearch
+                        searchResults: dbSearch
                     });
                 } else {
                     res.render('searchResults', {
