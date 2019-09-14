@@ -5,23 +5,23 @@ function onSignIn(googleUser) {
     const userName = profile.getName();
     const userEmail = profile.getEmail();
     const userImage = profile.getImageUrl();
-        $.ajax('/api/login', {
-            type: 'POST',
-            data: {
-                token: userIdToken,
-                name: userName,
-                email: userEmail,
-                image: userImage
-            }
-        }).then(function (response) {
-            if (response.registeredUser) {
-                window.location.href = '/profile';
-            } else if (response.newUser) {
-                window.location.href = '/profile/new';
-            } else if (response.signedIn) {
-                return;
-            }
-        });  
+    $.ajax('/api/login', {
+        type: 'POST',
+        data: {
+            token: userIdToken,
+            name: userName,
+            email: userEmail,
+            image: userImage
+        }
+    }).then(function (response) {
+        if (response.registeredUser) {
+            window.location.href = '/profile';
+        } else if (response.newUser) {
+            window.location.href = '/profile/new';
+        } else if (response.signedIn) {
+            return;
+        }
+    });  
 }
 
 function signOut() {

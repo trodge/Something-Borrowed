@@ -45,7 +45,7 @@ module.exports = function (app) {
 
     app.get('/profile', function (req, res) {
         const userId = req.cookies.userid;
-        db.User.findAll({ where: { userIdToken: userId }, include: [db.Item]}).then(function (dbUser) {
+        db.User.findAll({ where: { userIdToken: userId }, include: db.Item}).then(function (dbUser) {
             console.log('all results'+ JSON.stringify(dbUser[0].dataValues.Items));
             console.log('returned' + dbUser[0].dataValues.userName);
             db.Request.findAll({ where: {owner: userId}}).then(function (dbRequest) {
