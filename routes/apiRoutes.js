@@ -33,15 +33,22 @@ module.exports = function (app) {
             userEmail: signIn.email,
             userImage: signIn.image
         };
-        db.User.findAll({ where: { userIdToken: userId } }).then(function (pastUser) {
-            if (pastUser.length > 0) {
-                res.cookie('userid', userId).send({ registeredUser: userId });
-            } else {
-                db.User.create(userInfo).then(function () {
-                    res.cookie('userid', userId).send({ newUser: userId });
-                });
-            }
-        });
+        const userIdCookie = req.cookies.userid;
+        console.log('serverReadCookie' + userIdCookie);
+        console.log('verifyResult' + userId);
+        if (userIdCookie === userId) {
+            res.send({signedIn : true});
+        } else {
+            db.User.findAll({ where: { userIdToken: userId } }).then(function (pastUser) {
+                if (pastUser.length > 0) {
+                    res.cookie('userid', userId).send({ registeredUser: userId });
+                } else {
+                    db.User.create(userInfo).then(function () {
+                        res.cookie('userid', userId).send({ newUser: userId });
+                    });
+                }
+            });
+        }
     });
 
 

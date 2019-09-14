@@ -258,44 +258,7 @@ module.exports = function (app) {
         }
     });
 
-    app.get('/groups', function (req, res) {
-      db.User.findAll({ where: { userIdToken: userId }, include: [{all: true}]}).then(function (dbUser) {
-        console.log(JSON.stringify(dbUser));
-        res.render('profile');
-      });
-    });
 
-    app.get('/groupCheck', function (req, res) {
-        const userId = req.cookies.userid;
-        db.User.getGroups().then(function(groupCheck) {
-          console.log(JSON.stringify(groupCheck));
-        });
-        db.Group.findAll({}).then(function (dbGroup) {
-          console.log(JSON.stringify(dbGroup));
-
-            // let desiredMenu;
-            // if (userId) {
-            //   desiredMenu = {
-            //     home: '<button><a href="/">Home</a>',
-            //     profile: '<button><a href="/profile">Profile</a>',
-            //     signOut: '<button onclick="signOut();">Sign Out</button>'
-            //   };
-            //   res.render('items', {
-            //     navData: desiredMenu,
-            //     items: dbItems
-            //   });
-            // } else {
-            //   desiredMenu = {
-            //     home: '<button><a href="/">Home</a>',
-            //     signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-            //   };
-            //   res.render('items', {
-            //     navData: desiredMenu,
-            //     items: dbItems
-            //   });
-            // }
-        });
-    });
 
 
 };
