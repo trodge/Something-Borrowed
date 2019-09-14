@@ -29,14 +29,6 @@ module.exports = function (sequelize, DataTypes) {
                 len: [1]
             }
         },
-        groupAvailableTo: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            defaultValue: 'Public',
-            validate: {
-                len: [1]
-            }
-        },
         userIdToken: {
             type: DataTypes.STRING,
             allowNull: false
@@ -46,6 +38,7 @@ module.exports = function (sequelize, DataTypes) {
         Item.belongsTo(models.User, {
             foreignKey: 'userIdToken'
         });
+        Item.belongsToMany(models.Group, { through: 'ItemGroup' });
     };
     return Item;
 };

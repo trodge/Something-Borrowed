@@ -1,16 +1,15 @@
 $(document).ready(function () {
     $('#addItem').on('click', function (event) {
         event.preventDefault();
-        const itemInfo = {
+        const item = {
             itemName: $('#itemName').val().trim(),
             itemImage: $('#itemImage').val().trim(),
             itemDescription: $('#itemDesc').val().trim(),
             itemCategory: $('#itemCategory').val().trim(),
-            groupAvailableTo: $('#availableTo').val().trim(),
         };
         $.ajax('/api/items', {
             type: 'POST',
-            data: itemInfo
+            data: item
         }).then(function (/*response*/) {
             location.reload();
         });
