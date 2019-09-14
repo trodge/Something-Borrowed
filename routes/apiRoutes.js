@@ -65,68 +65,20 @@ module.exports = function (app) {
     });
 
     app.post('/api/groups', function (req, res) {
-        const groupInfo = req.body;
-        console.log(req.body);
-        //const userId = req.cookies.userid;
-        db.Group.create(groupInfo).then(function (group) {
-            console.log(req.cookies.userid);
+        db.Group.create(req.body).then(group => {
             db.User.findOne({
                 where: {
                     userIdToken: req.cookies.userid
                 }
-            }).then(function(user) {
-                console.log(user);
-                user.addGroup(group);
-                group.addUser(user);
+            }).then(user => {
+                user.addGroup(group, { through: { isAdmin: true }});
+                res.json(group);
+            }).catch(error => {
+                defer.reject(error);
             });
-            res.json(group);
+        }).catch(error => {
+            defer.reject(error);
         });
     });
-
-
-
-
 };
-
-
-// app.post('/api/createProfileInfo', function (req, res) {
-//   console.log()
-// });
-
-// app.post('/api/profile', async function (req, res) {
-//   console.log(req.body);
-//   let userId = await verify(req.body.token).catch(console.error);
-
-//   db.User.findAll({ where: { userId: userId} }).then(function(pastUser) {
-//     console.log(pastUser);
-//     if (pastUser.length > 0) {
-//       res.send('registeredUser');
-//     } else {
-//       res.send('newUser');
-//     }
-// })});
-
-
-// // Get all examples
-// app.get('/api/examples', function(req, res) {
-//   db.Example.findAll({}).then(function(dbExamples) {
-//     res.json(dbExamples);
-//   });
-// });
-
-// // Create a new example
-// app.post('/api/examples', function(req, res) {
-//   db.Example.create(req.body).then(function(dbExample) {
-//     res.json(dbExample);
-//   });
-// });
-
-// // Delete an example by id
-// app.delete('/api/examples/:id', function(req, res) {
-//   db.Example.destroy({ where: { id: req.params.id } }).then(function(
-//     dbExample
-//   ) {
-//     res.json(dbExample);
-//   });
-// });
 
