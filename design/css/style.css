@@ -125,3 +125,11 @@ footer ul a:active {
   color: #000;
   text-decoration: none;
 }
+
+/* Max-width 767px */
+@media all and (max-width: 767px) {
+  nav.navbar button {
+    margin-right: 0 !important;
+    font-size: 12px;
+  }
+}
