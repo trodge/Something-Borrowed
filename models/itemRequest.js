@@ -1,5 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    let itemRequest = sequelize.define('ItemRequest', {
+    let ItemRequest = sequelize.define('ItemRequest', {
         owner: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -51,8 +51,5 @@ module.exports = function (sequelize, DataTypes) {
             defaultValue: false
         }
     });
-    // Group.associate = function (models) {
-    //     Group.belongsToMany(models.User, { through: 'UserGroup' });
-    // };
-    return itemRequest;
+    return ItemRequest;
 };

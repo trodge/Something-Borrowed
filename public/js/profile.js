@@ -1,18 +1,20 @@
 $(document).ready(function () {
     $('#addItem').on('click', function (event) {
         event.preventDefault();
+        console.log($('#availableTo').val());
         const item = {
             itemName: $('#itemName').val().trim(),
             itemImage: $('#itemImage').val().trim(),
             itemDescription: $('#itemDesc').val().trim(),
-            itemCategory: $('#itemCategory').val().trim()
+            itemCategory: $('#itemCategory').val().trim(),
+            groups: $('#availableTo').val()
         };
-        $.ajax('/api/items', {
-            type: 'POST',
-            data: item
-        }).then(function (/*response*/) {
-            location.reload();
-        });
+        // $.ajax('/api/items', {
+        //     type: 'POST',
+        //     data: item
+        // }).then(function (/*response*/) {
+        //     location.reload();
+        // });
     });
     $('#addGroup').on('click', function (event) {
         event.preventDefault();
@@ -39,7 +41,7 @@ $(document).ready(function () {
             confirmed: true,
             denied: false
         };
-        $.ajax('/api/requests', {
+        $.ajax('/api/itemrequests', {
             type: 'PUT',
             data: requestInfo
         }).then(function (/*response*/) {
@@ -58,7 +60,7 @@ $(document).ready(function () {
             confirmed: true,
             denied: true
         };
-        $.ajax('/api/requests', {
+        $.ajax('/api/itemrequests', {
             type: 'PUT',
             data: requestInfo
         }).then(function (/*response*/) {

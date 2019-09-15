@@ -90,7 +90,7 @@ module.exports = function (app) {
 
 
 
-    app.post('/api/requests', function (req, res) {
+    app.post('/api/itemrequests', function (req, res) {
         const requestInfo = req.body;
         console.log(req.body);
         const userId = req.cookies.userid;
@@ -108,7 +108,7 @@ module.exports = function (app) {
                 exchange3: requestInfo.exchange3,
                 confirmed: false
             };
-            db.itemRequest.create(requestObject).then(function (dbRequest) {
+            db.ItemRequest.create(requestObject).then(function (dbRequest) {
                 console.log(JSON.stringify(dbRequest));
                 db.User.findOne({where: {userIdToken: dbItem.userIdToken}}).then(function(dbOwner) {
                     let to = dbOwner.userEmail;
@@ -132,7 +132,7 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/requests', function (req, res) {
+    app.put('/api/itemrequests', function (req, res) {
         let requestId = req.body.requestId;
         let confirmedStatus = req.body.confirmed;
         let deniedStatus = req.body.denied;
@@ -140,11 +140,11 @@ module.exports = function (app) {
             confirmed: confirmedStatus,
             denied: deniedStatus,
         };
-        db.itemRequest.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
+        db.ItemRequest.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
             if (dbRequest.changedRows === 0) {
                 return res.status(404).end();
             }
-            db.itemRequest.findOne({where: {id: requestId}}).then(function(dbRequestInfo) {
+            db.ItemRequest.findOne({where: {id: requestId}}).then(function(dbRequestInfo) {
                 let status;
                 if (dbRequestInfo.denied === true) {
                     status = 'Denied';

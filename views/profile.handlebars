@@ -30,7 +30,7 @@
         </div>
         {{/each}}
     </div>
-        <div id="confirmedRequests">
+    <div id="confirmedRequests">
         <h2>Your Confirmed Requests</h2>
         {{#each confirmed}}
         <div class="item">
@@ -43,8 +43,8 @@
         </div>
         {{/each}}
     </div>
-        </div>
-        <div id="deniedRequests">
+    </div>
+    <div id="deniedRequests">
         <h2>Your Denied Requests</h2>
         {{#each denied}}
         <div class="item">
@@ -78,16 +78,16 @@
             </div>
             <div class="formGroup">
                 <label for="availableTo">Available To: </label>
+                <select id="availableTo" class="selectpicker" multiple>
                     {{#each groups}}
-                        <option value={{this.groupId}}>{{this.groupName}}</option>
+                    <option value={{this.groupId}}>{{this.groupName}}</option>
                     {{/each}}
-                <select id="availableTo" class="formInput">
                 </select>
             </div>
         </form>
         <button id="addItem">Add</button>
     </div>
-        <div id="userGroups">
+    <div id="userGroups">
         <h2>Your Groups</h2>
         {{#each groups}}
         <div class="group">
@@ -98,7 +98,7 @@
         </div>
         {{/each}}
     </div>
-        <div id="newGroupSection">
+    <div id="newGroupSection">
         <h2>Create a New Group</h2>
         <form>
             <div class="formGroup">
@@ -107,11 +107,12 @@
             </div>
             <div class="formGroup">
                 <label for="groupAdmin">Description: </label>
-                <input type="text" id="groupDescription" class="formInput" placeholder="Description" value="{{user.userName}}">
+                <input type="text" id="groupDescription" class="formInput" placeholder="Description"
+                    value="{{user.userName}}">
             </div>
             <button id="addGroup">Add</button>
         </form>
-        
+
     </div>
 </main>
 {{>footer}}
@@ -121,7 +122,3 @@
 <script type="text/javascript" src="/js/auth.js"></script>
 <script type="text/javascript" src="/js/search.js"></script>
 <script type="text/javascript" src="/js/profile.js"></script>
-
-
-
-
