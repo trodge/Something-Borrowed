@@ -1,24 +1,23 @@
 {{>header}}
 <h1>New Profile</h1>
 <form>
-    <div class="formGroup">
+    <div class="form-group">
         <label for="userName">Name: </label>
-        <input type="text" id="userName" class="formInput" placeholder="Name" value="{{user.userName}}">
+        <input type="text" id="userName" class="form-control" placeholder="Name" value="{{user.userName}}">
     </div>
-    <div class="formGroup">
+    <div class="form-group">
         <label for="userEmail">Email: </label>
-        <input type="text" id="userEmail" class="formInput" placeholder="Email" value="{{user.userEmail}}">
+        <input type="text" id="userEmail" class="form-control" placeholder="Email" value="{{user.userEmail}}">
     </div>
-    <div class="formGroup">
+    <div class="form-group">
         <label for="userImage">Profile Image URL: </label>
-        <input type="text" id="userImage" class="formInput" placeholder="Profile Image URL" value="{{user.userImage}}">
+        <input type="text" id="userImage" class="form-control" placeholder="Profile Image URL" value="{{user.userImage}}">
     </div>
-    <button id="createProfile">Create</button>
+    <button id="createProfile" class="orange-btn curvedCorners">Create</button>
 </form>
 {{>footer}}
 
-<script src="https://apis.google.com/js/platform.js" async defer></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script type="text/javascript" src="/js/auth.js"></script>
-<script type="text/javascript" src="/js/search.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script type="text/javascript" src="/js/auth.js"></script>
 <script type="text/javascript" src="/js/newProfile.js"></script>

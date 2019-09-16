@@ -12,7 +12,7 @@ module.exports = function (app) {
         let desiredMenu;
         if (req.cookies.userid) {
             desiredMenu = {
-              home: '<li class="currentPage"><a href="/">Home</a></li>',
+                home: '<li class="currentPage"><a href="/">Home</a></li>',
                 profile: '<li><a href="/profile">Profile</a></li>',
                 items: '<li><a href="/items">Items</a></li>',
                 signOut: '<button onclick="signOut();">Sign Out</button>'
@@ -22,7 +22,7 @@ module.exports = function (app) {
             });
         } else {
             desiredMenu = {
-              home: '<li class="currentPage"><a href="/">Home</a></li>',
+                home: '<li class="currentPage"><a href="/">Home</a></li>',
                 items: '<li><a href="/items">Items</a></li>',
                 signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
             };
