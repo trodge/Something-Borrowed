@@ -1,18 +1,84 @@
 {{>header}}
 <main>
-    <h1>{{user.userName}}</h1>
-    <div id="userItems">
-        <h2>Your Available Items</h2>
-        {{#each items}}
-        <div class="item">
-            <div class="itemImage"><img src="{{this.itemImage}}"></div>
-            <div class="itemDescription">
-                <h3>{{this.itemName}}</h3>
-                <p>{{this.itemDescription}}</p>
+    <h2>{{user.userName}}</h2>
+    <div class="container">
+        <div class="section">
+            <div class="sectionHeader">
+                <h3>Items</h3>
+                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#newItem" href="#newItem"
+                    role="button" aria-expanded="false" aria-controls="newItem">
+                    Add New
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand add new item form">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse add new item form">
+                    </span>
+                </a>
+                <a class="orange-btn expand" data-toggle="collapse" data-target="#items" href="#items" role="button"
+                    aria-expanded="false" aria-controls="items">
+                    View All
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand add new item form">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse add new item form">
+                    </span>
+                </a>
+            </div>
+            <div id="newItem" class="collapse">
+                <form>
+                    <div class="form-group">
+                        <label for="itemName">Name: </label>
+                        <input type="text" id="itemName" class="form-control" placeholder="Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemName">Description: </label>
+                        <input type="text" id="itemDesc" class="form-control" placeholder="Description">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemImage">Image URL: </label>
+                        <input type="text" id="itemImage" class="form-control" placeholder="Image URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemCategory">Category: </label>
+                        <input type="text" id="itemCategory" class="form-control" placeholder="Miscellaneous">
+                    </div>
+                    <div class="form-group">
+                        <label>Groups Available To: </label>
+                        {{#each groups}}
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="{{this.groupId}}" id="{{this.groupId}}">
+                            <label class="form-check-label" for="{{this.groupId}}">
+                                {{this.groupName}}
+                            </label>
+                        </div>
+                        {{/each}}
+                    </div>
+                    <button id="addItem" class="orange-btn">Add</button>
+                </form>
+            </div>
+            <div id="items" class="collapse">
+                <div class="itemsDisplay">
+                {{#each items}}
+                <div class="item">
+                    <div class="itemImage"><img src="{{this.itemImage}}"></div>
+                    <div class="itemDescription">
+                        <h3>{{this.itemName}}</h3>
+                        <p>{{this.itemDescription}}</p>
+                    </div>
+                </div>
+                {{/each}}
+                </div>
             </div>
         </div>
-        {{/each}}
+        <div class="section">
+            <h3>Requests</h3>
+        </div>
+        <div class="section">
+            <h3>Groups</h3>
+        </div>
     </div>
+
+
+
+
     <div id="pendingRequests">
         <h2>Your Pending Requests</h2>
         {{#each pending}}
@@ -57,36 +123,7 @@
         </div>
         {{/each}}
     </div>
-    <div id="newItemSection">
-        <h2>Add a New Item</h2>
-        <form>
-            <div class="formGroup">
-                <label for="itemName">Name: </label>
-                <input type="text" id="itemName" class="formInput" placeholder="Name">
-            </div>
-            <div class="formGroup">
-                <label for="itemName">Description: </label>
-                <input type="text" id="itemDesc" class="formInput" placeholder="Description">
-            </div>
-            <div class="formGroup">
-                <label for="itemImage">Image URL: </label>
-                <input type="text" id="itemImage" class="formInput" placeholder="Image URL">
-            </div>
-            <div class="formGroup">
-                <label for="itemCategory">Category: </label>
-                <input type="text" id="itemCategory" class="formInput" placeholder="Miscellaneous">
-            </div>
-            <div class="formGroup">
-                <label for="availableTo">Available To: </label>
-                <select id="availableTo" class="selectpicker" multiple>
-                    {{#each groups}}
-                    <option value={{this.groupId}}>{{this.groupName}}</option>
-                    {{/each}}
-                </select>
-            </div>
-        </form>
-        <button id="addItem">Add</button>
-    </div>
+
     <div id="userGroups">
         <h2>Your Groups</h2>
         {{#each groups}}
@@ -117,8 +154,4 @@
 </main>
 {{>footer}}
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://apis.google.com/js/platform.js" async defer></script>
-<script type="text/javascript" src="/js/auth.js"></script>
-<script type="text/javascript" src="/js/search.js"></script>
 <script type="text/javascript" src="/js/profile.js"></script>
