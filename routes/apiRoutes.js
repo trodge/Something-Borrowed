@@ -187,8 +187,8 @@ module.exports = function (app) {
                         console.log('Email sent: ' + info.response);
                     }
                 });
-            res.status(204).end();
+                res.status(204).end();
+            });
         });
     });
-});
 };

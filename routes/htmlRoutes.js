@@ -106,8 +106,9 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/items', function (req, res) {
+    app.get('/items/:category', function (req, res) {
         const userId = req.cookies.userid;
+        const selectedCategory = req.params.category;
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
@@ -119,6 +120,9 @@ module.exports = function (app) {
             }).then(dbGroups => {
                 console.log(dbGroups);
                 // Render here. dbGroups is an array of groups. Groups has an array of Items.
+                if (selectedCategory) {
+                    // Filter for category.
+                }
             });
         });
         db.Item.findAll({}).then(function (dbItems) {
@@ -129,37 +133,6 @@ module.exports = function (app) {
                 }
             }
             console.log(currentCategories);
-            let desiredMenu;
-            if (userId) {
-                desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    profile: '<button><a href="/profile">Profile</a>',
-                    signOut: '<button onclick="signOut();">Sign Out</button>'
-                };
-                res.render('items', {
-                    navData: desiredMenu,
-                    items: dbItems,
-                    categories: currentCategories
-                });
-            } else {
-                desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                };
-                res.render('items', {
-                    navData: desiredMenu,
-                    items: dbItems,
-                    categories: currentCategories
-                });
-            }
-        });
-    });
-
-    app.get('/items/:category', function (req, res) {
-        const userId = req.cookies.userid;
-        const selectedCategory = req.params.category;
-        console.log(selectedCategory);
-        db.Item.findAll({ where: { itemCategory: selectedCategory } }).then(function (dbItems) {
             let desiredMenu;
             if (userId) {
                 desiredMenu = {
