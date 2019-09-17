@@ -8,15 +8,16 @@
         </div>
 
         <div id="accountControls">
-            {{{navData.signIn}}}
-            {{{navData.signOut}}}
+            {{#if loggedIn}}<button onclick="signOut();">Sign Out</button>
+            {{else}}<button data-toggle="modal" data-target="#signInModal">Sign In</button>
+            {{/if}}
         </div>
     </div>
     <nav class="mainMenu">
         <ul>
-            {{{navData.home}}}
-            {{{navData.profile}}}
-            {{{navData.items}}}
+            <li class="currentPage"><a href="/">Home</a></li>
+            {{#if loggedIn}}<li><a href="/profile">Profile</a></li>{{/if}}
+            <li><a href="/items/all">Items</a></li>
         </ul>
     </nav>
     {{>search}}

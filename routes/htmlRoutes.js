@@ -8,49 +8,31 @@ module.exports = function (app) {
             description: 'Helping you save money through friend-to-friend lending; don\'t buy when you can borrow!',
             keywords: 'lending, borrow, friend-to-friend, save'
         };
-        let desiredMenu;
-        if (req.cookies.userid) {
-            desiredMenu = {
-                home: '<li class="currentPage"><a href="/">Home</a></li>',
-                profile: '<li><a href="/profile">Profile</a></li>',
-                items: '<li><a href="/items">Items</a></li>',
-                signOut: '<button onclick="signOut();">Sign Out</button>'
-            };
-            res.render('index', {
-                navData: desiredMenu
-            });
-        } else {
-            desiredMenu = {
-                home: '<li class="currentPage"><a href="/">Home</a></li>',
-                items: '<li><a href="/items">Items</a></li>',
-                signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-            };
-            res.render('index', {
-                navData: desiredMenu
-            });
-        }
+        res.render('index', {
+            loggedIn: Boolean(req.cookies.userid)
+        });
     });
 
     app.get('/profile', function (req, res) {
         const userId = req.cookies.userid;
         let administrates = [];
         let belongsTo = [];
-        db.User.findOne({ where: {userIdToken: userId}, include: [db.Group, db.Item] }).then(dbUser => {
-        //   console.log('all results 1'+ JSON.stringify(dbUser));
+        db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
+            //   console.log('all results 1'+ JSON.stringify(dbUser));
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
             //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
             //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
-            for (let j=0; j < dbUser.Groups.length; j++) {
-            //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
+            for (let j = 0; j < dbUser.Groups.length; j++) {
+                //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
                 if (dbUser.Groups[j].UserGroup.isAdmin === true) {
                     administrates.push(dbUser.Groups[j]);
                 } else {
                     belongsTo.push(dbUser.Groups[j]);
                 }
             }
-            db.ItemRequest.findAll({ where: {owner: userId}}).then(function (dbRequest) {
+            db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbRequest) {
                 // console.log(JSON.stringify(dbRequest));
                 let pendingRequests = [];
                 let confirmedRequests = [];
@@ -66,69 +48,13 @@ module.exports = function (app) {
                     description: 'See all your items available to borrow and add new items',
                     keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                 };
-                let desiredMenu;
                 if (userId) {
-                    desiredMenu = {
-                        home: '<li><a href="/">Home</a></li>',
-                        profile: '<li class="currentPage"><a href="/profile">Profile</a></li>',
-                        items: '<li><a href="/items">Items</a></li>',
-                        signOut: '<button onclick="signOut();">Sign Out</button>'
-                    };
-                    res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests});
+                    res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests });
                 } else {
-                    desiredMenu = {
-                        home: '<li><a href="/">Home</a></li>',
-                        items: '<li><a href="/items">Items</a></li>',
-                        signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                    };
-                    res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.' });
+                    res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
                 }
             });
         });
-
-
-        // db.User.findAll({ where: { userIdToken: userId }, include: db.Item}).then(function (dbUser) {
-        //     console.log('all results'+ JSON.stringify(dbUser[0].dataValues.Items));
-        //     console.log('returned' + dbUser[0].dataValues.userName);
-        //     db.ItemRequest.findAll({ where: {owner: userId}}).then(function (dbRequest) {
-        //         console.log(JSON.stringify(dbRequest));
-        //         let pendingRequests = [];
-        //         let confirmedRequests = [];
-        //         let deniedRequests = [];
-        //         for (let i = 0; i < dbRequest.length; i++) {
-        //             if (dbRequest[i].dataValues.confirmed === false) {
-        //                 pendingRequests.push(dbRequest[i].dataValues);
-        //             } else if (dbRequest[i].dataValues.confirmed === true || dbRequest[i].dataValues.denied === true) {
-        //                 confirmedRequests.push(dbRequest[i].dataValues);
-        //             } else if (dbRequest[i].dataValues.denied === true) {
-        //                 deniedRequests.push(dbRequest[i].dataValues);
-        //             }
-        //         }
-        //         console.log('pending ' + JSON.stringify(pendingRequests));
-        //         res.locals.metaTags = {
-        //             title: dbUser[0].dataValues.userName + '\'s Profile',
-        //             description: 'See all your items available to borrow and add new items',
-        //             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
-        //         };
-        //         let desiredMenu;
-        //         if (userId) {
-        //             desiredMenu = {
-        //                 home: '<button><a href="/">Home</a>',
-        //                 items: '<button><a href="/items">Items</a></button>',
-        //                 signOut: '<button onclick="signOut();">Sign Out</button>'
-        //             };
-        //             res.render('profile', { navData: desiredMenu, user: dbUser[0].dataValues, items: dbUser[0].dataValues.Items, pending: pendingRequests, confirmed: confirmedRequests, denied: deniedRequests });
-        //         } else {
-        //             desiredMenu = {
-        //                 home: '<button><a href="/">Home</a>',
-        //                 items: '<button><a href="/items">Items</a></button>',
-        //                 signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-        //             };
-        //             res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.' });
-        //         }
-        //     });
-
-        // });
     });
 
     app.get('/profile/new', function (req, res) {
@@ -139,24 +65,13 @@ module.exports = function (app) {
                 description: 'Complete your new profile so you can save money through friend-to-friend lending',
                 keywords: 'lending, borrow, friend-to-friend, save'
             };
-            let desiredMenu;
             if (userId) {
-                desiredMenu = {
-                    home: '<li><a href="/">Home</a></li>',
-                    items: '<li><a href="/items">Items</a></li>',
-                    signOut: '<button onclick="signOut();">Sign Out</button>'
-                };
                 res.render('createProfile', {
-                    navData: desiredMenu,
+                    loggedIn: Boolean(userId),
                     user: dbUser[0].dataValues
                 });
             } else {
-                desiredMenu = {
-                    home: '<li><a href="/">Home</a></li>',
-                    items: '<li><a href="/items">Items</a></li>',
-                    signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                };
-                res.render('unauthorized', { navData: desiredMenu, msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
+                res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
             }
         });
     });
@@ -167,17 +82,28 @@ module.exports = function (app) {
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
-            dbUser.getGroups({ include: db.Item }).then(dbGroups => {
+            db.Group.findAll({
+                where: {
+                    groupId: groupIds
+                }, include: db.Item
+            }).then(dbGroups => {
                 console.log(dbGroups);
                 // Render here. dbGroups is an array of groups. Each group has an array of Items.
+                itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {
-                    dbItems = dbItems.concat(dbGroup.items.filter(
-                        item => selectedCategory === 'all' || item.itemCategory === selectedCategory));
+                    dbGroup.Items.forEach(
+                        item => {
+                            if ((selectedCategory === 'all' || item.itemCategory === selectedCategory) &&
+                                !itemIds.has(item.id)) {
+                                dbItems.push(item);
+                                itemIds.add(item.id);
+                            }
+                        });
                 });
                 res.render('items', {
                     loggedIn: Boolean(userId),
-                    items: dbItems
+                    items: Array.from(dbItems)
                 });
             });
         });
@@ -188,44 +114,17 @@ module.exports = function (app) {
         const searchQuery = req.params.query;
         console.log(`html route ${searchQuery}`);
         db.Item.findAll({ where: { itemName: searchQuery } }).then(function (dbSearch) {
-            let desiredMenu;
-            if (userId) {
-                desiredMenu = {
-                    home: '<li><a href="/">Home</a></li>',
-                    profile: '<li><a href="/profile">Profile</a></li>',
-                    items: '<li><a href="/items">Items</a></li>',
-                    signOut: '<button onclick="signOut();">Sign Out</button>'
-                };
-                if (dbSearch.length > 0) {
-                    console.log(dbSearch);
-                    res.render('searchResults', {
-                        navData: desiredMenu,
-                        searchResults: dbSearch
-                    });
-                } else {
-                    res.render('searchResults', {
-                        navData: desiredMenu,
-                        noResults: '<h3>Your query returned no results.</h3>'
-                    });
-                }
+            if (dbSearch.length > 0) {
+                console.log(dbSearch);
+                res.render('searchResults', {
+                    loggedIn: Boolean(userId),
+                    searchResults: dbSearch
+                });
             } else {
-                desiredMenu = {
-                    home: '<li><a href="/">Home</a></li>',
-                    items: '<li><a href="/items">Items</a></li>',
-                    signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                };
-                if (dbSearch.length > 0) {
-                    console.log(dbSearch);
-                    res.render('searchResults', {
-                        navData: desiredMenu,
-                        searchResults: dbSearch
-                    });
-                } else {
-                    res.render('searchResults', {
-                        navData: desiredMenu,
-                        noResults: '<h3>Your query returned no results.</h3>'
-                    });
-                }
+                res.render('searchResults', {
+                    loggedIn: Boolean(userId),
+                    noResults: '<h3>Your query returned no results.</h3>'
+                });
             }
         });
     });
@@ -236,23 +135,7 @@ module.exports = function (app) {
             description: 'Page not found.',
             keywords: 'error'
         };
-        let desiredMenu;
-        if (req.cookies.userid) {
-            desiredMenu = {
-                home: '<li><a href="/">Home</a></li>',
-                profile: '<li><a href="/profile">Profile</a></li>',
-                items: '<li><a href="/items">Items</a></li>',
-                signOut: '<button onclick="signOut();">Sign Out</button>'
-            };
-            res.render('404', { navData: desiredMenu });
-        } else {
-            desiredMenu = {
-                home: '<li><a href="/">Home</a></li>',
-                items: '<li><a href="/items">Items</a></li>',
-                signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-            };
-            res.render('404', { navData: desiredMenu });
-        }
+        res.render('404', { loggedIn: Boolean(req.cookies.userid) });
     });
 
 
