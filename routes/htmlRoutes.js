@@ -156,8 +156,30 @@ module.exports = function (app) {
                     items: '<li><a href="/items">Items</a></li>',
                     signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
                 };
-                res.render('unauthorized', { navData: desiredMenu, msg: 'You must sign in with Google before being able to complete your profile.'});
+                res.render('unauthorized', { navData: desiredMenu, msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
             }
+        });
+    });
+
+    app.get('/items/:category', function (req, res) {
+        const userId = req.cookies.userid;
+        const selectedCategory = req.params.category;
+        db.User.findOne({ include: db.Group }).then(dbUser => {
+            const groupIds = dbUser.Groups.map(group => group.groupId);
+            console.log(groupIds);
+            dbUser.getGroups({ include: db.Item }).then(dbGroups => {
+                console.log(dbGroups);
+                // Render here. dbGroups is an array of groups. Each group has an array of Items.
+                dbItems = [];
+                dbGroups.forEach(dbGroup => {
+                    dbItems = dbItems.concat(dbGroup.items.filter(
+                        item => selectedCategory === 'all' || item.itemCategory === selectedCategory));
+                });
+                res.render('items', {
+                    loggedIn: Boolean(userId),
+                    items: dbItems
+                });
+            });
         });
     });
 
