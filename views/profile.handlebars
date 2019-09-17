@@ -5,10 +5,54 @@
         <h2>Your Available Items</h2>
         {{#each items}}
         <div class="item">
-            <div class="itemImage"><img src="{{this.image}}"></div>
+            <div class="itemImage"><img src="{{this.itemImage}}"></div>
             <div class="itemDescription">
-                <h3>{{this.name}}</h3>
-                <p>{{this.description}}</p>
+                <h3>{{this.itemName}}</h3>
+                <p>{{this.itemDescription}}</p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    <div id="pendingRequests">
+        <h2>Your Pending Requests</h2>
+        {{#each pending}}
+        <div class="item">
+            <div class="itemDescription">
+                <h3>{{this.itemName}}</h3>
+                <p>{{this.exchange1}}</p>
+                <p>{{this.exchange2}}</p>
+                <p>{{this.exchange3}}</p>
+                <form>
+                    <button class="confirmRequest" data-requestid="{{this.id}}">Confirm Request</button>
+                    <button class="denyRequest" data-requestid="{{this.id}}">Deny Request</button>
+                </form>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+        <div id="confirmedRequests">
+        <h2>Your Confirmed Requests</h2>
+        {{#each confirmed}}
+        <div class="item">
+            <div class="itemDescription">
+                <h3>{{this.itemName}}</h3>
+                <p>{{this.exchange1}}</p>
+                <p>{{this.exchange2}}</p>
+                <p>{{this.exchange3}}</p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+        </div>
+        <div id="deniedRequests">
+        <h2>Your Denied Requests</h2>
+        {{#each denied}}
+        <div class="item">
+            <div class="itemDescription">
+                <h3>{{this.itemName}}</h3>
+                <p>{{this.exchange1}}</p>
+                <p>{{this.exchange2}}</p>
+                <p>{{this.exchange3}}</p>
             </div>
         </div>
         {{/each}}
@@ -29,12 +73,16 @@
                 <input type="text" id="itemImage" class="formInput" placeholder="Image URL">
             </div>
             <div class="formGroup">
-                <label for="itemImage">Category: </label>
+                <label for="itemCategory">Category: </label>
                 <input type="text" id="itemCategory" class="formInput" placeholder="Miscellaneous">
             </div>
             <div class="formGroup">
-                <label for="itemImage">Available To: </label>
-                <input type="text" id="availableTo" class="formInput" placeholder="Public">
+                <label for="availableTo">Available To: </label>
+                    {{#each groups}}
+                        <option value={{this.groupId}}>{{this.groupName}}</option>
+                    {{/each}}
+                <select id="availableTo" class="formInput">
+                </select>
             </div>
         </form>
         <button id="addItem">Add</button>
@@ -59,10 +107,11 @@
             </div>
             <div class="formGroup">
                 <label for="groupAdmin">Description: </label>
-                <input type="text" id="groupAdmin" class="formInput" placeholder="Administrator" value="{{user.userName}}">
+                <input type="text" id="groupDescription" class="formInput" placeholder="Description" value="{{user.userName}}">
             </div>
+            <button id="addGroup">Add</button>
         </form>
-        <button id="addGroup">Add</button>
+        
     </div>
 </main>
 {{>footer}}
