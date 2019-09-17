@@ -35,22 +35,22 @@ module.exports = function (app) {
         const userId = req.cookies.userid;
         let administrates = [];
         let belongsTo = [];
-        db.User.findOne({ where: {userIdToken: userId}, include: [db.Group, db.Item] }).then(dbUser => {
-        //   console.log('all results 1'+ JSON.stringify(dbUser));
+        db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
+            //   console.log('all results 1'+ JSON.stringify(dbUser));
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
             //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
             //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
-            for (let j=0; j < dbUser.Groups.length; j++) {
-            //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
+            for (let j = 0; j < dbUser.Groups.length; j++) {
+                //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
                 if (dbUser.Groups[j].UserGroup.isAdmin === true) {
                     administrates.push(dbUser.Groups[j]);
                 } else {
                     belongsTo.push(dbUser.Groups[j]);
                 }
             }
-            db.ItemRequest.findAll({ where: {owner: userId}}).then(function (dbRequest) {
+            db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbRequest) {
                 // console.log(JSON.stringify(dbRequest));
                 let pendingRequests = [];
                 let confirmedRequests = [];
@@ -74,7 +74,7 @@ module.exports = function (app) {
                         items: '<li><a href="/items">Items</a></li>',
                         signOut: '<button onclick="signOut();">Sign Out</button>'
                     };
-                    res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests});
+                    res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests });
                 } else {
                     desiredMenu = {
                         home: '<li><a href="/">Home</a></li>',
@@ -167,17 +167,28 @@ module.exports = function (app) {
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
-            dbUser.getGroups({ include: db.Item }).then(dbGroups => {
+            db.Group.findAll({
+                where: {
+                    groupId: groupIds
+                }, include: db.Item
+            }).then(dbGroups => {
                 console.log(dbGroups);
                 // Render here. dbGroups is an array of groups. Each group has an array of Items.
+                itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {
-                    dbItems = dbItems.concat(dbGroup.items.filter(
-                        item => selectedCategory === 'all' || item.itemCategory === selectedCategory));
+                    dbGroup.Items.forEach(
+                        item => {
+                            if ((selectedCategory === 'all' || item.itemCategory === selectedCategory) &&
+                                !itemIds.has(item.id)) {
+                                dbItems.push(item);
+                                itemIds.add(item.id);
+                            }
+                        });
                 });
                 res.render('items', {
                     loggedIn: Boolean(userId),
-                    items: dbItems
+                    items: Array.from(dbItems)
                 });
             });
         });
