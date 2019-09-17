@@ -13,7 +13,7 @@ $(document).ready(function () {
             return;
         }
         let itemUrl = $('#itemImage').val().trim();
-        itemUrl.substring(0,4).toLowerCase()
+        itemUrl.substring(0,4).toLowerCase();
         if (itemUrl.substring(0,4).toLowerCase() !== 'http') {
             $('#errorModal').modal('show');
             $('#errorMessage').text('Please enter an item image URL that begins with "http".');
