@@ -1,7 +1,6 @@
-
 const db = require('../models');
 module.exports = function (app) {
-    let currentCategories = [];
+    // let currentCategories = [];
 
     app.get('/', function (req, res) {
         res.locals.metaTags = {
@@ -12,8 +11,9 @@ module.exports = function (app) {
         let desiredMenu;
         if (req.cookies.userid) {
             desiredMenu = {
-                profile: '<button><a href="/profile">Profile</a>',
-                items: '<button><a href="/items">Items</a></button>',
+                home: '<li class="currentPage"><a href="/">Home</a></li>',
+                profile: '<li><a href="/profile">Profile</a></li>',
+                items: '<li><a href="/items">Items</a></li>',
                 signOut: '<button onclick="signOut();">Sign Out</button>'
             };
             res.render('index', {
@@ -21,7 +21,8 @@ module.exports = function (app) {
             });
         } else {
             desiredMenu = {
-                items: '<button><a href="/items">Items</a></button>',
+                home: '<li class="currentPage"><a href="/">Home</a></li>',
+                items: '<li><a href="/items">Items</a></li>',
                 signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
             };
             res.render('index', {
@@ -32,48 +33,102 @@ module.exports = function (app) {
 
     app.get('/profile', function (req, res) {
         const userId = req.cookies.userid;
-        db.User.findAll({ where: { userIdToken: userId }, include: [db.Item] }).then(function (dbUser) {
-            console.log('all results' + JSON.stringify(dbUser[0].dataValues.Items));
-            console.log('returned' + dbUser[0].dataValues.userName);
-            db.Request.findAll({ where: { owner: userId } }).then(function (dbRequest) {
-                console.log(JSON.stringify(dbRequest));
+        let administrates = [];
+        let belongsTo = [];
+        db.User.findOne({ where: {userIdToken: userId}, include: [db.Group, db.Item] }).then(dbUser => {
+        //   console.log('all results 1'+ JSON.stringify(dbUser));
+            const groupIds = dbUser.Groups.map(group => group.groupId);
+            console.log(groupIds);
+            //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
+            //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
+            //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
+            for (let j=0; j < dbUser.Groups.length; j++) {
+            //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
+                if (dbUser.Groups[j].UserGroup.isAdmin === true) {
+                    administrates.push(dbUser.Groups[j]);
+                } else {
+                    belongsTo.push(dbUser.Groups[j]);
+                }
+            }
+            db.ItemRequest.findAll({ where: {owner: userId}}).then(function (dbRequest) {
+                // console.log(JSON.stringify(dbRequest));
                 let pendingRequests = [];
                 let confirmedRequests = [];
-                let deniedRequests = [];
                 for (let i = 0; i < dbRequest.length; i++) {
                     if (dbRequest[i].dataValues.confirmed === false) {
                         pendingRequests.push(dbRequest[i].dataValues);
-                    } else if (dbRequest[i].dataValues.confirmed === true || dbRequest[i].dataValues.denied === true) {
+                    } else if (dbRequest[i].dataValues.confirmed === true && dbRequest[i].dataValues.denied === false) {
                         confirmedRequests.push(dbRequest[i].dataValues);
-                    } else if (dbRequest[i].dataValues.denied === true) {
-                        deniedRequests.push(dbRequest[i].dataValues);
                     }
                 }
-                console.log('pending ' + JSON.stringify(pendingRequests));
                 res.locals.metaTags = {
-                    title: dbUser[0].dataValues.userName + '\'s Profile',
+                    title: dbUser.userName + '\'s Profile',
                     description: 'See all your items available to borrow and add new items',
                     keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                 };
                 let desiredMenu;
                 if (userId) {
                     desiredMenu = {
-                        home: '<button><a href="/">Home</a>',
-                        items: '<button><a href="/items">Items</a></button>',
+                        home: '<li><a href="/">Home</a></li>',
+                        profile: '<li class="currentPage"><a href="/profile">Profile</a></li>',
+                        items: '<li><a href="/items">Items</a></li>',
                         signOut: '<button onclick="signOut();">Sign Out</button>'
                     };
-                    res.render('profile', { navData: desiredMenu, user: dbUser[0].dataValues, items: dbUser[0].dataValues.Items, pending: pendingRequests, confirmed: confirmedRequests, denied: deniedRequests });
+                    res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests});
                 } else {
                     desiredMenu = {
-                        home: '<button><a href="/">Home</a>',
-                        items: '<button><a href="/items">Items</a></button>',
+                        home: '<li><a href="/">Home</a></li>',
+                        items: '<li><a href="/items">Items</a></li>',
                         signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
                     };
                     res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.' });
                 }
             });
-
         });
+
+
+        // db.User.findAll({ where: { userIdToken: userId }, include: db.Item}).then(function (dbUser) {
+        //     console.log('all results'+ JSON.stringify(dbUser[0].dataValues.Items));
+        //     console.log('returned' + dbUser[0].dataValues.userName);
+        //     db.ItemRequest.findAll({ where: {owner: userId}}).then(function (dbRequest) {
+        //         console.log(JSON.stringify(dbRequest));
+        //         let pendingRequests = [];
+        //         let confirmedRequests = [];
+        //         let deniedRequests = [];
+        //         for (let i = 0; i < dbRequest.length; i++) {
+        //             if (dbRequest[i].dataValues.confirmed === false) {
+        //                 pendingRequests.push(dbRequest[i].dataValues);
+        //             } else if (dbRequest[i].dataValues.confirmed === true || dbRequest[i].dataValues.denied === true) {
+        //                 confirmedRequests.push(dbRequest[i].dataValues);
+        //             } else if (dbRequest[i].dataValues.denied === true) {
+        //                 deniedRequests.push(dbRequest[i].dataValues);
+        //             }
+        //         }
+        //         console.log('pending ' + JSON.stringify(pendingRequests));
+        //         res.locals.metaTags = {
+        //             title: dbUser[0].dataValues.userName + '\'s Profile',
+        //             description: 'See all your items available to borrow and add new items',
+        //             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
+        //         };
+        //         let desiredMenu;
+        //         if (userId) {
+        //             desiredMenu = {
+        //                 home: '<button><a href="/">Home</a>',
+        //                 items: '<button><a href="/items">Items</a></button>',
+        //                 signOut: '<button onclick="signOut();">Sign Out</button>'
+        //             };
+        //             res.render('profile', { navData: desiredMenu, user: dbUser[0].dataValues, items: dbUser[0].dataValues.Items, pending: pendingRequests, confirmed: confirmedRequests, denied: deniedRequests });
+        //         } else {
+        //             desiredMenu = {
+        //                 home: '<button><a href="/">Home</a>',
+        //                 items: '<button><a href="/items">Items</a></button>',
+        //                 signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
+        //             };
+        //             res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.' });
+        //         }
+        //     });
+
+        // });
     });
 
     app.get('/profile/new', function (req, res) {
@@ -87,8 +142,8 @@ module.exports = function (app) {
             let desiredMenu;
             if (userId) {
                 desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    items: '<button><a href="/items">Items</a></button>',
+                    home: '<li><a href="/">Home</a></li>',
+                    items: '<li><a href="/items">Items</a></li>',
                     signOut: '<button onclick="signOut();">Sign Out</button>'
                 };
                 res.render('createProfile', {
@@ -97,64 +152,11 @@ module.exports = function (app) {
                 });
             } else {
                 desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    items: '<button><a href="/items">Items</a></button>',
+                    home: '<li><a href="/">Home</a></li>',
+                    items: '<li><a href="/items">Items</a></li>',
                     signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
                 };
-                res.render('unauthorized', { navData: desiredMenu, msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
-            }
-        });
-    });
-
-    app.get('/items/:category', function (req, res) {
-        const userId = req.cookies.userid;
-        const selectedCategory = req.params.category;
-        db.User.findOne({ include: db.Group }).then(dbUser => {
-            const groupIds = dbUser.Groups.map(group => group.groupId);
-            console.log(groupIds);
-            db.Group.findAll({
-                where: {
-                    groupId: groupIds
-                },
-                include: db.Item
-            }).then(dbGroups => {
-                console.log(dbGroups);
-                // Render here. dbGroups is an array of groups. Groups has an array of Items.
-                if (selectedCategory) {
-                    // Filter for category.
-                }
-            });
-        });
-        db.Item.findAll({}).then(function (dbItems) {
-            console.log('check here ' + JSON.stringify(dbItems));
-            for (let i = 0; i < dbItems.length; i++) {
-                if (currentCategories.includes(dbItems[i].itemCategory) === false) {
-                    currentCategories.push(dbItems[i].itemCategory);
-                }
-            }
-            console.log(currentCategories);
-            let desiredMenu;
-            if (userId) {
-                desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    profile: '<button><a href="/profile">Profile</a>',
-                    signOut: '<button onclick="signOut();">Sign Out</button>'
-                };
-                res.render('items', {
-                    navData: desiredMenu,
-                    items: dbItems,
-                    categories: currentCategories
-                });
-            } else {
-                desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                };
-                res.render('items', {
-                    navData: desiredMenu,
-                    items: dbItems,
-                    categories: currentCategories
-                });
+                res.render('unauthorized', { navData: desiredMenu, msg: 'You must sign in with Google before being able to complete your profile.'});
             }
         });
     });
@@ -167,9 +169,9 @@ module.exports = function (app) {
             let desiredMenu;
             if (userId) {
                 desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    profile: '<button><a href="/profile">Profile</a>',
-                    items: '<button><a href="/items">Items</a></button>',
+                    home: '<li><a href="/">Home</a></li>',
+                    profile: '<li><a href="/profile">Profile</a></li>',
+                    items: '<li><a href="/items">Items</a></li>',
                     signOut: '<button onclick="signOut();">Sign Out</button>'
                 };
                 if (dbSearch.length > 0) {
@@ -186,8 +188,8 @@ module.exports = function (app) {
                 }
             } else {
                 desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    items: '<button><a href="/items">Items</a></button>',
+                    home: '<li><a href="/">Home</a></li>',
+                    items: '<li><a href="/items">Items</a></li>',
                     signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
                 };
                 if (dbSearch.length > 0) {
@@ -215,16 +217,16 @@ module.exports = function (app) {
         let desiredMenu;
         if (req.cookies.userid) {
             desiredMenu = {
-                home: '<button><a href="/">Home</a>',
-                profile: '<button><a href="/profile">Profile</a></button>',
-                items: '<button><a href="/items">Items</a></button>',
+                home: '<li><a href="/">Home</a></li>',
+                profile: '<li><a href="/profile">Profile</a></li>',
+                items: '<li><a href="/items">Items</a></li>',
                 signOut: '<button onclick="signOut();">Sign Out</button>'
             };
             res.render('404', { navData: desiredMenu });
         } else {
             desiredMenu = {
-                home: '<button><a href="/">Home</a>',
-                items: '<button><a href="/items">Items</a></button>',
+                home: '<li><a href="/">Home</a></li>',
+                items: '<li><a href="/items">Items</a></li>',
                 signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
             };
             res.render('404', { navData: desiredMenu });

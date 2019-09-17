@@ -34,8 +34,6 @@ module.exports = function (app) {
             userImage: signIn.image
         };
         const userIdCookie = req.cookies.userid;
-        console.log('serverReadCookie' + userIdCookie);
-        console.log('verifyResult' + userId);
         if (userIdCookie === userId) {
             res.send({ signedIn: true });
         } else {
@@ -65,9 +63,16 @@ module.exports = function (app) {
 
     app.post('/api/items', function (req, res) {
         let item = req.body;
+        let groupIds = req.body['groupsAvailable[]'];
+        let groupIdsInt = groupIds.map(function(item) {
+            return parseInt(item);
+        });
+        console.log(groupIdsInt);
         item.userIdToken = req.cookies.userid;
         db.Item.create(item).then(function (dbResult) {
-            res.json(dbResult);
+            dbResult.setGroups(groupIds).then(function(dbGroups) {
+                res.json(dbGroups);
+            });
         });
     });
 
@@ -90,7 +95,7 @@ module.exports = function (app) {
 
 
 
-    app.post('/api/requests', function (req, res) {
+    app.post('/api/itemrequests', function (req, res) {
         const requestInfo = req.body;
         console.log(req.body);
         const userId = req.cookies.userid;
@@ -108,7 +113,7 @@ module.exports = function (app) {
                 exchange3: requestInfo.exchange3,
                 confirmed: false
             };
-            db.Request.create(requestObject).then(function (dbRequest) {
+            db.ItemRequest.create(requestObject).then(function (dbRequest) {
                 console.log(JSON.stringify(dbRequest));
                 db.User.findOne({ where: { userIdToken: dbItem.userIdToken } }).then(function (dbOwner) {
                     db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
@@ -134,62 +139,43 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/requests/confirm', function (req, res) {
+    app.put('/api/itemrequests', function (req, res) {
         let requestId = req.body.requestId;
+        let confirmedStatus = req.body.confirmed;
+        let deniedStatus = req.body.denied;
         let updatedStatus = {
-            confirmed: true
+            confirmed: confirmedStatus,
+            denied: deniedStatus,
         };
-        db.Request.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
+        db.ItemRequest.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
             if (dbRequest.changedRows === 0) {
                 return res.sendStatus(404);
             }
-            db.User.findOne({ where: { userIdToken: dbRequest.requester } }).then(function (dbRequester) {
-                let to = dbRequester.userEmail;
-                const mailOptions = {
-                    from: 'mail.somethingborrowed@gmail.com',
-                    to: to,
-                    subject: 'Item Request Confirmed',
-                    text: `Your request to borrow ${db.Request.itemName} has been confirmed.`,
-                    html: `<p>Your request to borrow ${db.Request.itemName} has been confirmed.</p>`
-                };
-                transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log('Email sent: ' + info.response);
-                    }
+            db.ItemRequest.findOne({where: {id: requestId}}).then(function(dbRequestInfo) {
+                let status;
+                if (dbRequestInfo.denied === true) {
+                    status = 'denied';
+                } else {
+                    status = 'confirmed';
+                }
+                db.User.findOne({where: {userIdToken: dbRequestInfo.requester}}).then(function(dbRequester) {
+                    let to = dbRequester.userEmail;
+                    const mailOptions = {
+                        from: 'mail.somethingborrowed@gmail.com',
+                        to: to,
+                        subject: `Item Request ${capitalize(status)}`,
+                        text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
+                        html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
+                    };
+                    transporter.sendMail(mailOptions, function(error, info){
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    });
+                    res.status(204).end();
                 });
-                res.sendStatus(204);
-            });
-        });
-    });
-
-    app.put('/api/requests/deny', function (req, res) {
-        let requestId = req.body.requestId;
-        let updatedStatus = {
-            denied: true
-        };
-        db.Request.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
-            if (dbRequest.changedRows === 0) {
-                return res.sendStatus(404);
-            }
-            db.User.findOne({ where: { userIdToken: dbRequest.requester } }).then(function (dbRequester) {
-                let to = dbRequester.userEmail;
-                const mailOptions = {
-                    from: 'mail.somethingborrowed@gmail.com',
-                    to: to,
-                    subject: 'Item Request Denied',
-                    text: `Your request to borrow ${db.Request.itemName} has been denied.`,
-                    html: `<p>Your request to borrow ${db.Request.itemName} has been denied.</p>`
-                };
-                transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log('Email sent: ' + info.response);
-                    }
-                });
-                res.sendStatus(204);
             });
         });
     });

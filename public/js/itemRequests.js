@@ -9,7 +9,7 @@ $(document).ready(function () {
             exchange3: $('#exchange3').val().trim(),
         };
         console.log(requestInfo);
-        $.ajax('/api/requests', {
+        $.ajax('/api/itemrequests', {
             type: 'POST',
             data: requestInfo
         }).then(function (/*response*/) {
