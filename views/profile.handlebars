@@ -1,127 +1,235 @@
 {{>header}}
 <main>
-    <h1>{{user.userName}}</h1>
-    <div id="userItems">
-        <h2>Your Available Items</h2>
-        {{#each items}}
-        <div class="item">
-            <div class="itemImage"><img src="{{this.itemImage}}"></div>
-            <div class="itemDescription">
-                <h3>{{this.itemName}}</h3>
-                <p>{{this.itemDescription}}</p>
+    <h2>{{user.userName}}</h2>
+    <div class="container">
+        <div class="section">
+            <div class="sectionHeader">
+                <h3>Requests</h3>
+                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#pendingRequests"
+                    href="#pendingRequests" role="button" aria-expanded="false" aria-controls="pendingRequests">
+                    Pending
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand pending requests">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse pending requests">
+                    </span>
+                </a>
+                <a class="orange-btn expand" data-toggle="collapse" data-target="#confirmedRequests"
+                    href="#confirmedRequests" role="button" aria-expanded="false" aria-controls="confirmedRequests">
+                    Confirmed
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand confirmed requests">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse confirmed requests">
+                    </span>
+                </a>
+            </div>
+            <div class="sectionContents">
+                <div id="pendingRequests" class="collapse profileDisplay">
+                    <div class="requestsDisplay">
+                        {{#if pending}}
+                        {{#each pending}}
+                        <div class="item">
+                            <div class="itemDescription">
+                                <h4>{{this.itemName}}</h4>
+                                <p>{{this.exchange1}}</p>
+                                <p>{{this.exchange2}}</p>
+                                <p>{{this.exchange3}}</p>
+                                <form>
+                                    <button class="confirmRequest" data-requestid="{{this.id}}">Confirm Request</button>
+                                    <button class="denyRequest" data-requestid="{{this.id}}">Deny Request</button>
+                                </form>
+                            </div>
+                        </div>
+                        {{/each}}
+                        {{else}}
+                        <h4 class="text-center">There are no pending requests for your items.</h4>
+                        {{/if}}
+                    </div>
+                </div>
+                <div id="confirmedRequests" class="collapse profileDisplay">
+                    <div class="requestsDisplay">
+                        {{#if confirmed}}
+                        {{#each confirmed}}
+                        <div class="item">
+                            <div class="itemDescription">
+                                <h4>{{this.itemName}}</h4>
+                                <p>{{this.exchange1}}</p>
+                                <p>{{this.exchange2}}</p>
+                                <p>{{this.exchange3}}</p>
+                                <form>
+                                    <button class="confirmRequest" data-requestid="{{this.id}}">Confirm Request</button>
+                                    <button class="denyRequest" data-requestid="{{this.id}}">Deny Request</button>
+                                </form>
+                            </div>
+                        </div>
+                        {{/each}}
+                        {{else}}
+                        <h4 class="text-center">There are no confirmed requests for your items.</h4>
+                        {{/if}}
+                    </div>
+                </div>
             </div>
         </div>
-        {{/each}}
-    </div>
-    <div id="pendingRequests">
-        <h2>Your Pending Requests</h2>
-        {{#each pending}}
-        <div class="item">
-            <div class="itemDescription">
-                <h3>{{this.itemName}}</h3>
-                <p>{{this.exchange1}}</p>
-                <p>{{this.exchange2}}</p>
-                <p>{{this.exchange3}}</p>
-                <form>
-                    <button class="confirmRequest" data-requestid="{{this.id}}">Confirm Request</button>
-                    <button class="denyRequest" data-requestid="{{this.id}}">Deny Request</button>
-                </form>
+        <div class="section">
+            <div class="sectionHeader">
+                <h3>Items</h3>
+                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#newItem" href="#newItem"
+                    role="button" aria-expanded="false" aria-controls="newItem">
+                    Add New
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand add new item form">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse add new item form">
+                    </span>
+                </a>
+                <a class="orange-btn expand" data-toggle="collapse" data-target="#items" href="#items" role="button"
+                    aria-expanded="false" aria-controls="items">
+                    View All
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand all items">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse all items">
+                    </span>
+                </a>
+            </div>
+            <div class="sectionContents">
+                <div id="newItem" class="collapse">
+                    <form class="profileForm">
+                        <div class="form-group">
+                            <label for="itemName">Name: </label>
+                            <input type="text" id="itemName" class="form-control" placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="itemName">Description: </label>
+                            <input type="text" id="itemDesc" class="form-control" placeholder="Description">
+                        </div>
+                        <div class="form-group">
+                            <label for="itemImage">Image URL: </label>
+                            <input type="text" id="itemImage" class="form-control" placeholder="Image URL">
+                        </div>
+                        <div class="form-group">
+                            <label for="itemCategory">Category: </label>
+                            <select class="form-control" id="itemCategory">
+                                <option value="Books">Books</option>
+                                <option value="Cleaning Supplies">Cleaning Supplies</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Kitchen">Kitchen</option>
+                                <option value="Miscellaneous">Miscellaneous</option>
+                                <option value="Movies/TV">Movies/TV</option>
+                                <option value="Outdoor Tools">Outdoor Tools</option>
+                                <option value="Video Games">Video Games</option>
+                            </select>
+                            {{!-- <input type="text" id="itemCategory" class="form-control" placeholder="Miscellaneous"> --}}
+                        </div>
+                        <div class="form-group">
+                            <label>Groups Available To: </label>
+                            {{#each administrates}}
+                            <div class="form-check">
+                                <input class="form-check-input" name="groupOption" type="checkbox" value="{{this.groupId}}"
+                                    id="{{this.groupId}}">
+                                <label class="form-check-label" for="{{this.groupId}}">
+                                    {{this.groupName}}
+                                </label>
+                            </div>
+                            {{/each}}
+                            {{#each belongsTo}}
+                            <div class="form-check">
+                                <input class="form-check-input" name="groupOption" type="checkbox" value="{{this.groupId}}"
+                                    id="{{this.groupId}}">
+                                <label class="form-check-label" for="{{this.groupId}}">
+                                    {{this.groupName}}
+                                </label>
+                            </div>
+                            {{/each}}
+                        </div>
+                        <button id="addItem" class="orange-btn">Add</button>
+                    </form>
+                </div>
+                <div id="items" class="collapse profileDisplay">
+                    <div class="itemsDisplay">
+                        {{#each items}}
+                        <div class="item">
+                            <div class="itemImage"><img src="{{this.itemImage}}"></div>
+                            <div class="itemDescription">
+                                <h4 class="text-center">{{this.itemName}}</h3>
+                                <p>{{this.itemDescription}}</p>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
             </div>
         </div>
-        {{/each}}
-    </div>
-        <div id="confirmedRequests">
-        <h2>Your Confirmed Requests</h2>
-        {{#each confirmed}}
-        <div class="item">
-            <div class="itemDescription">
-                <h3>{{this.itemName}}</h3>
-                <p>{{this.exchange1}}</p>
-                <p>{{this.exchange2}}</p>
-                <p>{{this.exchange3}}</p>
+        <div class="section">
+            <div class="sectionHeader">
+                <h3>Groups</h3>
+                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#newGroup" href="#newGroup"
+                    role="button" aria-expanded="false" aria-controls="newGroup">
+                    Add New
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand add new group form">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse add new group form">
+                    </span>
+                </a>
+                <a class="orange-btn expand" data-toggle="collapse" data-target="#groups" href="#groups" role="button"
+                    aria-expanded="false" aria-controls="groups">
+                    View All
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand all groups">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse all groups">
+                    </span>
+                </a>
+            </div>
+            <div class="sectionContents">
+                <div id="newGroup" class="collapse">
+                    <form class="profileForm">
+                        <div class="form-group">
+                            <label for="groupName">Name: </label>
+                            <input type="text" id="groupName" class="form-control" placeholder="Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="groupDescription">Description: </label>
+                            <input type="textarea" id="groupDescription" class="form-control"
+                                placeholder="Description"></input>
+                        </div>
+                        <button id="addGroup" class="orange-btn">Add</button>
+                    </form>
+                </div>
+                <div id="groups" class="collapse profileDisplay">
+                    <div class="groupsDisplay">
+                        {{#if administrates}}
+                        <div class="flexColumn">
+                            <h4>You Administrate:</h4>
+                            {{#each administrates}}
+                            <div class="group">
+                                <div class="groupDescription">
+                                    <h5>{{this.groupName}}</h4>
+                                    <p>{{this.groupDescription}}</p>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                        {{/if}}
+                        {{!-- should separate groups they administrate vs. groups they belong to, need a place to display group requests --}}
+                        {{#if belongsTo}}
+                        <div class="flexColumn">
+                            <h4>You Belong To: </h4>
+                            {{#each belongsTo}}
+                            <div class="group">
+                                <div class="groupDescription">
+                                    <h5>{{this.groupName}}</h4>
+                                    <p>{{this.groupDescription}}</p>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
             </div>
         </div>
-        {{/each}}
-    </div>
-        </div>
-        <div id="deniedRequests">
-        <h2>Your Denied Requests</h2>
-        {{#each denied}}
-        <div class="item">
-            <div class="itemDescription">
-                <h3>{{this.itemName}}</h3>
-                <p>{{this.exchange1}}</p>
-                <p>{{this.exchange2}}</p>
-                <p>{{this.exchange3}}</p>
-            </div>
-        </div>
-        {{/each}}
-    </div>
-    <div id="newItemSection">
-        <h2>Add a New Item</h2>
-        <form>
-            <div class="formGroup">
-                <label for="itemName">Name: </label>
-                <input type="text" id="itemName" class="formInput" placeholder="Name">
-            </div>
-            <div class="formGroup">
-                <label for="itemName">Description: </label>
-                <input type="text" id="itemDesc" class="formInput" placeholder="Description">
-            </div>
-            <div class="formGroup">
-                <label for="itemImage">Image URL: </label>
-                <input type="text" id="itemImage" class="formInput" placeholder="Image URL">
-            </div>
-            <div class="formGroup">
-                <label for="itemCategory">Category: </label>
-                <input type="text" id="itemCategory" class="formInput" placeholder="Miscellaneous">
-            </div>
-            <div class="formGroup">
-                <label for="availableTo">Available To: </label>
-                    {{#each groups}}
-                        <option value={{this.groupId}}>{{this.groupName}}</option>
-                    {{/each}}
-                <select id="availableTo" class="formInput">
-                </select>
-            </div>
-        </form>
-        <button id="addItem">Add</button>
-    </div>
-        <div id="userGroups">
-        <h2>Your Groups</h2>
-        {{#each groups}}
-        <div class="group">
-            <div class="groupDescription">
-                <h3>{{this.groupName}}</h3>
-                <p>{{this.groupAdmin}}</p>
-            </div>
-        </div>
-        {{/each}}
-    </div>
-        <div id="newGroupSection">
-        <h2>Create a New Group</h2>
-        <form>
-            <div class="formGroup">
-                <label for="groupName">Name: </label>
-                <input type="text" id="groupName" class="formInput" placeholder="Name">
-            </div>
-            <div class="formGroup">
-                <label for="groupAdmin">Description: </label>
-                <input type="text" id="groupDescription" class="formInput" placeholder="Description" value="{{user.userName}}">
-            </div>
-            <button id="addGroup">Add</button>
-        </form>
-        
     </div>
 </main>
 {{>footer}}
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://apis.google.com/js/platform.js" async defer></script>
-<script type="text/javascript" src="/js/auth.js"></script>
-<script type="text/javascript" src="/js/search.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script type="text/javascript" src="/js/auth.js"></script>
 <script type="text/javascript" src="/js/profile.js"></script>
-
-
-
-
