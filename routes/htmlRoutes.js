@@ -161,14 +161,9 @@ module.exports = function (app) {
         });
     });
 
-    app.get('/items', function (req, res) {
+    app.get('/items/:category', function (req, res) {
         const userId = req.cookies.userid;
-        if (userId) {
-            //get all items from groups user belongs to, display owner name? should we have username 
-        } else {
-            //get all public items, display or say none to view?
-        }
-
+        const selectedCategory = req.params.category;
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
@@ -207,51 +202,18 @@ module.exports = function (app) {
                         // items: dbItems,
                         // categories: currentCategories
                     });
+                if (selectedCategory) {
+                    // Filter for category.
                 }
             });
         });
-        // db.Item.findAll({}).then(function (dbItems) {
-        //     console.log('check here ' + JSON.stringify(dbItems));
-        //     for (let i = 0; i < dbItems.length; i++) {
-        //         if (currentCategories.includes(dbItems[i].itemCategory) === false) {
-        //             currentCategories.push(dbItems[i].itemCategory);
-        //         }
-        //     }
-        //     console.log(currentCategories);
-
-        // });
-    });
-
-    app.get('/items/:category', function (req, res) {
-        const userId = req.cookies.userid;
-        const selectedCategory = req.params.category;
-        console.log(selectedCategory);
-        db.Item.findAll({ where: { itemCategory: selectedCategory } }).then(function (dbItems) {
-            let desiredMenu;
-            if (userId) {
-                desiredMenu = {
-                    home: '<li><a href="/">Home</a></li>',
-                    profile: '<li><a href="/profile">Profile</a></li>',
-                    items: '<li><a href="/items">Items</a></li>',
-                    signOut: '<button onclick="signOut();">Sign Out</button>'
-                };
-                res.render('items', {
-                    navData: desiredMenu,
-                    items: dbItems,
-                    categories: currentCategories
-                });
-            } else {
-                desiredMenu = {
-                    home: '<li><a href="/">Home</a></li>',
-                    items: '<li><a href="/items">Items</a></li>',
-                    signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                };
-                res.render('items', {
-                    navData: desiredMenu,
-                    items: dbItems,
-                    categories: currentCategories
-                });
-            }
+        db.Item.findAll({}).then(function (dbItems) {
+            console.log('check here ' + JSON.stringify(dbItems));
+            for (let i = 0; i < dbItems.length; i++) {
+                if (currentCategories.includes(dbItems[i].itemCategory) === false) {
+                    currentCategories.push(dbItems[i].itemCategory);
+                }
+            });
         });
     });
 

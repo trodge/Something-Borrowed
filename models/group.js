@@ -1,4 +1,4 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
     let Group = sequelize.define('Group', {
         groupId: {
             type: DataTypes.INTEGER,
@@ -6,20 +6,14 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             autoIncrement: true
         },
-        groupName: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                len: [1]
-            }
-        },
-        groupDescription: {
-            type: DataTypes.STRING
-        }
+        groupName: {type: DataTypes.STRING, allowNull: false, validate: {len: [1]}},
+        groupDescription: {type: DataTypes.STRING}
     });
-    Group.associate = function (models) {
-        Group.belongsToMany(models.User, { through: models.UserGroup });
-        Group.belongsToMany(models.Item, { through: 'ItemGroup' });
+    Group.associate = function(models) {
+        Group.belongsToMany(models.User, {through: models.UserGroup});
+        Group.belongsToMany(models.Item, {through: 'ItemGroup'});
+        Group.hasMany(
+            models.GroupRequest, {foreignKey: 'groupId', onDelete: 'cascade'});
     };
     return Group;
 };
