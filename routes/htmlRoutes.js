@@ -43,16 +43,27 @@ module.exports = function (app) {
                         confirmedRequests.push(dbRequest[i].dataValues);
                     }
                 }
-                res.locals.metaTags = {
-                    title: dbUser.userName + '\'s Profile',
-                    description: 'See all your items available to borrow and add new items',
-                    keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
-                };
-                if (userId) {
-                    res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests });
-                } else {
-                    res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
-                }
+                db.Group.findAll({}).then(function(dbGroups) {
+                    let otherGroups = [];
+                    for (let k; k < dbGroups.length; k++) {
+                        if (administrates.includes(dbGroup[k]) === false && belongsTo.includes(dbGroup[k]) === false) {
+                            otherGroups.push(dbGroup[k]);
+                        }
+                    }
+                    //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
+                    db.GroupRequest.findAll({where: {userIdToken: userId, status: 'pending'}}).then(function(dbGroupReqests) {
+                        res.locals.metaTags = {
+                            title: dbUser.userName + '\'s Profile',
+                            description: 'See all your items available to borrow and add new items',
+                            keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
+                        };
+                        if (userId) {
+                            res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, groups: otherGroups, pending: pendingRequests, confirmed: confirmedRequests, yourPendingGroups: dbGroupReqests });
+                        } else {
+                            res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
+                        }
+                    });
+                });
             });
         });
     });

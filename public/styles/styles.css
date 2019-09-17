@@ -354,7 +354,7 @@ button {
 }
 
 .sectionHeader h3 {
-  margin: 0;
+  margin: 0 1rem 0 0;
   flex: 1;
 }
 
@@ -365,7 +365,7 @@ button {
 }
 
 .middle {
-  margin: 0 1rem;
+  margin: 0 1rem 0 0;
 }
 
 .expand[aria-expanded="true"] {

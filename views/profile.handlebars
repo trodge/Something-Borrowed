@@ -5,66 +5,202 @@
         <div class="section">
             <div class="sectionHeader">
                 <h3>Requests</h3>
-                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#pendingRequests"
-                    href="#pendingRequests" role="button" aria-expanded="false" aria-controls="pendingRequests">
-                    Pending
+                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#itemRequests"
+                    href="#itemRequests" role="button" aria-expanded="false" aria-controls="itemRequests">
+                    Items
                     <span class="arrowContainer">
-                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand pending requests">
-                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse pending requests">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand item requests">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse item requests">
                     </span>
                 </a>
-                <a class="orange-btn expand" data-toggle="collapse" data-target="#confirmedRequests"
-                    href="#confirmedRequests" role="button" aria-expanded="false" aria-controls="confirmedRequests">
-                    Confirmed
+                <a class="orange-btn expand" data-toggle="collapse" data-target="#groupRequests" href="#groupRequests"
+                    role="button" aria-expanded="false" aria-controls="groupRequests">
+                    Groups
                     <span class="arrowContainer">
-                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand confirmed requests">
-                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse confirmed requests">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand group requests">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse group requests">
                     </span>
                 </a>
             </div>
+
+
+
+
             <div class="sectionContents">
-                <div id="pendingRequests" class="collapse profileDisplay">
+                <div id="groupRequests" class="collapse profileDisplay">
                     <div class="requestsDisplay">
-                        {{#if pending}}
-                        {{#each pending}}
-                        <div class="item">
-                            <div class="itemDescription">
-                                <h4>{{this.itemName}}</h4>
-                                <p>{{this.exchange1}}</p>
-                                <p>{{this.exchange2}}</p>
-                                <p>{{this.exchange3}}</p>
-                                <form>
-                                    <button class="confirmRequest" data-requestid="{{this.id}}">Confirm Request</button>
-                                    <button class="denyRequest" data-requestid="{{this.id}}">Deny Request</button>
-                                </form>
+                        <h4>Your Requests to Join Groups</h4>
+                        <div class="requestContainer">
+                            {{#if yourPendingGroups}}
+                            <h5>Pending</h5>
+                            {{#each yourPendingGroups}}
+                            <div class="group">
+                                <div class="groupDescription">
+                                    <h6>{{this.groupName}}</h6>
+                                    <p>{{this.groupDescription}}</p>
+                                    <form>
+                                        <button class="editRequest" data-requestid="{{this.groupId}}">Edit</button>
+                                        <button class="deleteRequest" data-requestid="{{this.groupId}}">Delete</button>
+                                    </form>
+                                </div>
                             </div>
+                            {{/each}}
+                            {{else}}
+                            <h5 class="text-center">You have no pending requests to join groups.</h5>
+                            {{/if}}
                         </div>
-                        {{/each}}
-                        {{else}}
-                        <h4 class="text-center">There are no pending requests for your items.</h4>
-                        {{/if}}
+                    </div>
+                    <div class="requestsDisplay">
+                        <h4>Requests to Join Your Groups</h4>
+                        <div class="requestContainer">
+                            {{#if pendingGroups}}
+                            <h5>Pending</h5>
+                            {{#each pendingGroups}}
+                            <div class="group">
+                                <div class="groupDescription">
+                                    <h6>{{this.requester}} to join {{this.groupName}}</h6>
+                                    <form>
+                                        <button class="confirmGroupRequest"
+                                            data-requestid="{{this.groupId}}">Confirm</button>
+                                        <button class="denyGroupRequest" data-requestid="{{this.groupId}}">Deny</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {{/each}}
+                            {{else}}
+                            <h5 class="text-center">There are no pending requests to join your groups.</h5>
+                            {{/if}}
+                        </div>
+                        <div class="requestContainer">
+                            {{#if confirmedGroups}}
+                            <h5>Confirmed</h5>
+                            {{#each confirmedGroups}}
+                            <div class="group">
+                                <div class="groupDescription">
+                                    <h6>{{this.requester}} is a member of {{this.groupName}}</h6>
+                                    <form>
+                                        <button class="removeFromGroupRequest" data-requestid="{{this.groupId}}">Remove
+                                            Member</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {{/each}}
+                            {{else}}
+                            <h5 class="text-center">There are no confirmed members in your groups.</h5>
+                            {{/if}}
+                        </div>
                     </div>
                 </div>
-                <div id="confirmedRequests" class="collapse profileDisplay">
+                <div id="itemRequests" class="collapse profileDisplay">
                     <div class="requestsDisplay">
-                        {{#if confirmed}}
-                        {{#each confirmed}}
-                        <div class="item">
-                            <div class="itemDescription">
-                                <h4>{{this.itemName}}</h4>
-                                <p>{{this.exchange1}}</p>
-                                <p>{{this.exchange2}}</p>
-                                <p>{{this.exchange3}}</p>
-                                <form>
-                                    <button class="confirmRequest" data-requestid="{{this.id}}">Confirm Request</button>
-                                    <button class="denyRequest" data-requestid="{{this.id}}">Deny Request</button>
-                                </form>
+                        <h4>Your Requests for Items</h4>
+                        <div class="requestContainer">
+                            {{#if yourPending}}
+                            <h5>Pending</h5>
+                            {{#each yourPending}}
+                            <div class="item">
+                                <div class="itemDescription">
+                                    <h6>{{this.itemName}}</h6>
+                                    <p>{{this.exchange1}}</p>
+                                    <p>{{this.exchange2}}</p>
+                                    <p>{{this.exchange3}}</p>
+                                    <form>
+                                        <button class="editRequest" data-requestid="{{this.id}}">Edit</button>
+                                        <button class="deleteRequest" data-requestid="{{this.id}}">Delete</button>
+                                    </form>
+                                </div>
                             </div>
+                            {{/each}}
+                            {{else}}
+                            <h5 class="text-center">You have no pending requests. Find items to request to borrow <a
+                                    href="/items/all">here</a></h5>
+                            {{/if}}
                         </div>
-                        {{/each}}
-                        {{else}}
-                        <h4 class="text-center">There are no confirmed requests for your items.</h4>
-                        {{/if}}
+                        <div class="requestContainer">
+                            {{#if yourConfirmed}}
+                            <h5>Confirmed</h5>
+                            {{#each yourConfirmed}}
+                            <div class="item">
+                                <div class="itemDescription">
+                                    <h6>{{this.itemName}}</h6>
+                                    <p>{{this.exchange1}}</p>
+                                    <p>{{this.exchange2}}</p>
+                                    <p>{{this.exchange3}}</p>
+                                    <form>
+                                        <button class="editRequest" data-requestid="{{this.id}}">Edit</button>
+                                        <button class="deleteRequest" data-requestid="{{this.id}}">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {{/each}}
+                            {{else}}
+                            <h5 class="text-center">You have no confirmed requests. Find items to request to borrow <a
+                                    href="/items/all">here</a></h5>
+                            {{/if}}
+                        </div>
+                        <div class="requestContainer">
+                            {{#if yourDenied}}
+                            <h5>Denied</h5>
+                            {{#each yourDenied}}
+                            <div class="item">
+                                <div class="itemDescription">
+                                    <h6>{{this.itemName}}</h6>
+                                    <p>{{this.exchange1}}</p>
+                                    <p>{{this.exchange2}}</p>
+                                    <p>{{this.exchange3}}</p>
+                                    <form>
+                                        <button class="editRequest" data-requestid="{{this.id}}">Edit</button>
+                                        <button class="deleteRequest" data-requestid="{{this.id}}">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {{/each}}
+                            {{else}}
+                            <h5 class="text-center">You have no denied requests.</h5>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div class="requestsDisplay">
+                        <h4>Requests for Your Items</h4>
+                        <div class="requestContainer">
+                            {{#if pending}}
+                            <h5>Pending</h5>
+                            {{#each pending}}
+                            <div class="item">
+                                <div class="itemDescription">
+                                    <h6>{{this.itemName}}</h6>
+                                    <p>{{this.exchange1}}</p>
+                                    <p>{{this.exchange2}}</p>
+                                    <p>{{this.exchange3}}</p>
+                                    <form>
+                                        <button class="confirmRequest" data-requestid="{{this.id}}">Confirmed</button>
+                                        <button class="denyRequest" data-requestid="{{this.id}}">Deny</button>
+                                    </form>
+                                </div>
+                            </div>
+                            {{/each}}
+                            {{else}}
+                            <h5 class="text-center">There are no pending requests for your items.</h5>
+                            {{/if}}
+                        </div>
+
+                        <div class="requestContainer">
+                            {{#if confirmed}}
+                            <h5>Confirmed</h5>
+                            {{#each confirmed}}
+                            <div class="item">
+                                <div class="itemDescription">
+                                    <h6>{{this.itemName}}</h6>
+                                    <p>{{this.exchange1}}</p>
+                                    <p>{{this.exchange2}}</p>
+                                    <p>{{this.exchange3}}</p>
+                                </div>
+                            </div>
+                            {{/each}}
+                            {{else}}
+                            <h5 class="text-center">There are no confirmed requests for your items.</h5>
+                            {{/if}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -122,8 +258,8 @@
                             <label>Groups Available To: </label>
                             {{#each administrates}}
                             <div class="form-check">
-                                <input class="form-check-input" name="groupOption" type="checkbox" value="{{this.groupId}}"
-                                    id="{{this.groupId}}">
+                                <input class="form-check-input" name="groupOption" type="checkbox"
+                                    value="{{this.groupId}}" id="{{this.groupId}}">
                                 <label class="form-check-label" for="{{this.groupId}}">
                                     {{this.groupName}}
                                 </label>
@@ -131,8 +267,8 @@
                             {{/each}}
                             {{#each belongsTo}}
                             <div class="form-check">
-                                <input class="form-check-input" name="groupOption" type="checkbox" value="{{this.groupId}}"
-                                    id="{{this.groupId}}">
+                                <input class="form-check-input" name="groupOption" type="checkbox"
+                                    value="{{this.groupId}}" id="{{this.groupId}}">
                                 <label class="form-check-label" for="{{this.groupId}}">
                                     {{this.groupName}}
                                 </label>
@@ -149,7 +285,7 @@
                             <div class="itemImage"><img src="{{this.itemImage}}"></div>
                             <div class="itemDescription">
                                 <h4 class="text-center">{{this.itemName}}</h3>
-                                <p>{{this.itemDescription}}</p>
+                                    <p>{{this.itemDescription}}</p>
                             </div>
                         </div>
                         {{/each}}
@@ -168,9 +304,17 @@
                         <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse add new group form">
                     </span>
                 </a>
-                <a class="orange-btn expand" data-toggle="collapse" data-target="#groups" href="#groups" role="button"
-                    aria-expanded="false" aria-controls="groups">
-                    View All
+                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#groups" href="#groups"
+                    role="button" aria-expanded="false" aria-controls="groups">
+                    View Yours
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand your groups">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse your groups">
+                    </span>
+                </a>
+                <a class="orange-btn expand" data-toggle="collapse" data-target="#allGroups" href="#allGroups"
+                    role="button" aria-expanded="false" aria-controls="allGroups">
+                    View Available
                     <span class="arrowContainer">
                         <img class="expandArrow" src="/images/expandArrow.svg" alt="expand all groups">
                         <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse all groups">
@@ -201,7 +345,7 @@
                             <div class="group">
                                 <div class="groupDescription">
                                     <h5>{{this.groupName}}</h4>
-                                    <p>{{this.groupDescription}}</p>
+                                        <p>{{this.groupDescription}}</p>
                                 </div>
                             </div>
                             {{/each}}
@@ -215,7 +359,7 @@
                             <div class="group">
                                 <div class="groupDescription">
                                     <h5>{{this.groupName}}</h4>
-                                    <p>{{this.groupDescription}}</p>
+                                        <p>{{this.groupDescription}}</p>
                                 </div>
                             </div>
                             {{/each}}
@@ -223,13 +367,31 @@
                         {{/if}}
                     </div>
                 </div>
+                <div id="allGroups" class="collapse profileDisplay">
+                    {{#if groups}}
+                    Available
+                    {{#each groups}}
+                    <div class="group">
+                        <div class="groupDescription">
+                            <h5>{{this.groupName}}</h4>
+                                <p>{{this.groupDescription}}</p>
+                        </div>
+                        <form>
+                            <button class="requestGroup orange-btn curvedCorners" data-requestid="{{this.groupId}}" data-toggle="modal" data-target="#submittedModal">Request to Join</button>
+                        </form>
+                    </div>
+                    {{/each}}
+                    {{else}}
+                    <h5 class="text-center">You already belong to all available groups.</h5>
+                    {{/if}}
+                </div>
             </div>
         </div>
     </div>
 </main>
 {{>footer}}
 
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://apis.google.com/js/platform.js" async defer></script>
-  <script type="text/javascript" src="/js/auth.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script type="text/javascript" src="/js/auth.js"></script>
 <script type="text/javascript" src="/js/profile.js"></script>

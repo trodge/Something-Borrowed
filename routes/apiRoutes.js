@@ -11,6 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = function (app) {
+    const profileLink = "https://something--borrowed.herokuapp.com/profile"
     //https://developers.google.com/identity/sign-in/web/backend-auth
     const { OAuth2Client } = require('google-auth-library');
     const client = new OAuth2Client('286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com');
@@ -123,7 +124,7 @@ module.exports = function (app) {
                             to: to,
                             subject: 'Pending Item Request',
                             text: `${dbRequester.userName} has requested your ${itemName}. Go to your profile on Something Borrowed to view the request.`,
-                            html: `<p>${dbRequester.userName} has requested your ${itemName}. Click <a href="https://project-2-uwcoding.herokuapp.com/profile">here</a> to go to your profile and view the request.</p>`
+                            html: `<p>${dbRequester.userName} has requested your ${itemName}. Click <a href="${profileLink}">here</a> to go to your profile and view the request.</p>`
                         };
                         transporter.sendMail(mailOptions, function (error, info) {
                             if (error) {
@@ -184,18 +185,22 @@ module.exports = function (app) {
         db.Group.findOne({ where: { groupId: req.body.groupId } }).then(dbGroup => {
             let groupRequest = {
                 groupId: dbGroup.groupId,
-                userIdToken: req.cookies.userid
+                userIdToken: req.cookies.userid,
+                status: 'pending'
             };
+            console.log('dbGroup ' + JSON.stringify(dbGroup));
             db.GroupRequest.create(groupRequest).then(dbGroupRequest => {
                 dbGroup.getUsers({ through: { isAdmin: true } }).then(function (dbAdministrator) {
-                    db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
-                        let to = dbAdministrator.userEmail;
+                    console.log('dbAdministrator ' + JSON.stringify(dbAdministrator));
+                    db.User.findOne({ where: { userIdToken: req.cookies.userid } }).then(function (dbRequester) {
+                        console.log('dbRequester ' + JSON.stringify(dbRequester));
+                        let to = dbAdministrator[0].userEmail;
                         const mailOptions = {
                             from: 'mail.somethingborrowed@gmail.com',
                             to: to,
-                            subject: 'Pending Item Request',
+                            subject: 'Pending Group Request',
                             text: `${dbRequester.userName} has requested to join ${dbGroup.groupName}. Go to your profile on Something Borrowed to view the request.`,
-                            html: `<p>${dbRequester.userName} has requested to join ${dbGroup.groupName}. Click <a href="https://project-2-uwcoding.herokuapp.com/profile">here</a> to go to your profile and view the request.</p>`
+                            html: `<p>${dbRequester.userName} has requested to join ${dbGroup.groupName}. Click <a href="${profileLink}">here</a> to go to your profile and view the request.</p>`
                         };
                         transporter.sendMail(mailOptions, function (error, info) {
                             if (error) {
@@ -204,6 +209,7 @@ module.exports = function (app) {
                                 console.log('Email sent: ' + info.response);
                             }
                         });
+                        console.log('dbGroupRequest ' + JSON.stringify(dbGroupRequest));
                         res.json(dbGroupRequest);
                     });
                 });

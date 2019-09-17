@@ -77,4 +77,20 @@ $(document).ready(function () {
             location.reload();
         });
     });
+
+    $('.requestGroup').on('click', function(event) {
+        event.preventDefault();
+        let requestId = event.target.dataset.requestid;
+        console.log(event);
+        console.log(requestId);
+        let requestInfo = {
+            groupId: requestId
+        };
+        $.ajax('/api/group-requests', {
+            type: 'POST',
+            data: requestInfo
+        }).then(function (/*response*/) {
+            location.reload();
+        });
+    });
 });
