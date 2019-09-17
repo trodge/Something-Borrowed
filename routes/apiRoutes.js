@@ -37,7 +37,7 @@ module.exports = function (app) {
         console.log('serverReadCookie' + userIdCookie);
         console.log('verifyResult' + userId);
         if (userIdCookie === userId) {
-            res.send({signedIn : true});
+            res.send({ signedIn: true });
         } else {
             db.User.findAll({ where: { userIdToken: userId } }).then(function (pastUser) {
                 if (pastUser.length > 0) {
@@ -78,7 +78,7 @@ module.exports = function (app) {
                     userIdToken: req.cookies.userid
                 }
             }).then(user => {
-                user.addGroup(group, { through: { isAdmin: true }});
+                user.addGroup(group, { through: { isAdmin: true } });
                 res.json(group);
             }).catch(error => {
                 defer.reject(error);
@@ -94,12 +94,12 @@ module.exports = function (app) {
         const requestInfo = req.body;
         console.log(req.body);
         const userId = req.cookies.userid;
-        db.Item.findOne({ where: {id: requestInfo.itemId}}).then(function(dbItem) {
+        db.Item.findOne({ where: { id: requestInfo.itemId } }).then(function (dbItem) {
             console.log(JSON.stringify(dbItem));
             let itemName = dbItem.itemName;
             const requestObject = {
                 owner: dbItem.userIdToken,
-                requester: userId, 
+                requester: userId,
                 item: requestInfo.itemId,
                 itemName: dbItem.itemName,
                 duration: requestInfo.duration,
@@ -110,23 +110,25 @@ module.exports = function (app) {
             };
             db.Request.create(requestObject).then(function (dbRequest) {
                 console.log(JSON.stringify(dbRequest));
-                db.User.findOne({where: {userIdToken: dbItem.userIdToken}}).then(function(dbOwner) {
-                    let to = dbOwner.userEmail;
-                    const mailOptions = {
-                        from: 'mail.somethingborrowed@gmail.com',
-                        to: to,
-                        subject: 'Pending Item Request',
-                        text: `Your ${itemName} has been requested. Go to your profile on Something Borrowed to view the request.`,
-                        html: `<p>Your ${itemName} has been requested. Click <a href="https://project-2-uwcoding.herokuapp.com/profile">here</a> to go to your profile and view the request.</p>`
-                    };
-                    transporter.sendMail(mailOptions, function(error, info){
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
+                db.User.findOne({ where: { userIdToken: dbItem.userIdToken } }).then(function (dbOwner) {
+                    db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
+                        let to = dbOwner.userEmail;
+                        const mailOptions = {
+                            from: 'mail.somethingborrowed@gmail.com',
+                            to: to,
+                            subject: 'Pending Item Request',
+                            text: `${dbRequester.userName} has requested your ${itemName}. Go to your profile on Something Borrowed to view the request.`,
+                            html: `<p>${dbRequester.userName} has requested your ${itemName}. Click <a href="https://project-2-uwcoding.herokuapp.com/profile">here</a> to go to your profile and view the request.</p>`
+                        };
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        });
+                        res.json(dbRequest);
                     });
-                    res.json(dbRequest);
                 });
             });
         });
@@ -139,9 +141,9 @@ module.exports = function (app) {
         };
         db.Request.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
             if (dbRequest.changedRows === 0) {
-                return res.status(404).end();
+                return res.sendStatus(404);
             }
-            db.User.findOne({where: {userIdToken: dbRequest.requester}}).then(function(dbRequester) {
+            db.User.findOne({ where: { userIdToken: dbRequest.requester } }).then(function (dbRequester) {
                 let to = dbRequester.userEmail;
                 const mailOptions = {
                     from: 'mail.somethingborrowed@gmail.com',
@@ -150,14 +152,14 @@ module.exports = function (app) {
                     text: `Your request to borrow ${db.Request.itemName} has been confirmed.`,
                     html: `<p>Your request to borrow ${db.Request.itemName} has been confirmed.</p>`
                 };
-                transporter.sendMail(mailOptions, function(error, info){
+                transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
                         console.log(error);
                     } else {
                         console.log('Email sent: ' + info.response);
                     }
                 });
-                res.status(204).end();
+                res.sendStatus(204);
             });
         });
     });
@@ -169,9 +171,9 @@ module.exports = function (app) {
         };
         db.Request.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
             if (dbRequest.changedRows === 0) {
-                return res.status(404).end();
+                return res.sendStatus(404);
             }
-            db.User.findOne({where: {userIdToken: dbRequest.requester}}).then(function(dbRequester) {
+            db.User.findOne({ where: { userIdToken: dbRequest.requester } }).then(function (dbRequester) {
                 let to = dbRequester.userEmail;
                 const mailOptions = {
                     from: 'mail.somethingborrowed@gmail.com',
@@ -180,15 +182,80 @@ module.exports = function (app) {
                     text: `Your request to borrow ${db.Request.itemName} has been denied.`,
                     html: `<p>Your request to borrow ${db.Request.itemName} has been denied.</p>`
                 };
-                transporter.sendMail(mailOptions, function(error, info){
+                transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
                         console.log(error);
                     } else {
                         console.log('Email sent: ' + info.response);
                     }
                 });
-                res.status(204).end();
+                res.sendStatus(204);
+            });
+        });
+    });
+
+    app.post('/api/group-requests', (req, res) => {
+        db.Group.findOne({ where: { groupId: req.body.groupId } }).then(dbGroup => {
+            let groupRequest = {
+                groupId: dbGroup.groupId,
+                userIdToken: req.cookies.userid
+            };
+            db.GroupRequest.create(groupRequest).then(dbGroupRequest => {
+                dbGroup.getUsers({ through: { isAdmin: true } }).then(function (dbAdministrator) {
+                    db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
+                        let to = dbAdministrator.userEmail;
+                        const mailOptions = {
+                            from: 'mail.somethingborrowed@gmail.com',
+                            to: to,
+                            subject: 'Pending Item Request',
+                            text: `${dbRequester.userName} has requested to join ${dbGroup.groupName}. Go to your profile on Something Borrowed to view the request.`,
+                            html: `<p>${dbRequester.userName} has requested to join ${dbGroup.groupName}. Click <a href="https://project-2-uwcoding.herokuapp.com/profile">here</a> to go to your profile and view the request.</p>`
+                        };
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        });
+                        res.json(dbGroupRequest);
+                    });
+                });
+            });
+        });
+    });
+
+    app.put('/api/group-requests/:status', (req, res) => {
+        db.GroupRequest.update({ status: req.params.status },
+            { where: { groupRequestId: req.body.groupRequestId } }).then(dbGroupRequest => {
+            dbGroupRequest.getGroup().then(dbGroup => {
+                if (!dbGroupRequest.changedRows) {res.sendStatus(404);}
+                db.User.findOne({ where: { userIdToken: dbGroupRequest.userIdToken } }).then(dbRequester => {
+                    let to = dbRequester.userEmail;
+                    const mailOptions = {
+                        from: 'mail.somethingborrowed@gmail.com',
+                        to: to,
+                        subject: `Group Request ${capitalize(req.params.status)}`,
+                        text: `Your request to join ${dbGroup.groupName} has been ${req.params.status}.`,
+                        html: `<p>Your request to borrow ${dbGroup.groupName} has been ${req.params.status}.</p>`
+                    };
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
+                    });
+                    if (req.params.status === 'approved') {
+                        dbUser.addGroup(dbGroup);
+                    }
+                    res.sendStatus('200');
+                });
             });
         });
     });
 };
+
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
