@@ -99,7 +99,6 @@ module.exports = function (app) {
                 }, include: db.Item
             }).then(dbGroups => {
                 console.log(dbGroups);
-                // Render here. dbGroups is an array of groups. Each group has an array of Items.
                 itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {

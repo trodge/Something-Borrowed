@@ -25,6 +25,8 @@ app.engine(
 );
 app.set('view engine', 'handlebars');
 
+app.locals.googleSignIn = process.env.GOOGLE_SIGN_IN;
+
 // Routes
 require('./routes/apiRoutes')(app);
 require('./routes/htmlRoutes')(app);
