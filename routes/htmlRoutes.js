@@ -205,7 +205,7 @@ module.exports = function (app) {
                 if (selectedCategory) {
                     // Filter for category.
                 }
-            });
+            }
         });
         db.Item.findAll({}).then(function (dbItems) {
             console.log('check here ' + JSON.stringify(dbItems));
@@ -213,7 +213,7 @@ module.exports = function (app) {
                 if (currentCategories.includes(dbItems[i].itemCategory) === false) {
                     currentCategories.push(dbItems[i].itemCategory);
                 }
-            });
+            };
         });
     });
 
