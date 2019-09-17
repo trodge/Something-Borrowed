@@ -173,7 +173,7 @@ module.exports = function (app) {
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {
                     dbItems = dbItems.concat(dbGroup.items.filter(
-                        item => selectedCategory == 'all' || item.itemCategory == selectedCategory));
+                        item => selectedCategory === 'all' || item.itemCategory === selectedCategory));
                 });
                 res.render('items', {
                     loggedIn: Boolean(userId),
