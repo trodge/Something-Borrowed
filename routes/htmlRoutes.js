@@ -49,17 +49,7 @@ module.exports = function (app) {
                     keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                 };
                 if (userId) {
-<<<<<<< HEAD
                     res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests });
-=======
-                    desiredMenu = {
-                        home: '<li><a href="/">Home</a></li>',
-                        profile: '<li class="currentPage"><a href="/profile">Profile</a></li>',
-                        items: '<li><a href="/items">Items</a></li>',
-                        signOut: '<button onclick="signOut();">Sign Out</button>'
-                    };
-                    res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests });
->>>>>>> origin/items
                 } else {
                     res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
                 }
