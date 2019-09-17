@@ -16,9 +16,9 @@ let config = {
         logging: false
     },
     production: {
-        use_env_variable: "JAWSDB_URL",
+        useEnvVariable: "JAWSDB_URL",
         dialect: "mysql"
     }
-  };
+};
 
-  module.exports = config;
+module.exports = config;
