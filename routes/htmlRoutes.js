@@ -37,53 +37,53 @@ module.exports = function (app) {
         let belongsTo = [];
         db.User.findOne({ where: {userIdToken: userId}, include: [db.Group, db.Item] }).then(dbUser => {
         //   console.log('all results 1'+ JSON.stringify(dbUser));
-          const groupIds = dbUser.Groups.map(group => group.groupId);
-        //   console.log(groupIds);
-        //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
-        //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
-        //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
-          for (let j=0; j < dbUser.Groups.length; j++) {
+            const groupIds = dbUser.Groups.map(group => group.groupId);
+            console.log(groupIds);
+            //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
+            //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
+            //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
+            for (let j=0; j < dbUser.Groups.length; j++) {
             //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
-              if (dbUser.Groups[j].UserGroup.isAdmin === true) {
-                administrates.push(dbUser.Groups[j]);
-              } else {
-                  belongsTo.push(dbUser.Groups[j])
-              }
-          }
-          db.ItemRequest.findAll({ where: {owner: userId}}).then(function (dbRequest) {
-                    // console.log(JSON.stringify(dbRequest));
-                    let pendingRequests = [];
-                    let confirmedRequests = [];
-                    for (let i = 0; i < dbRequest.length; i++) {
-                        if (dbRequest[i].dataValues.confirmed === false) {
-                            pendingRequests.push(dbRequest[i].dataValues);
-                        } else if (dbRequest[i].dataValues.confirmed === true && dbRequest[i].dataValues.denied === false) {
-                            confirmedRequests.push(dbRequest[i].dataValues);
-                        }
-                    }
-              res.locals.metaTags = {
-                title: dbUser.userName + '\'s Profile',
-                description: 'See all your items available to borrow and add new items',
-                keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
-            };
-            let desiredMenu;
-            if (userId) {
-                desiredMenu = {
-                    home: '<li><a href="/">Home</a></li>',
-                    profile: '<li class="currentPage"><a href="/profile">Profile</a></li>',
-                    items: '<li><a href="/items">Items</a></li>',
-                    signOut: '<button onclick="signOut();">Sign Out</button>'
-                };
-                res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests});
-            } else {
-                desiredMenu = {
-                    home: '<li><a href="/">Home</a></li>',
-                    items: '<li><a href="/items">Items</a></li>',
-                    signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                };
-                res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.' });
+                if (dbUser.Groups[j].UserGroup.isAdmin === true) {
+                    administrates.push(dbUser.Groups[j]);
+                } else {
+                    belongsTo.push(dbUser.Groups[j]);
+                }
             }
-          });
+            db.ItemRequest.findAll({ where: {owner: userId}}).then(function (dbRequest) {
+                // console.log(JSON.stringify(dbRequest));
+                let pendingRequests = [];
+                let confirmedRequests = [];
+                for (let i = 0; i < dbRequest.length; i++) {
+                    if (dbRequest[i].dataValues.confirmed === false) {
+                        pendingRequests.push(dbRequest[i].dataValues);
+                    } else if (dbRequest[i].dataValues.confirmed === true && dbRequest[i].dataValues.denied === false) {
+                        confirmedRequests.push(dbRequest[i].dataValues);
+                    }
+                }
+                res.locals.metaTags = {
+                    title: dbUser.userName + '\'s Profile',
+                    description: 'See all your items available to borrow and add new items',
+                    keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
+                };
+                let desiredMenu;
+                if (userId) {
+                    desiredMenu = {
+                        home: '<li><a href="/">Home</a></li>',
+                        profile: '<li class="currentPage"><a href="/profile">Profile</a></li>',
+                        items: '<li><a href="/items">Items</a></li>',
+                        signOut: '<button onclick="signOut();">Sign Out</button>'
+                    };
+                    res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests});
+                } else {
+                    desiredMenu = {
+                        home: '<li><a href="/">Home</a></li>',
+                        items: '<li><a href="/items">Items</a></li>',
+                        signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
+                    };
+                    res.render('unauthorized', { navData: desiredMenu, msg: 'You must be signed in to view your profile.' });
+                }
+            });
         });
 
 
@@ -158,62 +158,6 @@ module.exports = function (app) {
                 };
                 res.render('unauthorized', { navData: desiredMenu, msg: 'You must sign in with Google before being able to complete your profile.'});
             }
-        });
-    });
-
-    app.get('/items/:category', function (req, res) {
-        const userId = req.cookies.userid;
-        const selectedCategory = req.params.category;
-        db.User.findOne({ include: db.Group }).then(dbUser => {
-            const groupIds = dbUser.Groups.map(group => group.groupId);
-            console.log(groupIds);
-            db.Group.findAll({
-                where: {
-                    groupId: groupIds
-                },
-                include: db.Item
-            }).then(dbGroups => {
-                //loop through dbGroups then loop through that groups' items array, check if that item id is already in defined authItems array and add if not
-              console.log(dbGroups);
-                console.log(dbGroups[0].Items);
-                console.log(JSON.stringify(dbGroups[0].Items));
-                // Render here. dbGroups is an array of groups. Groups has an array of Items.
-                let desiredMenu;
-                if (userId) {
-                    desiredMenu = {
-                        home: '<li><a href="/">Home</a></li>',
-                        profile: '<li><a href="/profile">Profile</a></li>',
-                        items: '<li class="currentPage"><a href="/items">Items</a></li>',
-                        signOut: '<button onclick="signOut();">Sign Out</button>'
-                    };
-                    res.render('items', {
-                        navData: desiredMenu,
-                        // items: dbItems,
-                        // categories: currentCategories
-                    });
-                } else {
-                    desiredMenu = {
-                        home: '<li><a href="/">Home</a></li>',
-                        items: '<li class="currentPage"><a href="/items">Items</a></li>',
-                        signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                    };
-                    res.render('items', {
-                        navData: desiredMenu,
-                        // items: dbItems,
-                        // categories: currentCategories
-                    });
-                if (selectedCategory) {
-                    // Filter for category.
-                }
-            }
-        });
-        db.Item.findAll({}).then(function (dbItems) {
-            console.log('check here ' + JSON.stringify(dbItems));
-            for (let i = 0; i < dbItems.length; i++) {
-                if (currentCategories.includes(dbItems[i].itemCategory) === false) {
-                    currentCategories.push(dbItems[i].itemCategory);
-                }
-            };
         });
     });
 
