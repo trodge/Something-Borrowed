@@ -5,19 +5,19 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'mail.somethingborrowed@gmail.com',
-        pass: 'yy*V3W336o^I%VlE'
+        user: process.env.MAILER_ADDRESS,
+        pass: process.env.MAILER_PASSWORD
     }
 });
 
 module.exports = function (app) {
     //https://developers.google.com/identity/sign-in/web/backend-auth
     const { OAuth2Client } = require('google-auth-library');
-    const client = new OAuth2Client('286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com');
+    const client = new OAuth2Client(process.env.GOOGLE_SIGN_IN);
     async function verify(token) {
         const ticket = await client.verifyIdToken({
             idToken: token,
-            audience: '286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com'
+            audience: process.env.GOOGLE_SIGN_IN
         });
         const payload = ticket.getPayload();
         const verifiedUserId = payload.sub;
@@ -119,7 +119,7 @@ module.exports = function (app) {
                     db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
                         let to = dbOwner.userEmail;
                         const mailOptions = {
-                            from: 'mail.somethingborrowed@gmail.com',
+                            from: process.env.MAILER_ADDRESS,
                             to: to,
                             subject: 'Pending Item Request',
                             text: `${dbRequester.userName} has requested your ${itemName}. Go to your profile on Something Borrowed to view the request.`,
@@ -161,7 +161,7 @@ module.exports = function (app) {
                 db.User.findOne({where: {userIdToken: dbRequestInfo.requester}}).then(function(dbRequester) {
                     let to = dbRequester.userEmail;
                     const mailOptions = {
-                        from: 'mail.somethingborrowed@gmail.com',
+                        from: process.env.MAILER_ADDRESS,
                         to: to,
                         subject: `Item Request ${capitalize(status)}`,
                         text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
@@ -191,7 +191,7 @@ module.exports = function (app) {
                     db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
                         let to = dbAdministrator.userEmail;
                         const mailOptions = {
-                            from: 'mail.somethingborrowed@gmail.com',
+                            from: process.env.MAILER_ADDRESS,
                             to: to,
                             subject: 'Pending Item Request',
                             text: `${dbRequester.userName} has requested to join ${dbGroup.groupName}. Go to your profile on Something Borrowed to view the request.`,
@@ -219,7 +219,7 @@ module.exports = function (app) {
                 db.User.findOne({ where: { userIdToken: dbGroupRequest.userIdToken } }).then(dbRequester => {
                     let to = dbRequester.userEmail;
                     const mailOptions = {
-                        from: 'mail.somethingborrowed@gmail.com',
+                        from: process.env.MAILER_ADDRESS,
                         to: to,
                         subject: `Group Request ${capitalize(req.params.status)}`,
                         text: `Your request to join ${dbGroup.groupName} has been ${req.params.status}.`,
