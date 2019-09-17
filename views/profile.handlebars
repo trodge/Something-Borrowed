@@ -1,0 +1,78 @@
+{{>header}}
+<main>
+    <h1>{{user.userName}}</h1>
+    <div id="userItems">
+        <h2>Your Available Items</h2>
+        {{#each items}}
+        <div class="item">
+            <div class="itemImage"><img src="{{this.image}}"></div>
+            <div class="itemDescription">
+                <h3>{{this.name}}</h3>
+                <p>{{this.description}}</p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    <div id="newItemSection">
+        <h2>Add a New Item</h2>
+        <form>
+            <div class="formGroup">
+                <label for="itemName">Name: </label>
+                <input type="text" id="itemName" class="formInput" placeholder="Name">
+            </div>
+            <div class="formGroup">
+                <label for="itemName">Description: </label>
+                <input type="text" id="itemDesc" class="formInput" placeholder="Description">
+            </div>
+            <div class="formGroup">
+                <label for="itemImage">Image URL: </label>
+                <input type="text" id="itemImage" class="formInput" placeholder="Image URL">
+            </div>
+            <div class="formGroup">
+                <label for="itemImage">Category: </label>
+                <input type="text" id="itemCategory" class="formInput" placeholder="Miscellaneous">
+            </div>
+            <div class="formGroup">
+                <label for="itemImage">Available To: </label>
+                <input type="text" id="availableTo" class="formInput" placeholder="Public">
+            </div>
+        </form>
+        <button id="addItem">Add</button>
+    </div>
+        <div id="userGroups">
+        <h2>Your Groups</h2>
+        {{#each groups}}
+        <div class="group">
+            <div class="groupDescription">
+                <h3>{{this.groupName}}</h3>
+                <p>{{this.groupAdmin}}</p>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+        <div id="newGroupSection">
+        <h2>Create a New Group</h2>
+        <form>
+            <div class="formGroup">
+                <label for="groupName">Name: </label>
+                <input type="text" id="groupName" class="formInput" placeholder="Name">
+            </div>
+            <div class="formGroup">
+                <label for="groupAdmin">Description: </label>
+                <input type="text" id="groupAdmin" class="formInput" placeholder="Administrator" value="{{user.userName}}">
+            </div>
+        </form>
+        <button id="addGroup">Add</button>
+    </div>
+</main>
+{{>footer}}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<script type="text/javascript" src="/js/auth.js"></script>
+<script type="text/javascript" src="/js/search.js"></script>
+<script type="text/javascript" src="/js/profile.js"></script>
+
+
+
+
