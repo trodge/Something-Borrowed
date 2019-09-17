@@ -112,50 +112,19 @@ module.exports = function (app) {
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
-            db.Group.findAll({
-                where: {
-                    groupId: groupIds
-                },
-                include: db.Item
-            }).then(dbGroups => {
+            dbUser.getGroups({ include: db.Item }).then(dbGroups => {
                 console.log(dbGroups);
-                // Render here. dbGroups is an array of groups. Groups has an array of Items.
-                if (selectedCategory) {
-                    // Filter for category.
-                }
+                // Render here. dbGroups is an array of groups. Each group has an array of Items.
+                dbItems = [];
+                dbGroups.forEach(dbGroup => {
+                    dbItems = dbItems.concat(dbGroup.items.filter(
+                        item => selectedCategory == 'all' || item.itemCategory == selectedCategory));
+                });
+                res.render('items', {
+                    loggedIn: Boolean(userId),
+                    items: dbItems
+                });
             });
-        });
-        db.Item.findAll({}).then(function (dbItems) {
-            console.log('check here ' + JSON.stringify(dbItems));
-            for (let i = 0; i < dbItems.length; i++) {
-                if (currentCategories.includes(dbItems[i].itemCategory) === false) {
-                    currentCategories.push(dbItems[i].itemCategory);
-                }
-            }
-            console.log(currentCategories);
-            let desiredMenu;
-            if (userId) {
-                desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    profile: '<button><a href="/profile">Profile</a>',
-                    signOut: '<button onclick="signOut();">Sign Out</button>'
-                };
-                res.render('items', {
-                    navData: desiredMenu,
-                    items: dbItems,
-                    categories: currentCategories
-                });
-            } else {
-                desiredMenu = {
-                    home: '<button><a href="/">Home</a>',
-                    signIn: '<button data-toggle="modal" data-target="#signInModal">Sign In</button>'
-                };
-                res.render('items', {
-                    navData: desiredMenu,
-                    items: dbItems,
-                    categories: currentCategories
-                });
-            }
         });
     });
 
