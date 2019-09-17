@@ -106,13 +106,32 @@
                         </div>
                         <div class="form-group">
                             <label for="itemCategory">Category: </label>
-                            <input type="text" id="itemCategory" class="form-control" placeholder="Miscellaneous">
+                            <select class="form-control" id="itemCategory">
+                                <option value="Books">Books</option>
+                                <option value="Cleaning Supplies">Cleaning Supplies</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Kitchen">Kitchen</option>
+                                <option value="Miscellaneous">Miscellaneous</option>
+                                <option value="Movies/TV">Movies/TV</option>
+                                <option value="Outdoor Tools">Outdoor Tools</option>
+                                <option value="Video Games">Video Games</option>
+                            </select>
+                            {{!-- <input type="text" id="itemCategory" class="form-control" placeholder="Miscellaneous"> --}}
                         </div>
                         <div class="form-group">
                             <label>Groups Available To: </label>
-                            {{#each groups}}
+                            {{#each administrates}}
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="{{this.groupId}}"
+                                <input class="form-check-input" name="groupOption" type="checkbox" value="{{this.groupId}}"
+                                    id="{{this.groupId}}">
+                                <label class="form-check-label" for="{{this.groupId}}">
+                                    {{this.groupName}}
+                                </label>
+                            </div>
+                            {{/each}}
+                            {{#each belongsTo}}
+                            <div class="form-check">
+                                <input class="form-check-input" name="groupOption" type="checkbox" value="{{this.groupId}}"
                                     id="{{this.groupId}}">
                                 <label class="form-check-label" for="{{this.groupId}}">
                                     {{this.groupName}}
@@ -175,14 +194,33 @@
                 </div>
                 <div id="groups" class="collapse profileDisplay">
                     <div class="groupsDisplay">
-                        {{#each groups}}
-                        <div class="group">
-                            <div class="groupDescription">
-                                <h4>{{this.groupName}}</h4>
-                                <p>{{this.groupDescription}}</p>
+                        {{#if administrates}}
+                        <div class="flexColumn">
+                            <h4>You Administrate:</h4>
+                            {{#each administrates}}
+                            <div class="group">
+                                <div class="groupDescription">
+                                    <h5>{{this.groupName}}</h4>
+                                    <p>{{this.groupDescription}}</p>
+                                </div>
                             </div>
+                            {{/each}}
                         </div>
-                        {{/each}}
+                        {{/if}}
+                        {{!-- should separate groups they administrate vs. groups they belong to, need a place to display group requests --}}
+                        {{#if belongsTo}}
+                        <div class="flexColumn">
+                            <h4>You Belong To: </h4>
+                            {{#each belongsTo}}
+                            <div class="group">
+                                <div class="groupDescription">
+                                    <h5>{{this.groupName}}</h4>
+                                    <p>{{this.groupDescription}}</p>
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                        {{/if}}
                     </div>
                 </div>
             </div>

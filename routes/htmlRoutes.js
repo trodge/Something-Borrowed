@@ -1,7 +1,6 @@
-
 const db = require('../models');
 module.exports = function (app) {
-    let currentCategories = [];
+    // let currentCategories = [];
 
     app.get('/', function (req, res) {
         res.locals.metaTags = {
@@ -34,24 +33,32 @@ module.exports = function (app) {
 
     app.get('/profile', function (req, res) {
         const userId = req.cookies.userid;
+        let administrates = [];
+        let belongsTo = [];
         db.User.findOne({ where: {userIdToken: userId}, include: [db.Group, db.Item] }).then(dbUser => {
-          console.log('all results 1'+ JSON.stringify(dbUser));
+        //   console.log('all results 1'+ JSON.stringify(dbUser));
           const groupIds = dbUser.Groups.map(group => group.groupId);
-          console.log(groupIds);
-          console.log('all results 2'+ JSON.stringify(dbUser.Items));
-          console.log('all results 2'+ JSON.stringify(dbUser.Groups));
+        //   console.log(groupIds);
+        //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
+        //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
+        //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
+          for (let j=0; j < dbUser.Groups.length; j++) {
+            //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
+              if (dbUser.Groups[j].UserGroup.isAdmin === true) {
+                administrates.push(dbUser.Groups[j]);
+              } else {
+                  belongsTo.push(dbUser.Groups[j])
+              }
+          }
           db.ItemRequest.findAll({ where: {owner: userId}}).then(function (dbRequest) {
-                    console.log(JSON.stringify(dbRequest));
+                    // console.log(JSON.stringify(dbRequest));
                     let pendingRequests = [];
                     let confirmedRequests = [];
-                    let deniedRequests = [];
                     for (let i = 0; i < dbRequest.length; i++) {
                         if (dbRequest[i].dataValues.confirmed === false) {
                             pendingRequests.push(dbRequest[i].dataValues);
-                        } else if (dbRequest[i].dataValues.confirmed === true || dbRequest[i].dataValues.denied === true) {
+                        } else if (dbRequest[i].dataValues.confirmed === true && dbRequest[i].dataValues.denied === false) {
                             confirmedRequests.push(dbRequest[i].dataValues);
-                        } else if (dbRequest[i].dataValues.denied === true) {
-                            deniedRequests.push(dbRequest[i].dataValues);
                         }
                     }
               res.locals.metaTags = {
@@ -67,7 +74,7 @@ module.exports = function (app) {
                     items: '<li><a href="/items">Items</a></li>',
                     signOut: '<button onclick="signOut();">Sign Out</button>'
                 };
-                res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, groups: dbUser.Groups, pending: pendingRequests, confirmed: confirmedRequests, denied: deniedRequests});
+                res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests});
             } else {
                 desiredMenu = {
                     home: '<li><a href="/">Home</a></li>',
@@ -156,6 +163,12 @@ module.exports = function (app) {
 
     app.get('/items', function (req, res) {
         const userId = req.cookies.userid;
+        if (userId) {
+            //get all items from groups user belongs to, display owner name? should we have username 
+        } else {
+            //get all public items, display or say none to view?
+        }
+
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
@@ -165,8 +178,10 @@ module.exports = function (app) {
                 },
                 include: db.Item
             }).then(dbGroups => {
+                //loop through dbGroups then loop through that groups' items array, check if that item id is already in defined authItems array and add if not
               console.log(dbGroups);
                 console.log(dbGroups[0].Items);
+                console.log(JSON.stringify(dbGroups[0].Items));
                 // Render here. dbGroups is an array of groups. Groups has an array of Items.
                 let desiredMenu;
                 if (userId) {
@@ -179,7 +194,7 @@ module.exports = function (app) {
                     res.render('items', {
                         navData: desiredMenu,
                         // items: dbItems,
-                        categories: currentCategories
+                        // categories: currentCategories
                     });
                 } else {
                     desiredMenu = {
@@ -190,7 +205,7 @@ module.exports = function (app) {
                     res.render('items', {
                         navData: desiredMenu,
                         // items: dbItems,
-                        categories: currentCategories
+                        // categories: currentCategories
                     });
                 }
             });

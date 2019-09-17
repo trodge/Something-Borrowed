@@ -1,21 +1,33 @@
 $(document).ready(function () {
     $('#addItem').on('click', function (event) {
+        let allowedCategories = ['Books', 'Cleaning Supplies', 'Electronics', 'Kitchen', 'Miscellaneous', 'Movies/TV', 'Outdoor Tools', 'Video Games'];
         event.preventDefault();
-        console.log($('#availableTo').val());
+        let category;
+        if (allowedCategories.includes($('#itemCategory').val().trim())) {
+            category = $('#itemCategory').val().trim();
+        } else {
+            category = 'Miscellaneous';
+        }
+        let groupIds = [];
+        $.each($("input[name='groupOption']:checked"), function(){            
+            groupIds.push(parseInt($(this).val()));
+        });
+        console.log(groupIds);
         const item = {
             itemName: $('#itemName').val().trim(),
             itemImage: $('#itemImage').val().trim(),
             itemDescription: $('#itemDesc').val().trim(),
-            itemCategory: $('#itemCategory').val().trim(),
-            groups: $('#availableTo').val()
+            itemCategory: category,
+            groupsAvailable: groupIds
         };
-        // $.ajax('/api/items', {
-        //     type: 'POST',
-        //     data: item
-        // }).then(function (/*response*/) {
-        //     location.reload();
-        // });
+        $.ajax('/api/items', {
+            type: 'POST',
+            data: item
+        }).then(function (/*response*/) {
+            location.reload();
+        });
     });
+
     $('#addGroup').on('click', function (event) {
         event.preventDefault();
         const groupInfo = {
@@ -32,7 +44,6 @@ $(document).ready(function () {
 
     $('.confirmRequest').on('click', function (event) {
         event.preventDefault();
-        // console.log(requestInfo);
         let requestId = event.target.dataset.requestid;
         console.log(event);
         console.log(requestId);
@@ -51,7 +62,6 @@ $(document).ready(function () {
 
     $('.denyRequest').on('click', function (event) {
         event.preventDefault();
-        // console.log(requestInfo);
         let requestId = event.target.dataset.requestid;
         console.log(event);
         console.log(requestId);

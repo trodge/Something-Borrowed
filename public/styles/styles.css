@@ -135,6 +135,7 @@ main {
 }
 
 #homeContainer {
+  flex: 1;
   display: flex;
 }
 

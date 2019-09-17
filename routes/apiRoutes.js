@@ -34,8 +34,6 @@ module.exports = function (app) {
             userImage: signIn.image
         };
         const userIdCookie = req.cookies.userid;
-        console.log('serverReadCookie' + userIdCookie);
-        console.log('verifyResult' + userId);
         if (userIdCookie === userId) {
             res.send({signedIn : true});
         } else {
@@ -65,9 +63,16 @@ module.exports = function (app) {
 
     app.post('/api/items', function (req, res) {
         let item = req.body;
+        let groupIds = req.body['groupsAvailable[]'];
+        let groupIdsInt = groupIds.map(function(item) {
+            return parseInt(item);
+        });
+        console.log(groupIdsInt);
         item.userIdToken = req.cookies.userid;
         db.Item.create(item).then(function (dbResult) {
-            res.json(dbResult);
+            dbResult.setGroups(groupIds).then(function(dbGroups) {
+                res.json(dbGroups);
+            });
         });
     });
 
