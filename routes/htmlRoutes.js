@@ -49,7 +49,17 @@ module.exports = function (app) {
                     keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                 };
                 if (userId) {
+<<<<<<< HEAD
                     res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests });
+=======
+                    desiredMenu = {
+                        home: '<li><a href="/">Home</a></li>',
+                        profile: '<li class="currentPage"><a href="/profile">Profile</a></li>',
+                        items: '<li><a href="/items">Items</a></li>',
+                        signOut: '<button onclick="signOut();">Sign Out</button>'
+                    };
+                    res.render('profile', { navData: desiredMenu, user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests });
+>>>>>>> origin/items
                 } else {
                     res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
                 }
@@ -82,17 +92,28 @@ module.exports = function (app) {
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
-            dbUser.getGroups({ include: db.Item }).then(dbGroups => {
+            db.Group.findAll({
+                where: {
+                    groupId: groupIds
+                }, include: db.Item
+            }).then(dbGroups => {
                 console.log(dbGroups);
                 // Render here. dbGroups is an array of groups. Each group has an array of Items.
+                itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {
-                    dbItems = dbItems.concat(dbGroup.items.filter(
-                        item => selectedCategory == 'all' || item.itemCategory == selectedCategory));
+                    dbGroup.Items.forEach(
+                        item => {
+                            if ((selectedCategory === 'all' || item.itemCategory === selectedCategory) &&
+                                !itemIds.has(item.id)) {
+                                dbItems.push(item);
+                                itemIds.add(item.id);
+                            }
+                        });
                 });
                 res.render('items', {
                     loggedIn: Boolean(userId),
-                    items: dbItems
+                    items: Array.from(dbItems)
                 });
             });
         });
