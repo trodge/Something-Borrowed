@@ -22,12 +22,18 @@ module.exports = function (app) {
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
             //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
             //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
+            groupMembers = [];
             for (let group of dbUser.Groups) {
                 //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
                 if (group.UserGroup.isAdmin) {
                     administrates.push(group);
                 } else {
                     belongsTo.push(group);
+                }
+                for (let member of group.Users) {
+                    member.groupId = group.groupId;
+                    member.groupName = group.groupName;
+                    groupMembers.push(member)
                 }
             }
             const administratesIds = administrates.map(group => group.groupId);
@@ -43,9 +49,8 @@ module.exports = function (app) {
                         confirmedRequests.push(request.dataValues);
                     }
                 }
-                db.Group.findAll({}).then(function (dbGroups) {
+                db.Group.findAll().then(function (dbGroups) {
                     let otherGroups = [];
-                    console.log('dbGroups:', dbGroups);
                     for (let group of dbGroups) {
                         let groupId = group.groupId;
                         if (!administratesIds.includes(groupId) &&
@@ -55,17 +60,14 @@ module.exports = function (app) {
                     }
                     //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
                     db.GroupRequest.findAll({ include: [db.User, db.Group] }).then(function (dbGroupReqests) {
-                        let sentGroupReqests = [], recievedGroupRequests = [], confirmedGroupRequests = [];
+                        let sentGroupReqests = [], recievedGroupRequests = [];
                         for (groupRequest of dbGroupReqests) {
                             groupRequest.requester = groupRequest.User.userName;
                             groupRequest.groupName = groupRequest.Group.groupName;
                             if (groupRequest.userIdToken === userId)
                                 sentGroupReqests.push(groupRequest);
                             else if (administratesIds.includes(groupRequest.groupId))
-                                if (groupRequest.status === 'approved')
-                                    confirmedGroupRequests.push(groupRequest);
-                                else if (groupRequest.status === 'pending')
-                                    recievedGroupRequests.push(groupRequest);
+                                recievedGroupRequests.push(groupRequest);
                         }
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
@@ -84,7 +86,7 @@ module.exports = function (app) {
                                 confirmed: confirmedRequests,
                                 sentGroupReuqests: sentGroupReqests,
                                 recievedGroupRequests: recievedGroupRequests,
-                                confirmedGroupRequests: confirmedGroupRequests
+                                groupMembers: groupMembers
                             });
                         } else {
                             res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
@@ -137,7 +139,6 @@ module.exports = function (app) {
                     groupId: groupIds
                 }, include: db.Item
             }).then(dbGroups => {
-                console.log(dbGroups);
                 itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {

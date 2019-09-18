@@ -91,7 +91,14 @@ module.exports = function (app) {
         ).catch(err => res.json(err));
     });
 
-
+    app.put('/api/remove-member/:groupid', (req, res) => {
+        db.Group.findOne({
+            where: { groupId: req.params.groupid }, include: {
+                model: db.User, where: { userIdToken: req.body.userid }
+            }
+        }).then(dbGroup =>
+            dbGroup.removeUser(dbGroup.User)).then(dbResult => res.json(dbResult));
+    });
 
     app.post('/api/itemrequests', function (req, res) {
         const requestInfo = req.body;
@@ -214,34 +221,40 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/group-request/:status', (req, res) => {
-        db.GroupRequest.update({ status: req.params.status },
-            { where: { groupRequestId: req.body.groupRequestId } }).then(() => {
-                db.GroupRequest.findOne({ where: { groupRequestId: req.body.groupRequestId }, include: db.Group }).then(dbGroupRequest => {
-                    dbGroupRequest.getGroup().then(dbGroup => {
-                        dbGroupRequest.getUser().then(dbRequester => {
-                            let to = dbRequester.userEmail;
-                            const mailOptions = {
-                                from: process.env.MAILER_ADDRESS,
-                                to: to,
-                                subject: `Group Request ${capitalize(req.params.status)}`,
-                                text: `Your request to join ${dbGroup.groupName} has been ${req.params.status}.`,
-                                html: `<p>Your request to join ${dbGroup.groupName} has been ${req.params.status}.</p>`
-                            };
-                            transporter.sendMail(mailOptions, function (error, info) {
-                                if (error)
-                                    console.log(error);
-                                else
-                                    console.log('Email sent: ' + info.response);
-                            });
-                            if (req.params.status === 'approved') {
-                                dbGroup.addUser(dbRequester).then(dbUser => res.json(dbUser));
-                            } else
-                                res.sendStatus('200');
-                        });
-                    });
+    app.delete('/api/group-request/:status', (req, res) => {
+        const groupRequestId = req.body.groupRequestId;
+        db.GroupRequest.findOne({
+            where: {
+                groupRequestId: groupRequestId
+            },
+            include: [db.Group, db.User]
+        }).then(dbGroupRequest => {
+            const dbGroup = dbGroupRequest.Group;
+            const groupName = Group.groupName;
+            const dbUser = dbGroupRequest.User;
+            const requesterName = dbUser.userName;
+            const to = dbGroupRequest.User.userEmail;
+            const status = req.params.status;
+            const mailOptions = {
+                from: process.env.MAILER_ADDRESS,
+                to: to,
+                subject: `Group Request ${capitalize(status)}`,
+                text: `Your request to join ${groupName} has been ${status}.`,
+                html: `<p>Your request to join ${groupName} has been ${status}.</p>`
+            };
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error)
+                    console.log(error);
+                else
+                    console.log('Email sent: ' + info.response);
+                db.GroupRequest.destroy({ where: { groupRequestId: groupRequestId } }).then(() => {
+                    if (status === 'approved') {
+                        dbGroup.addUser(dbUser).then();
+                    } else
+                        res.sendStatus('200');
                 });
             });
+        });
     });
 };
 

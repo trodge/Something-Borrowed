@@ -73,21 +73,22 @@
                             {{/if}}
                         </div>
                         <div class="requestContainer">
-                            {{#if confirmedGroupRequests}}
+                            {{#if groupMembers}}
                             <h5>Confirmed</h5>
-                            {{#each confirmedGroupRequests}}
+                            {{#each groupMembers}}
                             <div class="group">
                                 <div class="groupDescription">
-                                    <h6>{{this.requester}} is a member of {{this.groupName}}</h6>
+                                    <h6>{{this.userName}} is a member of {{this.groupName}}</h6>
                                     <form>
-                                        <button class="removeFromGroupRequest" data-requestid="{{this.groupId}}">Remove
+                                        <button class="removeMember" data-groupid="{{this.groupId}}"
+                                            data-userid="{{this.userIdToken}}">Remove
                                             Member</button>
                                     </form>
                                 </div>
                             </div>
                             {{/each}}
                             {{else}}
-                            <h5 class="text-center">There are no confirmed members in your groups.</h5>
+                            <h5 class="text-center">There are no members in your groups.</h5>
                             {{/if}}
                         </div>
                     </div>

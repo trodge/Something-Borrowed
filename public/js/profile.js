@@ -43,7 +43,7 @@ $(document).ready(function () {
             groupsAvailable: groupIds
         };
         $.ajax('/api/items', {
-            type: 'POST',
+            method: 'POST',
             data: item
         }).then(function (/*response*/) {
             location.reload();
@@ -57,7 +57,7 @@ $(document).ready(function () {
             groupDescription: $('#groupDescription').val().trim()
         };
         $.ajax('/api/groups', {
-            type: 'POST',
+            method: 'POST',
             data: groupInfo
         }).then(function (/*response*/) {
             location.reload();
@@ -75,7 +75,7 @@ $(document).ready(function () {
             denied: false
         };
         $.ajax('/api/itemrequests', {
-            type: 'PUT',
+            method: 'PUT',
             data: requestInfo
         }).then(function (/*response*/) {
             location.reload();
@@ -93,7 +93,7 @@ $(document).ready(function () {
             denied: true
         };
         $.ajax('/api/itemrequests', {
-            type: 'PUT',
+            method: 'PUT',
             data: requestInfo
         }).then(function (/*response*/) {
             location.reload();
@@ -109,7 +109,7 @@ $(document).ready(function () {
             groupId: requestId
         };
         $.ajax('/api/group-request', {
-            type: 'POST',
+            method: 'POST',
             data: requestInfo
         }).then(function (/*response*/) {
             location.reload();
@@ -124,11 +124,25 @@ $(document).ready(function () {
         };
         console.log(request);
         $.ajax(`/api/group-request/${dataset.requeststatus}`, {
-            type: 'PUT',
+            method: 'DELETE',
             data: request
         }).then(response => {
             console.log(response);
             location.reload();
         });
     });
+    $('.removeMember').click(event => {
+        event.preventDefault();
+        let dataset = event.target.dataset;
+        let request = {
+            userid: dataset.userid
+        };
+        $.ajax(`/api/remove-member/${dataset.groupid}`, {
+            method: 'PUT',
+            data: request
+        }).then(response => {
+            console.log(response);
+            location.reload();
+        })
+    })
 });
