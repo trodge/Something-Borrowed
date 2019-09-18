@@ -63,6 +63,7 @@ module.exports = function (app) {
                 }
             }
             db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbRequest) {
+                console.log(JSON.stringify(dbRequest))
                 let pendingRequests = [];
                 let confirmedRequests = [];
                 for (let i = 0; i < dbRequest.length; i++) {
@@ -72,6 +73,8 @@ module.exports = function (app) {
                         confirmedRequests.push(dbRequest[i].dataValues);
                     }
                 }
+                console.log(pendingRequests);
+
                 db.Group.findAll({}).then(function (dbGroups) {
                     let otherGroups = [];
                     for (let k = 0; k < dbGroups.length; k++) {
@@ -80,6 +83,7 @@ module.exports = function (app) {
                         }
                     }
                     db.GroupRequest.findAll({ where: { userIdToken: userId, status: 'pending' } }).then(function (dbGroupReqests) {
+                        console.log(dbGroupRequests);
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
                             description: 'See all your items available to borrow and add new items',
