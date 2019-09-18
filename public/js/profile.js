@@ -45,7 +45,7 @@ $(document).ready(function () {
         $.ajax('/api/items', {
             type: 'POST',
             data: item
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });

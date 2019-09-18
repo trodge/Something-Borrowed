@@ -61,6 +61,26 @@ module.exports = function (app) {
         });
     });
 
+    app.post('/api/contact', function (req, res) {
+        const contactData = req.body;
+        const mailOptions = {
+            from: process.env.MAILER_ADDRESS,
+            to: process.env.MAILER_ADDRESS,
+            subject: `Contact from ${contactData.contactName}`,
+            text: `Contact Name: ${contactData.contactName}; Contact Phone: ${contactData.contactPhone}; Contact Email: ${contactData.contactEmail}; Contact Message: ${contactData.contactMessage};`,
+            html: `<p>Contact Name: ${contactData.contactName}</p><p>Contact Phone: ${contactData.contactPhone}</p><p>Contact Email: ${contactData.contactEmail}</p><p>Contact Message: ${contactData.contactMessage}</p>`
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+                res.sendStatus(500);
+            } else {
+                console.log('Email sent: ' + info.response);
+                res.sendStatus(200);
+            }
+        });
+    });
+
     app.post('/api/items', function (req, res) {
         let item = req.body;
         console.log('REQBODY' + JSON.stringify(req.body));

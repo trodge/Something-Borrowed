@@ -12,6 +12,39 @@ module.exports = function (app) {
         });
     });
 
+    app.get('/about', function (req, res) {
+        res.locals.metaTags = {
+            title: 'About Something Borrowed',
+            description: 'Helping you save money through friend-to-friend lending; don\'t buy when you can borrow!',
+            keywords: 'lending, borrow, friend-to-friend, save'
+        };
+        res.render('about', {
+            loggedIn: Boolean(req.cookies.userid)
+        });
+    });
+
+    app.get('/contact', function (req, res) {
+        res.locals.metaTags = {
+            title: 'Contact Something Borrowed',
+            description: 'Submit this contact form to get in touch with us.',
+            keywords: 'lending, borrow, friend-to-friend, save, contact'
+        };
+        res.render('contact', {
+            loggedIn: Boolean(req.cookies.userid)
+        });
+    });
+
+    app.get('/terms', function (req, res) {
+        res.locals.metaTags = {
+            title: 'Something Borrowed Terms',
+            description: 'Created as a proof of concept for UW Coding Bootcamp.',
+            keywords: 'lending, borrow, friend-to-friend, save, terms'
+        };
+        res.render('terms', {
+            loggedIn: Boolean(req.cookies.userid)
+        });
+    });
+
     app.get('/profile', function (req, res) {
         const userId = req.cookies.userid;
         let administrates = [];
