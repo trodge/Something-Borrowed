@@ -1,6 +1,6 @@
 <form>
     <div class="form-group">
-        <label for="itemCategory">Category: </label>
+        <label for="itemCategory">{{#if category}}{{else}}<h4>View by Category Instead:</h4>{{/if}}</label>
         <select class="form-control" id="itemCategory" onchange="location = this.value;">
             <option value="#">Select a Category</option>
             <option value="/items/all">All</option>

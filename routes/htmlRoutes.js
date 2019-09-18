@@ -136,20 +136,34 @@ module.exports = function (app) {
     app.get('/search/:query', function (req, res) {
         const userId = req.cookies.userid;
         const searchQuery = req.params.query;
-        console.log(`html route ${searchQuery}`);
-        db.Item.findAll({ where: { itemName: searchQuery } }).then(function (dbSearch) {
-            if (dbSearch.length > 0) {
-                console.log(dbSearch);
-                res.render('searchResults', {
-                    loggedIn: Boolean(userId),
-                    searchResults: dbSearch
+        db.User.findOne({ include: db.Group }).then(dbUser => {
+            const groupIds = dbUser.Groups.map(group => group.groupId);
+            console.log(groupIds);
+            db.Group.findAll({
+                where: {
+                    groupId: groupIds
+                }, include: db.Item
+            }).then(dbGroups => {
+                console.log(dbGroups);
+                itemIds = new Set();
+                dbItems = [];
+                dbGroups.forEach(dbGroup => {
+                    dbGroup.Items.forEach(
+                        item => {
+                            if ((item.itemName === searchQuery) &&
+                                !itemIds.has(item.id)) {
+                                dbItems.push(item);
+                                itemIds.add(item.id);
+                            }
+                        });
                 });
-            } else {
-                res.render('searchResults', {
+                res.render('items', {
+                    query: searchQuery,
                     loggedIn: Boolean(userId),
-                    noResults: '<h3>Your query returned no results.</h3>'
+                    items: Array.from(dbItems)
                 });
-            }
+
+            });
         });
     });
 

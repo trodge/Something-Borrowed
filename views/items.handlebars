@@ -2,7 +2,11 @@
 
 {{>header}}
 <main>
+    {{#if category}}
     <h2>View by Category: {{category}}</h2>
+    {{else}}
+    <h2>Search Results: {{query}}</h2>
+    {{/if}}
     {{>categorySelect}}
 
     <div id="resultsHolder">
@@ -20,9 +24,12 @@
         </div>
         {{/each}}
         {{else}}
-        <h3 class="text-center">There are no available items in that category right now.</h3>
+        {{#if category}}
+        <h3 class="text-center">There are no items currently available in that category.</h3>
+        {{else}}
+        <h3 class="text-center">That search query returns no results at this time.</h3>
         {{/if}}
-
+        {{/if}}
     </div>
 </main>
 {{>requestModal}}
