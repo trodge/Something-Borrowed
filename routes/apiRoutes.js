@@ -64,7 +64,7 @@ module.exports = function (app) {
 
     app.post('/api/items', function (req, res) {
         let item = req.body;
-        console.log('REQBODY' + JSON.stringify(req.body));
+        console.log('REQBODY: ' + JSON.stringify(req.body));
         let groupIds = req.body['groupsAvailable[]'];
         let groupIdsInt;
         if (groupIds.isArray) {
@@ -224,12 +224,9 @@ module.exports = function (app) {
     });
 
     app.put('/api/group-requests/:status', (req, res) => {
-        console.log(req.params);
-        console.log(req.body.groupRequestId);
         db.GroupRequest.update({ status: req.params.status },
             { where: { groupRequestId: req.body.groupRequestId } }).then(dbResults => {
                 if (!dbResults.changedRows) { res.sendStatus(404); }
-                console.log(dbResults);
                 db.GroupRequest.findOne({ where: { groupRequestId: req.body.groupRequestId }, include: db.Group }).then(dbGroupRequest => {
                     dbGroupRequest.getGroup().then(dbGroup => {
                         dbGroupRequest.getUser().then(dbRequester => {
