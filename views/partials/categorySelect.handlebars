@@ -1,6 +1,17 @@
-<select onchange="location = this.value;">
-    <option value="/items">All Categories</option>
-    {{#each categories}}
-    <option value="/items/{{this}}">{{this}}</option>
-    {{/each}}
-</select>
+<form>
+    <div class="form-group">
+        <label for="itemCategory">{{#if category}}{{else}}<h4>View by Category Instead:</h4>{{/if}}</label>
+        <select class="form-control" id="itemCategory" onchange="location = this.value;">
+            <option value="#">Select a Category</option>
+            <option value="/items/all">All</option>
+            <option value="/items/books">Books</option>
+            <option value="/items/cleaning-supplies">Cleaning Supplies</option>
+            <option value="/items/electronics">Electronics</option>
+            <option value="/items/kitchen">Kitchen</option>
+            <option value="/items/miscellaneous">Miscellaneous</option>
+            <option value="/items/movies-tv">Movies/TV</option>
+            <option value="/items/outdoor-tools">Outdoor Tools</option>
+            <option value="/items/video-games">Video Games</option>
+        </select>
+    </div>
+</form>

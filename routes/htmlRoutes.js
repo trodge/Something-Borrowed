@@ -43,16 +43,27 @@ module.exports = function (app) {
                         confirmedRequests.push(dbRequest[i].dataValues);
                     }
                 }
-                res.locals.metaTags = {
-                    title: dbUser.userName + '\'s Profile',
-                    description: 'See all your items available to borrow and add new items',
-                    keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
-                };
-                if (userId) {
-                    res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, pending: pendingRequests, confirmed: confirmedRequests });
-                } else {
-                    res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
-                }
+                db.Group.findAll({}).then(function (dbGroups) {
+                    let otherGroups = [];
+                    for (let k; k < dbGroups.length; k++) {
+                        if (administrates.includes(dbGroup[k]) === false && belongsTo.includes(dbGroup[k]) === false) {
+                            otherGroups.push(dbGroup[k]);
+                        }
+                    }
+                    //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
+                    db.GroupRequest.findAll({ where: { userIdToken: userId, status: 'pending' } }).then(function (dbGroupReqests) {
+                        res.locals.metaTags = {
+                            title: dbUser.userName + '\'s Profile',
+                            description: 'See all your items available to borrow and add new items',
+                            keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
+                        };
+                        if (userId) {
+                            res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, groups: otherGroups, pending: pendingRequests, confirmed: confirmedRequests, yourPendingGroups: dbGroupReqests });
+                        } else {
+                            res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
+                        }
+                    });
+                });
             });
         });
     });
@@ -79,6 +90,18 @@ module.exports = function (app) {
     app.get('/items/:category', function (req, res) {
         const userId = req.cookies.userid;
         const selectedCategory = req.params.category;
+        let keyCategory = selectedCategory.replace('-', '');
+        const categoryNames = {
+            all: 'All',
+            books: 'Books',
+            cleaningsupplies: 'Cleaning Supplies',
+            electronics: 'Electronics',
+            kitchen: 'Kitchen',
+            miscellaneous: 'Miscellaneous',
+            moviestv: 'Movies/TV',
+            outdoortools: 'Outdoor Tools',
+            video: 'Video Games'
+        };
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
@@ -88,7 +111,6 @@ module.exports = function (app) {
                 }, include: db.Item
             }).then(dbGroups => {
                 console.log(dbGroups);
-                // Render here. dbGroups is an array of groups. Each group has an array of Items.
                 itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {
@@ -102,9 +124,11 @@ module.exports = function (app) {
                         });
                 });
                 res.render('items', {
+                    category: categoryNames[`${keyCategory}`],
                     loggedIn: Boolean(userId),
                     items: Array.from(dbItems)
                 });
+
             });
         });
     });
@@ -112,20 +136,34 @@ module.exports = function (app) {
     app.get('/search/:query', function (req, res) {
         const userId = req.cookies.userid;
         const searchQuery = req.params.query;
-        console.log(`html route ${searchQuery}`);
-        db.Item.findAll({ where: { itemName: searchQuery } }).then(function (dbSearch) {
-            if (dbSearch.length > 0) {
-                console.log(dbSearch);
-                res.render('searchResults', {
-                    loggedIn: Boolean(userId),
-                    searchResults: dbSearch
+        db.User.findOne({ include: db.Group }).then(dbUser => {
+            const groupIds = dbUser.Groups.map(group => group.groupId);
+            console.log(groupIds);
+            db.Group.findAll({
+                where: {
+                    groupId: groupIds
+                }, include: db.Item
+            }).then(dbGroups => {
+                console.log(dbGroups);
+                itemIds = new Set();
+                dbItems = [];
+                dbGroups.forEach(dbGroup => {
+                    dbGroup.Items.forEach(
+                        item => {
+                            if ((item.itemName === searchQuery) &&
+                                !itemIds.has(item.id)) {
+                                dbItems.push(item);
+                                itemIds.add(item.id);
+                            }
+                        });
                 });
-            } else {
-                res.render('searchResults', {
+                res.render('items', {
+                    query: searchQuery,
                     loggedIn: Boolean(userId),
-                    noResults: '<h3>Your query returned no results.</h3>'
+                    items: Array.from(dbItems)
                 });
-            }
+
+            });
         });
     });
 

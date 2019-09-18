@@ -5,19 +5,20 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'mail.somethingborrowed@gmail.com',
-        pass: 'yy*V3W336o^I%VlE'
+        user: process.env.MAILER_ADDRESS,
+        pass: process.env.MAILER_PASSWORD
     }
 });
 
 module.exports = function (app) {
+    const profileLink = "https://something--borrowed.herokuapp.com/profile";
     //https://developers.google.com/identity/sign-in/web/backend-auth
     const { OAuth2Client } = require('google-auth-library');
-    const client = new OAuth2Client('286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com');
+    const client = new OAuth2Client(process.env.GOOGLE_SIGN_IN);
     async function verify(token) {
         const ticket = await client.verifyIdToken({
             idToken: token,
-            audience: '286476703675-e3k83h6l2h8ohlt381tndsp1ae23k1ic.apps.googleusercontent.com'
+            audience: process.env.GOOGLE_SIGN_IN
         });
         const payload = ticket.getPayload();
         const verifiedUserId = payload.sub;
@@ -63,14 +64,20 @@ module.exports = function (app) {
 
     app.post('/api/items', function (req, res) {
         let item = req.body;
+        console.log('REQBODY' + JSON.stringify(req.body));
         let groupIds = req.body['groupsAvailable[]'];
-        let groupIdsInt = groupIds.map(function(item) {
-            return parseInt(item);
-        });
+        let groupIdsInt;
+        if (groupIds.isArray) {
+            groupIdsInt = groupIds.map(function (item) {
+                return parseInt(item);
+            });
+        } else {
+            groupIdsInt = [parseInt(groupIds)];
+        }
         console.log(groupIdsInt);
         item.userIdToken = req.cookies.userid;
         db.Item.create(item).then(function (dbResult) {
-            dbResult.setGroups(groupIds).then(function(dbGroups) {
+            dbResult.setGroups(groupIdsInt).then(function (dbGroups) {
                 res.json(dbGroups);
             });
         });
@@ -119,11 +126,11 @@ module.exports = function (app) {
                     db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
                         let to = dbOwner.userEmail;
                         const mailOptions = {
-                            from: 'mail.somethingborrowed@gmail.com',
+                            from: process.env.MAILER_ADDRESS,
                             to: to,
                             subject: 'Pending Item Request',
                             text: `${dbRequester.userName} has requested your ${itemName}. Go to your profile on Something Borrowed to view the request.`,
-                            html: `<p>${dbRequester.userName} has requested your ${itemName}. Click <a href="https://project-2-uwcoding.herokuapp.com/profile">here</a> to go to your profile and view the request.</p>`
+                            html: `<p>${dbRequester.userName} has requested your ${itemName}. Click <a href="${profileLink}">here</a> to go to your profile and view the request.</p>`
                         };
                         transporter.sendMail(mailOptions, function (error, info) {
                             if (error) {
@@ -151,23 +158,23 @@ module.exports = function (app) {
             if (dbRequest.changedRows === 0) {
                 return res.sendStatus(404);
             }
-            db.ItemRequest.findOne({where: {id: requestId}}).then(function(dbRequestInfo) {
+            db.ItemRequest.findOne({ where: { id: requestId } }).then(function (dbRequestInfo) {
                 let status;
                 if (dbRequestInfo.denied === true) {
                     status = 'denied';
                 } else {
                     status = 'confirmed';
                 }
-                db.User.findOne({where: {userIdToken: dbRequestInfo.requester}}).then(function(dbRequester) {
+                db.User.findOne({ where: { userIdToken: dbRequestInfo.requester } }).then(function (dbRequester) {
                     let to = dbRequester.userEmail;
                     const mailOptions = {
-                        from: 'mail.somethingborrowed@gmail.com',
+                        from: process.env.MAILER_ADDRESS,
                         to: to,
                         subject: `Item Request ${capitalize(status)}`,
                         text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
                         html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
                     };
-                    transporter.sendMail(mailOptions, function(error, info){
+                    transporter.sendMail(mailOptions, function (error, info) {
                         if (error) {
                             console.log(error);
                         } else {
@@ -184,18 +191,22 @@ module.exports = function (app) {
         db.Group.findOne({ where: { groupId: req.body.groupId } }).then(dbGroup => {
             let groupRequest = {
                 groupId: dbGroup.groupId,
-                userIdToken: req.cookies.userid
+                userIdToken: req.cookies.userid,
+                status: 'pending'
             };
+            console.log('dbGroup ' + JSON.stringify(dbGroup));
             db.GroupRequest.create(groupRequest).then(dbGroupRequest => {
                 dbGroup.getUsers({ through: { isAdmin: true } }).then(function (dbAdministrator) {
-                    db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
-                        let to = dbAdministrator.userEmail;
+                    console.log('dbAdministrator ' + JSON.stringify(dbAdministrator));
+                    db.User.findOne({ where: { userIdToken: req.cookies.userid } }).then(function (dbRequester) {
+                        console.log('dbRequester ' + JSON.stringify(dbRequester));
+                        let to = dbAdministrator[0].userEmail;
                         const mailOptions = {
-                            from: 'mail.somethingborrowed@gmail.com',
+                            from: process.env.MAILER_ADDRESS,
                             to: to,
-                            subject: 'Pending Item Request',
+                            subject: 'Pending Group Request',
                             text: `${dbRequester.userName} has requested to join ${dbGroup.groupName}. Go to your profile on Something Borrowed to view the request.`,
-                            html: `<p>${dbRequester.userName} has requested to join ${dbGroup.groupName}. Click <a href="https://project-2-uwcoding.herokuapp.com/profile">here</a> to go to your profile and view the request.</p>`
+                            html: `<p>${dbRequester.userName} has requested to join ${dbGroup.groupName}. Click <a href="${profileLink}">here</a> to go to your profile and view the request.</p>`
                         };
                         transporter.sendMail(mailOptions, function (error, info) {
                             if (error) {
@@ -204,6 +215,7 @@ module.exports = function (app) {
                                 console.log('Email sent: ' + info.response);
                             }
                         });
+                        console.log('dbGroupRequest ' + JSON.stringify(dbGroupRequest));
                         res.json(dbGroupRequest);
                     });
                 });
@@ -215,11 +227,11 @@ module.exports = function (app) {
         db.GroupRequest.update({ status: req.params.status },
             { where: { groupRequestId: req.body.groupRequestId } }).then(dbGroupRequest => {
             dbGroupRequest.getGroup().then(dbGroup => {
-                if (!dbGroupRequest.changedRows) {res.sendStatus(404);}
+                if (!dbGroupRequest.changedRows) { res.sendStatus(404); }
                 db.User.findOne({ where: { userIdToken: dbGroupRequest.userIdToken } }).then(dbRequester => {
                     let to = dbRequester.userEmail;
                     const mailOptions = {
-                        from: 'mail.somethingborrowed@gmail.com',
+                        from: process.env.MAILER_ADDRESS,
                         to: to,
                         subject: `Group Request ${capitalize(req.params.status)}`,
                         text: `Your request to join ${dbGroup.groupName} has been ${req.params.status}.`,
