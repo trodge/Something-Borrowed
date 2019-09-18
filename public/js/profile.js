@@ -74,7 +74,7 @@ $(document).ready(function () {
             confirmed: true,
             denied: false
         };
-        $.ajax('/api/itemrequests', {
+        $.ajax('/api/item-requests', {
             type: 'PUT',
             data: requestInfo
         }).then(function (/*response*/) {
@@ -92,7 +92,7 @@ $(document).ready(function () {
             confirmed: true,
             denied: true
         };
-        $.ajax('/api/itemrequests', {
+        $.ajax('/api/item-requests', {
             type: 'PUT',
             data: requestInfo
         }).then(function (/*response*/) {

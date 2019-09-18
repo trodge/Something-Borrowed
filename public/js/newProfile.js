@@ -14,7 +14,7 @@ $(document).ready(function() {
         $.ajax('/api/login', {
             type: 'PUT',
             data: userInfo
-        }).then(function (response) {
+        }).then(function () {
             window.location.href = '/profile';
         });
     });

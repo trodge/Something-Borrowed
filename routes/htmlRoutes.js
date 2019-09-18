@@ -1,6 +1,5 @@
 const db = require('../models');
 module.exports = function (app) {
-    // let currentCategories = [];
 
     app.get('/', function (req, res) {
         res.locals.metaTags = {
@@ -17,23 +16,20 @@ module.exports = function (app) {
         const userId = req.cookies.userid;
         let administrates = [];
         let belongsTo = [];
+        let partOfIds = [];
         db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
-            //   console.log('all results 1'+ JSON.stringify(dbUser));
             const groupIds = dbUser.Groups.map(group => group.groupId);
-            console.log(groupIds);
-            //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
-            //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
-            //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
+            console.log('allGroups ' + JSON.stringify(dbUser));
             for (let j = 0; j < dbUser.Groups.length; j++) {
-                //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
                 if (dbUser.Groups[j].UserGroup.isAdmin === true) {
-                    administrates.push(dbUser.Groups[j]);
+                    administrates.push(dbUser.Groups[j].dataValues);
+                    partOfIds.push(dbUser.Groups[j].dataValues.groupId);
                 } else {
-                    belongsTo.push(dbUser.Groups[j]);
+                    belongsTo.push(dbUser.Groups[j].dataValues);
+                    partOfIds.push(dbUser.Groups[j].dataValues.groupId);
                 }
             }
             db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbRequest) {
-                // console.log(JSON.stringify(dbRequest));
                 let pendingRequests = [];
                 let confirmedRequests = [];
                 for (let i = 0; i < dbRequest.length; i++) {
@@ -45,13 +41,11 @@ module.exports = function (app) {
                 }
                 db.Group.findAll({}).then(function (dbGroups) {
                     let otherGroups = [];
-                    console.log('OTHERGROUPS                   ' + JSON.stringify(dbGroups));
-                    for (let k; k < dbGroups.length; k++) {
-                        if (administrates.includes(dbGroup[k]) === false && belongsTo.includes(dbGroup[k]) === false) {
-                            otherGroups.push(dbGroup[k]);
+                    for (let k = 0; k < dbGroups.length; k++) {
+                        if (partOfIds.includes(dbGroups[k].dataValues.groupId) === false) {
+                            otherGroups.push(dbGroups[k].dataValues);
                         }
                     }
-                    //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
                     db.GroupRequest.findAll({ where: { userIdToken: userId, status: 'pending' } }).then(function (dbGroupReqests) {
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
@@ -105,13 +99,11 @@ module.exports = function (app) {
         };
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
-            console.log(groupIds);
             db.Group.findAll({
                 where: {
                     groupId: groupIds
                 }, include: db.Item
             }).then(dbGroups => {
-                console.log(dbGroups);
                 itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {
@@ -139,13 +131,11 @@ module.exports = function (app) {
         const searchQuery = req.params.query;
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
-            console.log(groupIds);
             db.Group.findAll({
                 where: {
                     groupId: groupIds
                 }, include: db.Item
             }).then(dbGroups => {
-                console.log(dbGroups);
                 itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {

@@ -4,5 +4,5 @@ $(document).ready(function () {
         const query = $('#searchInput').val().trim();
         console.log(`search ${query}`);
         window.location.href = `/search/${query}`;
-    });
+    });    
 });

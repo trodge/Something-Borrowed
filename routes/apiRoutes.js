@@ -42,21 +42,13 @@ module.exports = function (app) {
                 if (pastUser.length > 0) {
                     res.cookie('userid', userId).send({ registeredUser: userId });
                 } else {
-                    db.User.create(userInfo).then(function () {
-                        let groupRequest = {
-                            groupId: 1,
-                            userIdToken: userId,
-                            status: 'confirmed'
-                        }
-                        db.GroupRequest.create(groupRequest).then(function (dbPublicGroup) {
-                            res.cookie('userid', userId).send({ newUser: userId });
-                        });
+                    db.User.create(userInfo).then(function (dbUser) {
+                        res.cookie('userid', userId).send({ newUser: userId });
                     });
                 }
             });
         }
     });
-
 
     app.put('/api/login', function (req, res) {
         const updatedInfo = req.body;
@@ -107,7 +99,7 @@ module.exports = function (app) {
         });
     });
 
-    app.post('/api/itemrequests', function (req, res) {
+    app.post('/api/item-requests', function (req, res) {
         const requestInfo = req.body;
         console.log(req.body);
         const userId = req.cookies.userid;
@@ -151,7 +143,7 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/itemrequests', function (req, res) {
+    app.put('/api/item-requests', function (req, res) {
         let requestId = req.body.requestId;
         let confirmedStatus = req.body.confirmed;
         let deniedStatus = req.body.denied;
