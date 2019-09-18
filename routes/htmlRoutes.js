@@ -45,6 +45,7 @@ module.exports = function (app) {
                 }
                 db.Group.findAll({}).then(function (dbGroups) {
                     let otherGroups = [];
+                    console.log('OTHERGROUPS                   ' + JSON.stringify(dbGroups));
                     for (let k; k < dbGroups.length; k++) {
                         if (administrates.includes(dbGroup[k]) === false && belongsTo.includes(dbGroup[k]) === false) {
                             otherGroups.push(dbGroup[k]);

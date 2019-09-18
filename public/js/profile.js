@@ -115,4 +115,36 @@ $(document).ready(function () {
             location.reload();
         });
     });
+
+    $('.confirmGroupRequest').on('click', function(event) {
+        event.preventDefault();
+        let requestId = event.target.dataset.requestid;
+        console.log(event);
+        console.log(requestId);
+        let requestInfo = {
+            groupRequestId: requestId,
+        };
+        $.ajax('/api/group-requests/confirmed', {
+            type: 'PUT',
+            data: requestInfo
+        }).then(function (/*response*/) {
+            location.reload();
+        });
+    });
+
+    $('.denyGroupRequest').on('click', function(event) {
+        event.preventDefault();
+        let requestId = event.target.dataset.requestid;
+        console.log(event);
+        console.log(requestId);
+        let requestInfo = {
+            groupRequestId: requestId,
+        };
+        $.ajax('/api/group-requests/denied', {
+            type: 'PUT',
+            data: requestInfo
+        }).then(function (/*response*/) {
+            location.reload();
+        });
+    });
 });
