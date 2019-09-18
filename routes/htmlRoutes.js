@@ -43,7 +43,7 @@ module.exports = function (app) {
                         confirmedRequests.push(dbRequest[i].dataValues);
                     }
                 }
-                db.Group.findAll({}).then(function(dbGroups) {
+                db.Group.findAll({}).then(function (dbGroups) {
                     let otherGroups = [];
                     for (let k; k < dbGroups.length; k++) {
                         if (administrates.includes(dbGroup[k]) === false && belongsTo.includes(dbGroup[k]) === false) {
@@ -51,7 +51,7 @@ module.exports = function (app) {
                         }
                     }
                     //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
-                    db.GroupRequest.findAll({where: {userIdToken: userId, status: 'pending'}}).then(function(dbGroupReqests) {
+                    db.GroupRequest.findAll({ where: { userIdToken: userId, status: 'pending' } }).then(function (dbGroupReqests) {
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
                             description: 'See all your items available to borrow and add new items',
@@ -90,6 +90,18 @@ module.exports = function (app) {
     app.get('/items/:category', function (req, res) {
         const userId = req.cookies.userid;
         const selectedCategory = req.params.category;
+        let keyCategory = selectedCategory.replace('-', '');
+        const categoryNames = {
+            all: 'All',
+            books: 'Books',
+            cleaningsupplies: 'Cleaning Supplies',
+            electronics: 'Electronics',
+            kitchen: 'Kitchen',
+            miscellaneous: 'Miscellaneous',
+            moviestv: 'Movies/TV',
+            outdoortools: 'Outdoor Tools',
+            video: 'Video Games'
+        };
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
@@ -112,9 +124,11 @@ module.exports = function (app) {
                         });
                 });
                 res.render('items', {
+                    category: categoryNames[`${keyCategory}`],
                     loggedIn: Boolean(userId),
                     items: Array.from(dbItems)
                 });
+
             });
         });
     });

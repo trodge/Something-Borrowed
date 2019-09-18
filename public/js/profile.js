@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $('#addItem').on('click', function (event) {
-        let allowedCategories = ['Books', 'Cleaning Supplies', 'Electronics', 'Kitchen', 'Miscellaneous', 'Movies/TV', 'Outdoor Tools', 'Video Games'];
+        let allowedCategories = ['books', 'cleaning-supplies', 'electronics', 'kitchen', 'miscellaneous', 'movies-tv', 'outdoor-tools', 'video-games'];
         event.preventDefault();
         if ($('#itemName').val().trim() === '' || $('#itemName').val().trim() === ' ') {
             $('#errorModal').modal('show');
@@ -23,7 +23,7 @@ $(document).ready(function () {
         if (allowedCategories.includes($('#itemCategory').val().trim())) {
             category = $('#itemCategory').val().trim();
         } else {
-            category = 'Miscellaneous';
+            category = 'miscellaneous';
         }
         let groupIds = [];
         $.each($("input[name='groupOption']:checked"), function(){            

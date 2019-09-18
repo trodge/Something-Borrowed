@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = function (app) {
-    const profileLink = "https://something--borrowed.herokuapp.com/profile"
+    const profileLink = "https://something--borrowed.herokuapp.com/profile";
     //https://developers.google.com/identity/sign-in/web/backend-auth
     const { OAuth2Client } = require('google-auth-library');
     const client = new OAuth2Client(process.env.GOOGLE_SIGN_IN);

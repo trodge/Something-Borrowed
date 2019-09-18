@@ -2,11 +2,11 @@
 
 {{>header}}
 <main>
-    <h2>View by Category</h2>
+    <h2>View by Category: {{category}}</h2>
     {{>categorySelect}}
 
     <div id="resultsHolder">
-        <h2>All Items</h2>
+        {{#if items}}
         {{#each items}}
         <div class="row">
             <div class="col-4">
@@ -15,9 +15,14 @@
             <div class="col-8">
                 <h2 data-itemId="{{this.id}}">{{this.itemName}}</h2>
             </div>
-            <button id="request" data-itemId="{{this.id}}" data-toggle="modal" data-target="#requestModal">Request this Item</button>
+            <button class="orange-btn curvedCorners" id="request" data-itemId="{{this.id}}" data-toggle="modal"
+                data-target="#requestModal">Request this Item</button>
         </div>
         {{/each}}
+        {{else}}
+        <h3 class="text-center">There are no available items in that category right now.</h3>
+        {{/if}}
+
     </div>
 </main>
 {{>requestModal}}
