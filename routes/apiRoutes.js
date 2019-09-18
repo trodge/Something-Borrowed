@@ -64,40 +64,31 @@ module.exports = function (app) {
 
     app.post('/api/items', function (req, res) {
         let item = req.body;
-        console.log('REQBODY: ' + JSON.stringify(req.body));
-        let groupIds = req.body['groupsAvailable[]'];
+        console.log('POST to /api/items body: ' + JSON.stringify(req.body));
+        let groupIds = req.body.groupsAvailable;
         let groupIdsInt;
-        if (groupIds.isArray) {
-            groupIdsInt = groupIds.map(function (item) {
-                return parseInt(item);
-            });
-        } else {
+        if (Array.isArray(groupIds))
+            groupIdsInt = groupIds.map(i => parseInt(i));
+        else
             groupIdsInt = [parseInt(groupIds)];
-        }
         console.log(groupIdsInt);
         item.userIdToken = req.cookies.userid;
-        db.Item.create(item).then(function (dbResult) {
-            dbResult.setGroups(groupIdsInt).then(function (dbGroups) {
-                res.json(dbGroups);
-            });
-        });
+        db.Item.create(item).then(dbItem =>
+            dbItem.setGroups(groupIdsInt).then(dbGroups => res.json(dbGroups))
+                .catch(err => res.json(err))
+        ).catch(err => res.json(err));
     });
 
     app.post('/api/groups', function (req, res) {
-        db.Group.create(req.body).then(group => {
+        db.Group.create(req.body).then(group =>
             db.User.findOne({
                 where: {
                     userIdToken: req.cookies.userid
                 }
-            }).then(user => {
-                user.addGroup(group, { through: { isAdmin: true } });
-                res.json(group);
-            }).catch(error => {
-                res.json(error);
-            });
-        }).catch(error => {
-            res.json(error);
-        });
+            }).then(user =>
+                user.addGroup(group, { through: { isAdmin: true } }).then(dbGroup => res.json(dbGroup))
+            ).catch(err => res.json(err))
+        ).catch(err => res.json(err));
     });
 
 
@@ -181,13 +172,13 @@ module.exports = function (app) {
                             console.log('Email sent: ' + info.response);
                         }
                     });
-                    res.status(204).end();
+                    res.sendStatus(204);
                 });
             });
         });
     });
 
-    app.post('/api/group-requests', (req, res) => {
+    app.post('/api/group-request', (req, res) => {
         db.Group.findOne({ where: { groupId: req.body.groupId } }).then(dbGroup => {
             let groupRequest = {
                 groupId: dbGroup.groupId,
@@ -223,10 +214,9 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/group-requests/:status', (req, res) => {
+    app.put('/api/group-request/:status', (req, res) => {
         db.GroupRequest.update({ status: req.params.status },
-            { where: { groupRequestId: req.body.groupRequestId } }).then(dbResults => {
-                if (!dbResults.changedRows) { res.sendStatus(404); }
+            { where: { groupRequestId: req.body.groupRequestId } }).then(() => {
                 db.GroupRequest.findOne({ where: { groupRequestId: req.body.groupRequestId }, include: db.Group }).then(dbGroupRequest => {
                     dbGroupRequest.getGroup().then(dbGroup => {
                         dbGroupRequest.getUser().then(dbRequester => {
@@ -239,16 +229,15 @@ module.exports = function (app) {
                                 html: `<p>Your request to join ${dbGroup.groupName} has been ${req.params.status}.</p>`
                             };
                             transporter.sendMail(mailOptions, function (error, info) {
-                                if (error) {
+                                if (error)
                                     console.log(error);
-                                } else {
+                                else
                                     console.log('Email sent: ' + info.response);
-                                }
                             });
                             if (req.params.status === 'approved') {
-                                dbGroup.addUser(dbRequester);
-                            }
-                            res.sendStatus('200');
+                                dbGroup.addUser(dbRequester).then(dbUser => res.json(dbUser));
+                            } else
+                                res.sendStatus('200');
                         });
                     });
                 });

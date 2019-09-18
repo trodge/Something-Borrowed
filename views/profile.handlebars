@@ -60,9 +60,10 @@
                                 <div class="groupDescription">
                                     <h6>{{this.requester}} to join {{this.groupName}}</h6>
                                     <form>
-                                        <button class="confirmGroupRequest"
-                                            data-requestid="{{this.groupRequestId}}">Confirm</button>
-                                        <button class="denyGroupRequest" data-requestid="{{this.groupId}}">Deny</button>
+                                        <button class="handleGroupRequest" data-requestid="{{this.groupRequestId}}"
+                                            data-requeststatus="approved">Confirm</button>
+                                        <button class="handleGroupRequest" data-requestid="{{this.groupRequestId}}"
+                                            data-requeststatus="denied">Deny</button>
                                     </form>
                                 </div>
                             </div>
@@ -376,7 +377,8 @@
                                 <p>{{this.groupDescription}}</p>
                         </div>
                         <form>
-                            <button class="requestGroup orange-btn curvedCorners" data-requestid="{{this.groupId}}" data-toggle="modal" data-target="#submittedModal">Request to Join</button>
+                            <button class="requestGroup orange-btn curvedCorners" data-requestid="{{this.groupId}}"
+                                data-toggle="modal" data-target="#submittedModal">Request to Join</button>
                         </form>
                     </div>
                     {{/each}}

@@ -108,7 +108,7 @@ $(document).ready(function () {
         let requestInfo = {
             groupId: requestId
         };
-        $.ajax('/api/group-requests', {
+        $.ajax('/api/group-request', {
             type: 'POST',
             data: requestInfo
         }).then(function (/*response*/) {
@@ -116,13 +116,14 @@ $(document).ready(function () {
         });
     });
 
-    $('.confirmGroupRequest').click(event => {
+    $('.handleGroupRequest').click(event => {
         event.preventDefault();
+        let dataset = event.target.dataset;
         let request = {
-            groupRequestId: event.target.dataset.requestid
+            groupRequestId: dataset.requestid
         };
         console.log(request);
-        $.ajax('/api/group-requests/approved', {
+        $.ajax(`/api/group-request/${dataset.requeststatus}`, {
             type: 'PUT',
             data: request
         }).then(response => {
