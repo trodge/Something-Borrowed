@@ -31,9 +31,9 @@
                     <div class="requestsDisplay">
                         <h4>Your Requests to Join Groups</h4>
                         <div class="requestContainer">
-                            {{#if yourPendingGroups}}
+                            {{#if sentGroupRequests}}
                             <h5>Pending</h5>
-                            {{#each yourPendingGroups}}
+                            {{#each sentGroupRequests}}
                             <div class="group">
                                 <div class="groupDescription">
                                     <h6>{{this.groupName}}</h6>
@@ -53,15 +53,15 @@
                     <div class="requestsDisplay">
                         <h4>Requests to Join Your Groups</h4>
                         <div class="requestContainer">
-                            {{#if pendingGroups}}
+                            {{#if recievedGroupRequests}}
                             <h5>Pending</h5>
-                            {{#each pendingGroups}}
+                            {{#each recievedGroupRequests}}
                             <div class="group">
                                 <div class="groupDescription">
                                     <h6>{{this.requester}} to join {{this.groupName}}</h6>
                                     <form>
                                         <button class="confirmGroupRequest"
-                                            data-requestid="{{this.groupId}}">Confirm</button>
+                                            data-requestid="{{this.groupRequestId}}">Confirm</button>
                                         <button class="denyGroupRequest" data-requestid="{{this.groupId}}">Deny</button>
                                     </form>
                                 </div>
@@ -72,9 +72,9 @@
                             {{/if}}
                         </div>
                         <div class="requestContainer">
-                            {{#if confirmedGroups}}
+                            {{#if confirmedGroupRequests}}
                             <h5>Confirmed</h5>
-                            {{#each confirmedGroups}}
+                            {{#each confirmedGroupRequests}}
                             <div class="group">
                                 <div class="groupDescription">
                                     <h6>{{this.requester}} is a member of {{this.groupName}}</h6>

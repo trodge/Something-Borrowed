@@ -19,46 +19,73 @@ module.exports = function (app) {
         let belongsTo = [];
         db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
             //   console.log('all results 1'+ JSON.stringify(dbUser));
-            const groupIds = dbUser.Groups.map(group => group.groupId);
-            console.log(groupIds);
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
             //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
             //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
-            for (let j = 0; j < dbUser.Groups.length; j++) {
+            for (let group of dbUser.Groups) {
                 //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
-                if (dbUser.Groups[j].UserGroup.isAdmin === true) {
-                    administrates.push(dbUser.Groups[j]);
+                if (group.UserGroup.isAdmin) {
+                    administrates.push(group);
                 } else {
-                    belongsTo.push(dbUser.Groups[j]);
+                    belongsTo.push(group);
                 }
             }
+            const administratesIds = administrates.map(group => group.groupId);
+            const belongsToIds = belongsTo.map(group => group.groupId);
             db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbRequest) {
                 // console.log(JSON.stringify(dbRequest));
                 let pendingRequests = [];
                 let confirmedRequests = [];
-                for (let i = 0; i < dbRequest.length; i++) {
-                    if (dbRequest[i].dataValues.confirmed === false) {
-                        pendingRequests.push(dbRequest[i].dataValues);
-                    } else if (dbRequest[i].dataValues.confirmed === true && dbRequest[i].dataValues.denied === false) {
-                        confirmedRequests.push(dbRequest[i].dataValues);
+                for (let request of dbRequest) {
+                    if (request.dataValues.confirmed === false) {
+                        pendingRequests.push(request.dataValues);
+                    } else if (request.dataValues.confirmed === true && request.dataValues.denied === false) {
+                        confirmedRequests.push(request.dataValues);
                     }
                 }
                 db.Group.findAll({}).then(function (dbGroups) {
                     let otherGroups = [];
-                    for (let k; k < dbGroups.length; k++) {
-                        if (administrates.includes(dbGroup[k]) === false && belongsTo.includes(dbGroup[k]) === false) {
-                            otherGroups.push(dbGroup[k]);
+                    console.log('dbGroups:', dbGroups);
+                    for (let group of dbGroups) {
+                        let groupId = group.groupId;
+                        if (!administratesIds.includes(groupId) &&
+                            !belongsToIds.includes(groupId)) {
+                            otherGroups.push(group);
                         }
                     }
                     //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
-                    db.GroupRequest.findAll({ where: { userIdToken: userId, status: 'pending' } }).then(function (dbGroupReqests) {
+                    db.GroupRequest.findAll({ include: [db.User, db.Group] }).then(function (dbGroupReqests) {
+                        let sentGroupReqests = [], recievedGroupRequests = [], confirmedGroupRequests = [];
+                        for (groupRequest of dbGroupReqests) {
+                            groupRequest.requester = groupRequest.User.userName;
+                            groupRequest.groupName = groupRequest.Group.groupName;
+                            if (groupRequest.userIdToken === userId)
+                                sentGroupReqests.push(groupRequest);
+                            else if (administratesIds.includes(groupRequest.groupId))
+                                if (groupRequest.status === 'approved')
+                                    confirmedGroupRequests.push(groupRequest);
+                                else if (groupRequest.status === 'pending')
+                                    recievedGroupRequests.push(groupRequest);
+                        }
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
                             description: 'See all your items available to borrow and add new items',
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
                         if (userId) {
-                            res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, groups: otherGroups, pending: pendingRequests, confirmed: confirmedRequests, yourPendingGroups: dbGroupReqests });
+                            res.render('profile', {
+                                loggedIn: Boolean(userId),
+                                user: dbUser,
+                                items: dbUser.Items,
+                                administrates: administrates,
+                                belongsTo: belongsTo,
+                                groups: otherGroups,
+                                pending: pendingRequests,
+                                confirmed: confirmedRequests,
+                                sentGroupReuqests: sentGroupReqests,
+                                recievedGroupRequests: recievedGroupRequests,
+                                confirmedGroupRequests: confirmedGroupRequests
+                            });
                         } else {
                             res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
                         }

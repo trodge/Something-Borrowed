@@ -93,10 +93,10 @@ module.exports = function (app) {
                 user.addGroup(group, { through: { isAdmin: true } });
                 res.json(group);
             }).catch(error => {
-                defer.reject(error);
+                res.json(error);
             });
         }).catch(error => {
-            defer.reject(error);
+            res.json(error);
         });
     });
 
@@ -224,33 +224,38 @@ module.exports = function (app) {
     });
 
     app.put('/api/group-requests/:status', (req, res) => {
+        console.log(req.params);
+        console.log(req.body.groupRequestId);
         db.GroupRequest.update({ status: req.params.status },
-            { where: { groupRequestId: req.body.groupRequestId } }).then(dbGroupRequest => {
-            dbGroupRequest.getGroup().then(dbGroup => {
-                if (!dbGroupRequest.changedRows) { res.sendStatus(404); }
-                db.User.findOne({ where: { userIdToken: dbGroupRequest.userIdToken } }).then(dbRequester => {
-                    let to = dbRequester.userEmail;
-                    const mailOptions = {
-                        from: process.env.MAILER_ADDRESS,
-                        to: to,
-                        subject: `Group Request ${capitalize(req.params.status)}`,
-                        text: `Your request to join ${dbGroup.groupName} has been ${req.params.status}.`,
-                        html: `<p>Your request to borrow ${dbGroup.groupName} has been ${req.params.status}.</p>`
-                    };
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
+            { where: { groupRequestId: req.body.groupRequestId } }).then(dbResults => {
+                if (!dbResults.changedRows) { res.sendStatus(404); }
+                console.log(dbResults);
+                db.GroupRequest.findOne({ where: { groupRequestId: req.body.groupRequestId }, include: db.Group }).then(dbGroupRequest => {
+                    dbGroupRequest.getGroup().then(dbGroup => {
+                        dbGroupRequest.getUser().then(dbRequester => {
+                            let to = dbRequester.userEmail;
+                            const mailOptions = {
+                                from: process.env.MAILER_ADDRESS,
+                                to: to,
+                                subject: `Group Request ${capitalize(req.params.status)}`,
+                                text: `Your request to join ${dbGroup.groupName} has been ${req.params.status}.`,
+                                html: `<p>Your request to join ${dbGroup.groupName} has been ${req.params.status}.</p>`
+                            };
+                            transporter.sendMail(mailOptions, function (error, info) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    console.log('Email sent: ' + info.response);
+                                }
+                            });
+                            if (req.params.status === 'approved') {
+                                dbGroup.addUser(dbRequester);
+                            }
+                            res.sendStatus('200');
+                        });
                     });
-                    if (req.params.status === 'approved') {
-                        dbUser.addGroup(dbGroup);
-                    }
-                    res.sendStatus('200');
                 });
             });
-        });
     });
 };
 

@@ -13,8 +13,8 @@ $(document).ready(function () {
             return;
         }
         let itemUrl = $('#itemImage').val().trim();
-        itemUrl.substring(0,4).toLowerCase();
-        if (itemUrl.substring(0,4).toLowerCase() !== 'http') {
+        itemUrl.substring(0, 4).toLowerCase();
+        if (itemUrl.substring(0, 4).toLowerCase() !== 'http') {
             $('#errorModal').modal('show');
             $('#errorMessage').text('Please enter an item image URL that begins with "http".');
             return;
@@ -26,7 +26,7 @@ $(document).ready(function () {
             category = 'miscellaneous';
         }
         let groupIds = [];
-        $.each($("input[name='groupOption']:checked"), function(){            
+        $.each($("input[name='groupOption']:checked"), function () {
             groupIds.push(parseInt($(this).val()));
         });
         if (groupIds.length === 0) {
@@ -100,7 +100,7 @@ $(document).ready(function () {
         });
     });
 
-    $('.requestGroup').on('click', function(event) {
+    $('.requestGroup').on('click', function (event) {
         event.preventDefault();
         let requestId = event.target.dataset.requestid;
         console.log(event);
@@ -112,6 +112,21 @@ $(document).ready(function () {
             type: 'POST',
             data: requestInfo
         }).then(function (/*response*/) {
+            location.reload();
+        });
+    });
+
+    $('.confirmGroupRequest').click(event => {
+        event.preventDefault();
+        let request = {
+            groupRequestId: event.target.dataset.requestid
+        };
+        console.log(request);
+        $.ajax('/api/group-requests/approved', {
+            type: 'PUT',
+            data: request
+        }).then(response => {
+            console.log(response);
             location.reload();
         });
     });
