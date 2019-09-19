@@ -227,7 +227,7 @@ module.exports = function (app) {
                     dbGroup.Items.forEach(
                         item => {
                             if ((selectedCategory === 'all' || item.itemCategory === selectedCategory) &&
-                                !itemIds.has(item.id)) {
+                                !itemIds.has(item.id) && item.userIdToken !== userId) {
                                 dbItems.push(item);
                                 itemIds.add(item.id);
                             }
