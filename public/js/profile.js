@@ -64,37 +64,15 @@ $(document).ready(function () {
         });
     });
 
-    $('.confirmRequest').on('click', function (event) {
+    $('.handleItemRequest').on('click', function (event) {
         event.preventDefault();
-        let requestId = event.target.dataset.requestid;
-        console.log(event);
-        console.log(requestId);
-        let requestInfo = {
-            requestId: requestId,
-            confirmed: true,
-            denied: false
+        let dataset = event.target.dataset;
+        let request = {
+            requestId: dataset.requestid
         };
-        $.ajax('/api/itemrequests', {
+        $.ajax(`/api/item-requests/${dataset.requeststatus}`, {
             method: 'PUT',
-            data: requestInfo
-        }).then(function (/*response*/) {
-            location.reload();
-        });
-    });
-
-    $('.denyRequest').on('click', function (event) {
-        event.preventDefault();
-        let requestId = event.target.dataset.requestid;
-        console.log(event);
-        console.log(requestId);
-        let requestInfo = {
-            requestId: requestId,
-            confirmed: true,
-            denied: true
-        };
-        $.ajax('/api/itemrequests', {
-            method: 'PUT',
-            data: requestInfo
+            data: request
         }).then(function (/*response*/) {
             location.reload();
         });

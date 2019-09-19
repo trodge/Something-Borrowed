@@ -97,9 +97,9 @@
                     <div class="requestsDisplay">
                         <h4>Your Requests for Items</h4>
                         <div class="requestContainer">
-                            {{#if yourPending}}
+                            {{#if pendingSentItemRequests}}
                             <h5>Pending</h5>
-                            {{#each yourPending}}
+                            {{#each pendingSentItemRequests}}
                             <div class="item">
                                 <div class="itemDescription">
                                     <h6>{{this.itemName}}</h6>
@@ -119,9 +119,9 @@
                             {{/if}}
                         </div>
                         <div class="requestContainer">
-                            {{#if yourConfirmed}}
+                            {{#if approvedSentItemRequests}}
                             <h5>Confirmed</h5>
-                            {{#each yourConfirmed}}
+                            {{#each approvedSentItemRequests}}
                             <div class="item">
                                 <div class="itemDescription">
                                     <h6>{{this.itemName}}</h6>
@@ -141,9 +141,9 @@
                             {{/if}}
                         </div>
                         <div class="requestContainer">
-                            {{#if yourDenied}}
+                            {{#if deniedSentItemRequests}}
                             <h5>Denied</h5>
-                            {{#each yourDenied}}
+                            {{#each deniedSentItemRequests}}
                             <div class="item">
                                 <div class="itemDescription">
                                     <h6>{{this.itemName}}</h6>
@@ -165,9 +165,9 @@
                     <div class="requestsDisplay">
                         <h4>Requests for Your Items</h4>
                         <div class="requestContainer">
-                            {{#if pending}}
+                            {{#if pendingItemRequests}}
                             <h5>Pending</h5>
-                            {{#each pending}}
+                            {{#each pendingItemRequests}}
                             <div class="item">
                                 <div class="itemDescription">
                                     <h6>{{this.itemName}}</h6>
@@ -175,8 +175,10 @@
                                     <p>{{this.exchange2}}</p>
                                     <p>{{this.exchange3}}</p>
                                     <form>
-                                        <button class="confirmRequest" data-requestid="{{this.id}}">Confirmed</button>
-                                        <button class="denyRequest" data-requestid="{{this.id}}">Deny</button>
+                                        <button class="handleItemRequest" data-requestid="{{this.id}}"
+                                            data-requeststatus="approved">Approve</button>
+                                        <button class="denyRequest" data-requestid="{{this.id}}"
+                                            data-requeststatus="denied">Deny</button>
                                     </form>
                                 </div>
                             </div>
@@ -187,9 +189,9 @@
                         </div>
 
                         <div class="requestContainer">
-                            {{#if confirmed}}
+                            {{#if approvedItemRequests}}
                             <h5>Confirmed</h5>
-                            {{#each confirmed}}
+                            {{#each approvedItemRequests}}
                             <div class="item">
                                 <div class="itemDescription">
                                     <h6>{{this.itemName}}</h6>

@@ -103,7 +103,7 @@ module.exports = function (app) {
         });
     });
 
-    app.post('/api/itemrequests', function (req, res) {
+    app.post('/api/item-requests', function (req, res) {
         const requestInfo = req.body;
         console.log(req.body);
         const userId = req.cookies.userid;
@@ -118,8 +118,7 @@ module.exports = function (app) {
                 duration: requestInfo.duration,
                 exchange1: requestInfo.exchange1,
                 exchange2: requestInfo.exchange2,
-                exchange3: requestInfo.exchange3,
-                confirmed: false
+                exchange3: requestInfo.exchange3
             };
             db.ItemRequest.create(requestObject).then(function (dbRequest) {
                 console.log(JSON.stringify(dbRequest));
@@ -147,45 +146,38 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/itemrequests', function (req, res) {
-        let requestId = req.body.requestId;
-        let confirmedStatus = req.body.confirmed;
-        let deniedStatus = req.body.denied;
-        let updatedStatus = {
-            confirmed: confirmedStatus,
-            denied: deniedStatus,
-        };
-        db.ItemRequest.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
-            if (dbRequest.changedRows === 0) {
-                return res.sendStatus(404);
-            }
-            db.ItemRequest.findOne({ where: { id: requestId } }).then(function (dbRequestInfo) {
-                let status;
-                if (dbRequestInfo.denied === true) {
-                    status = 'denied';
-                } else {
-                    status = 'confirmed';
+    app.put('/api/item-requests/:status', function (req, res) {
+        const requestId = req.body.requestId;
+        db.ItemRequest.update({ status: req.params.status },
+            { where: { id: requestId } }).then(function (dbRequest) {
+                if (dbRequest.changedRows === 0) {
+                    res.sendStatus(404);
                 }
-                db.User.findOne({ where: { userIdToken: dbRequestInfo.requester } }).then(function (dbRequester) {
-                    let to = dbRequester.userEmail;
-                    const mailOptions = {
-                        from: process.env.MAILER_ADDRESS,
-                        to: to,
-                        subject: `Item Request ${capitalize(status)}`,
-                        text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
-                        html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
-                    };
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
+                db.ItemRequest.findOne({
+                    where: { id: requestId },
+                    include: db.User
+                }).then(function (dbRequestInfo) {
+                    const status = dbRequestInfo.dataValues.status;
+                    dbRequestInfo.getUser().then(function (dbRequester) {
+                        let to = dbRequester.userEmail;
+                        const mailOptions = {
+                            from: process.env.MAILER_ADDRESS,
+                            to: to,
+                            subject: `Item Request ${capitalize(status)}`,
+                            text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
+                            html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
+                        };
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
+                        });
+                        res.sendStatus(204);
                     });
-                    res.sendStatus(204);
                 });
             });
-        });
     });
 
     app.post('/api/group-request', (req, res) => {

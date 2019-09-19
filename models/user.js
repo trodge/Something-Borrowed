@@ -38,6 +38,7 @@ module.exports = function (sequelize, DataTypes) {
         User.belongsToMany(models.Group, {
             through: models.UserGroup
         });
+        User.hasMany(models.ItemRequest, {foreignKey: 'userIdToken', onDelete: 'cascade'});
         User.hasMany(models.GroupRequest, {foreignKey: 'userIdToken', onDelete: 'cascade'});
     };
     return User;
