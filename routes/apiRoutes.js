@@ -123,7 +123,7 @@ module.exports = function (app) {
         });
     });
 
-    app.post('/api/itemrequests', function (req, res) {
+    app.post('/api/item-requests', function (req, res) {
         const requestInfo = req.body;
         console.log(req.body);
         const userId = req.cookies.userid;
@@ -167,7 +167,7 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/itemrequests', function (req, res) {
+    app.put('/api/item-requests', function (req, res) {
         let requestId = req.body.requestId;
         let confirmedStatus = req.body.confirmed;
         let deniedStatus = req.body.denied;

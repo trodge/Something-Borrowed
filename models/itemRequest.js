@@ -14,13 +14,6 @@ module.exports = function (sequelize, DataTypes) {
                 len: [1]
             }
         }, 
-        requesterName: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                len: [1]
-            }
-        }, 
         item: {
             type: DataTypes.INTEGER,
             allowNull: false
