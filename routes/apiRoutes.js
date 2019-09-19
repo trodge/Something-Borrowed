@@ -178,24 +178,22 @@ module.exports = function (app) {
                 include: db.User
             }).then(function (dbRequestInfo) {
                 const status = dbRequestInfo.dataValues.status;
-                dbRequestInfo.getUser().then(function (dbRequester) {
-                    let to = dbRequester.userEmail;
-                    const mailOptions = {
-                        from: process.env.MAILER_ADDRESS,
-                        to: to,
-                        subject: `Item Request ${capitalize(status)}`,
-                        text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
-                        html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
-                    };
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    });
-                    res.sendStatus(204);
+                let to = dbRequestInfo.User.userEmail;
+                const mailOptions = {
+                    from: process.env.MAILER_ADDRESS,
+                    to: to,
+                    subject: `Item Request ${capitalize(status)}`,
+                    text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
+                    html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
                 });
+                res.sendStatus(204);
             });
         });
     });

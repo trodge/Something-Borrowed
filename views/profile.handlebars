@@ -125,10 +125,10 @@
                                     <p>{{this.exchange1}}</p>
                                     <p>{{this.exchange2}}</p>
                                     <p>{{this.exchange3}}</p>
-                                    <form>
+                                    {{!-- <form>
                                         <button class="editRequest" data-requestid="{{this.id}}">Edit</button>
                                         <button class="deleteRequest" data-requestid="{{this.id}}">Delete</button>
-                                    </form>
+                                    </form> --}}
                                 </div>
                             </div>
                             {{/each}}
@@ -137,7 +137,7 @@
                                     href="/items/all">here</a></h5>
                             {{/if}}
                         </div>
-                        <div class="requestContainer">
+                        {{!-- <div class="requestContainer">
                             {{#if deniedSentItemRequests}}
                             <h5>Denied</h5>
                             {{#each deniedSentItemRequests}}
@@ -157,7 +157,7 @@
                             {{else}}
                             <h5 class="text-center">You have no denied requests.</h5>
                             {{/if}}
-                        </div>
+                        </div> --}}
                     </div>
                     <div class="requestsDisplay">
                         <h4>Requests for Your Items</h4>
