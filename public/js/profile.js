@@ -45,7 +45,7 @@ $(document).ready(function () {
         $.ajax('/api/items', {
             method: 'POST',
             data: item
-        }).then(function () {
+        }).then(function (/*response*/) {
             location.reload();
         });
     });
@@ -59,7 +59,7 @@ $(document).ready(function () {
         $.ajax('/api/groups', {
             method: 'POST',
             data: groupInfo
-        }).then(function () {
+        }).then(function (/*response*/) {
             location.reload();
         });
     });
@@ -74,10 +74,10 @@ $(document).ready(function () {
             confirmed: true,
             denied: false
         };
-        $.ajax('/api/item-requests', {
-            type: 'PUT',
+        $.ajax('/api/itemrequests', {
+            method: 'PUT',
             data: requestInfo
-        }).then(function () {
+        }).then(function (/*response*/) {
             location.reload();
         });
     });
@@ -92,10 +92,10 @@ $(document).ready(function () {
             confirmed: true,
             denied: true
         };
-        $.ajax('/api/item-requests', {
-            type: 'PUT',
+        $.ajax('/api/itemrequests', {
+            method: 'PUT',
             data: requestInfo
-        }).then(function () {
+        }).then(function (/*response*/) {
             location.reload();
         });
     });
@@ -111,39 +111,7 @@ $(document).ready(function () {
         $.ajax('/api/group-request', {
             method: 'POST',
             data: requestInfo
-        }).then(function () {
-            location.reload();
-        });
-    });
-
-    $('.confirmGroupRequest').on('click', function(event) {
-        event.preventDefault();
-        let requestId = event.target.dataset.requestid;
-        console.log(event);
-        console.log(requestId);
-        let requestInfo = {
-            groupRequestId: requestId,
-        };
-        $.ajax('/api/group-requests/confirmed', {
-            type: 'PUT',
-            data: requestInfo
-        }).then(function () {
-            location.reload();
-        });
-    });
-
-    $('.denyGroupRequest').on('click', function(event) {
-        event.preventDefault();
-        let requestId = event.target.dataset.requestid;
-        console.log(event);
-        console.log(requestId);
-        let requestInfo = {
-            groupRequestId: requestId,
-        };
-        $.ajax('/api/group-requests/denied', {
-            type: 'PUT',
-            data: requestInfo
-        }).then(function () {
+        }).then(function (/*response*/) {
             location.reload();
         });
     });

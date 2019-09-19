@@ -48,7 +48,13 @@ module.exports = function (app) {
         const userId = req.cookies.userid;
         let administrates = [];
         let belongsTo = [];
-        let partOfIds = [];
+        if (!userId) {
+            // User not logged in.
+            res.render('unauthorized', {
+                loggedIn: Boolean(userId),
+                msg: 'You must be signed in to view your profile.'
+            });
+        }
         db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
             //   console.log('all results 1'+ JSON.stringify(dbUser));
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
@@ -92,28 +98,34 @@ module.exports = function (app) {
                     }
                 }
                 db.Group.findAll().then(function (dbGroups) {
-                    let otherGroups = [];
+                    let availableGroups = [];
                     for (let group of dbGroups) {
                         let groupId = group.groupId;
                         if (!administratesIds.includes(groupId) &&
                             !belongsToIds.includes(groupId)) {
-                            otherGroups.push(group);
+                                availableGroups.push(group);
                         }
                     }
                     //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
                     db.GroupRequest.findAll({ include: [db.User, db.Group] }).then(function (dbGroupReqests) {
-                        let sentGroupReqests = [], recievedGroupRequests = [];
+                        let sentGroupRequests = [], recievedGroupRequests = [];
                         for (groupRequest of dbGroupReqests) {
                             groupRequest.requester = groupRequest.User.userName;
                             groupRequest.groupName = groupRequest.Group.groupName;
-                            if (groupRequest.userIdToken === userId) { sentGroupReqests.push(groupRequest); }
+                            if (groupRequest.userIdToken === userId) { sentGroupRequests.push(groupRequest); }
                             else if (administratesIds.includes(groupRequest.groupId)) { recievedGroupRequests.push(groupRequest); }
                         }
+                        // Remove groups from available groups for which a request has already been sent.
+                        console.log(availableGroups);
+                        console.log(sentGroupRequests);
+                        availableGroups = availableGroups.filter(group =>
+                            !sentGroupRequests.find(request => request.groupId === group.groupId));
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
                             description: 'See all your items available to borrow and add new items',
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
+                        // Render profile.
                         if (userId) {
                             res.render('profile', {
                                 loggedIn: Boolean(userId),
@@ -121,10 +133,10 @@ module.exports = function (app) {
                                 items: dbUser.Items,
                                 administrates: administrates,
                                 belongsTo: belongsTo,
-                                groups: otherGroups,
+                                availableGroups: availableGroups,
                                 pending: pendingRequests,
                                 confirmed: confirmedRequests,
-                                sentGroupReuqests: sentGroupReqests,
+                                sentGroupRequests: sentGroupRequests,
                                 recievedGroupRequests: recievedGroupRequests,
                                 groupMembers: groupMembers
                             });
@@ -176,6 +188,7 @@ module.exports = function (app) {
         };
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
+            console.log(groupIds);
             db.Group.findAll({
                 where: {
                     groupId: groupIds
@@ -193,7 +206,6 @@ module.exports = function (app) {
                             }
                         });
                 });
-                console.log('line 156         '+ JSON.stringify(dbItems));
                 res.render('items', {
                     category: categoryNames[`${keyCategory}`],
                     loggedIn: Boolean(userId),
@@ -209,11 +221,13 @@ module.exports = function (app) {
         const searchQuery = req.params.query;
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
+            console.log(groupIds);
             db.Group.findAll({
                 where: {
                     groupId: groupIds
                 }, include: db.Item
             }).then(dbGroups => {
+                console.log(dbGroups);
                 itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {
