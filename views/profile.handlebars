@@ -1,6 +1,7 @@
 {{>header}}
 <main>
     <h2>{{user.userName}}</h2>
+    <p><img class="user-photo" src="{{user.userImage}}" alt="{{user.userName}} photo" /></p>
     <div class="container">
         <div class="section">
             <div class="sectionHeader">
@@ -453,9 +454,11 @@
     <p id="to-top" class="hide-override">
         <a id="to-top-link" href="#">To Top &uarr;</a>
     </p>
+    {{>toTopLink}}
 </main>
 {{>footer}}
 {{>errorModal}}
+
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://apis.google.com/js/platform.js" async defer></script>
