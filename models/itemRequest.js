@@ -6,14 +6,14 @@ module.exports = function (sequelize, DataTypes) {
             validate: {
                 len: [1]
             }
-        }, 
+        },
         requester: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
                 len: [1]
             }
-        }, 
+        },
         item: {
             type: DataTypes.INTEGER,
             allowNull: false
@@ -42,14 +42,14 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING,
             allowNull: true
         },
-        confirmed: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
-        },
-        denied: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
+        status: {
+            type: DataTypes.STRING,
+            defaultValue: 'pending'
         }
     });
+    ItemRequest.associate = function (models) {
+        ItemRequest.belongsTo(models.User, {foreignKey: 'owner'});
+        ItemRequest.belongsTo(models.User, {foreignKey: 'requester'});
+    };
     return ItemRequest;
 };

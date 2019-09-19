@@ -88,18 +88,25 @@ module.exports = function (app) {
                         groupMembers.push(member);
                     }
                 }
-                console.log(groupMembers);
             });
-            db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbItemRequests) {
+            let itemRequests = {
+                sent: {
+                    pending: [],
+                    approved: [],
+                    denied: []
+                },
+                received: {
+                    pending: [],
+                    approved: []
+                }
+            };
+            db.ItemRequest.findAll({ include: db.User }).then(function (dbItemRequests) {
                 // Find all requests on items this user owns.
-                let pendingRequests = [];
-                let confirmedRequests = [];
                 for (let request of dbItemRequests) {
-                    if (!request.dataValues.confirmed) {
-                        pendingRequests.push(request.dataValues);
-                    } else if (request.dataValues.confirmed && !request.dataValues.denied) {
-                        confirmedRequests.push(request.dataValues);
-                    }
+                    if (request.dataValues.requester === userId)
+                    {itemRequests.sent[request.status].push(request.dataValues);}
+                    else if (request.dataValues.owner === userId)
+                    {itemRequests.received[request.status].push(request.dataValues);}
                 }
                 db.Group.findAll().then(function (dbGroups) {
                     let availableGroups = [];
@@ -138,8 +145,11 @@ module.exports = function (app) {
                                 administrates: administrates,
                                 belongsTo: belongsTo,
                                 availableGroups: availableGroups,
-                                pending: pendingRequests,
-                                confirmed: confirmedRequests,
+                                pendingItemRequests: itemRequests.received.pending,
+                                approvedItemRequests: itemRequests.received.approved,
+                                pendingSentItemRequests: itemRequests.sent.pending,
+                                approvedSentItemRequests: itemRequests.sent.approved,
+                                deniedSentItemRequests: itemRequests.sent.denied,
                                 sentGroupRequests: sentGroupRequests,
                                 recievedGroupRequests: recievedGroupRequests,
                                 groupMembers: groupMembers
@@ -184,7 +194,7 @@ module.exports = function (app) {
     app.get('/items/:category', function (req, res) {
         const userId = req.cookies.userid;
         const selectedCategory = req.params.category;
-        let keyCategory = selectedCategory.replace('-', '');
+        const keyCategory = selectedCategory.replace('-', '');
         const categoryNames = {
             all: 'All',
             books: 'Books',
@@ -196,7 +206,7 @@ module.exports = function (app) {
             outdoortools: 'Outdoor Tools',
             video: 'Video Games'
         };
-        db.User.findOne({ include: db.Group }).then(dbUser => {
+        db.User.findOne({ where: { userIdToken: userId }, include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
             db.Group.findAll({
@@ -219,7 +229,7 @@ module.exports = function (app) {
                 res.render('items', {
                     category: categoryNames[`${keyCategory}`],
                     loggedIn: Boolean(userId),
-                    items: Array.from(dbItems)
+                    items: dbItems
                 });
 
             });
