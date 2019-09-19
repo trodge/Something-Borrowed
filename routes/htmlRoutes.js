@@ -33,7 +33,7 @@ module.exports = function (app) {
                 for (let member of group.Users) {
                     member.groupId = group.groupId;
                     member.groupName = group.groupName;
-                    groupMembers.push(member)
+                    groupMembers.push(member);
                 }
             }
             const administratesIds = administrates.map(group => group.groupId);
@@ -65,9 +65,9 @@ module.exports = function (app) {
                             groupRequest.requester = groupRequest.User.userName;
                             groupRequest.groupName = groupRequest.Group.groupName;
                             if (groupRequest.userIdToken === userId)
-                                sentGroupReqests.push(groupRequest);
+                            {sentGroupReqests.push(groupRequest);}
                             else if (administratesIds.includes(groupRequest.groupId))
-                                recievedGroupRequests.push(groupRequest);
+                            {recievedGroupRequests.push(groupRequest);}
                         }
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',

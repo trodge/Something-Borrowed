@@ -143,6 +143,6 @@ $(document).ready(function () {
         }).then(response => {
             console.log(response);
             location.reload();
-        })
-    })
+        });
+    });
 });

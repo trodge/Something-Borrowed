@@ -68,9 +68,9 @@ module.exports = function (app) {
         let groupIds = req.body.groupsAvailable;
         let groupIdsInt;
         if (Array.isArray(groupIds))
-            groupIdsInt = groupIds.map(i => parseInt(i));
+        {groupIdsInt = groupIds.map(i => parseInt(i));}
         else
-            groupIdsInt = [parseInt(groupIds)];
+        {groupIdsInt = [parseInt(groupIds)];}
         console.log(groupIdsInt);
         item.userIdToken = req.cookies.userid;
         db.Item.create(item).then(dbItem =>
@@ -232,8 +232,7 @@ module.exports = function (app) {
             const dbGroup = dbGroupRequest.Group;
             const groupName = Group.groupName;
             const dbUser = dbGroupRequest.User;
-            const requesterName = dbUser.userName;
-            const to = dbGroupRequest.User.userEmail;
+            const to = dbUser.userEmail;
             const status = req.params.status;
             const mailOptions = {
                 from: process.env.MAILER_ADDRESS,
@@ -244,14 +243,14 @@ module.exports = function (app) {
             };
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error)
-                    console.log(error);
+                {console.log(error);}
                 else
-                    console.log('Email sent: ' + info.response);
+                {console.log('Email sent: ' + info.response);}
                 db.GroupRequest.destroy({ where: { groupRequestId: groupRequestId } }).then(() => {
                     if (status === 'approved') {
                         dbGroup.addUser(dbUser).then();
                     } else
-                        res.sendStatus('200');
+                    {res.sendStatus('200');}
                 });
             });
         });
