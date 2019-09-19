@@ -134,7 +134,7 @@ module.exports = function (app) {
     app.get('/items/:category', function (req, res) {
         const userId = req.cookies.userid;
         const selectedCategory = req.params.category;
-        let keyCategory = selectedCategory.replace('-', '');
+        const keyCategory = selectedCategory.replace('-', '');
         const categoryNames = {
             all: 'All',
             books: 'Books',
@@ -146,7 +146,7 @@ module.exports = function (app) {
             outdoortools: 'Outdoor Tools',
             video: 'Video Games'
         };
-        db.User.findOne({ include: db.Group }).then(dbUser => {
+        db.User.findOne({ where: { userIdToken: userId }, include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
             db.Group.findAll({
@@ -169,7 +169,7 @@ module.exports = function (app) {
                 res.render('items', {
                     category: categoryNames[`${keyCategory}`],
                     loggedIn: Boolean(userId),
-                    items: Array.from(dbItems)
+                    items: dbItems
                 });
 
             });
