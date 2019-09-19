@@ -221,7 +221,6 @@ module.exports = function (app) {
                     db.User.findOne({ where: { userIdToken: req.cookies.userid } }).then(function (dbRequester) {
                         console.log('dbRequester ' + JSON.stringify(dbRequester));
                         let to = dbAdministrator[0].userEmail;
-                        console.log('api line 224                 '+ to);
                         const mailOptions = {
                             from: process.env.MAILER_ADDRESS,
                             to: to,

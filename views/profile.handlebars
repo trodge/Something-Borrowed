@@ -27,9 +27,9 @@
                     <div class="requestsDisplay">
                         <h4>Your Requests to Join Groups</h4>
                         <div class="requestContainer">
-                            {{#if yourPendingGroups}}
+                            {{#if sentGroupRequests}}
                             <h5>Pending</h5>
-                            {{#each yourPendingGroups}}
+                            {{#each sentGroupRequests}}
                             <div class="group">
                                 <div class="groupDescription">
                                     <h6>{{this.groupName}}</h6>
@@ -49,16 +49,17 @@
                     <div class="requestsDisplay">
                         <h4>Requests to Join Your Groups</h4>
                         <div class="requestContainer">
-                            {{#if pendingGroups}}
+                            {{#if recievedGroupRequests}}
                             <h5>Pending</h5>
-                            {{#each pendingGroups}}
+                            {{#each recievedGroupRequests}}
                             <div class="group">
                                 <div class="groupDescription">
                                     <h6>{{this.requester}} to join {{this.groupName}}</h6>
                                     <form>
-                                        <button class="confirmGroupRequest"
-                                            data-requestid="{{this.groupId}}">Confirm</button>
-                                        <button class="denyGroupRequest" data-requestid="{{this.groupId}}">Deny</button>
+                                        <button class="handleGroupRequest" data-requestid="{{this.groupRequestId}}"
+                                            data-requeststatus="approved">Confirm</button>
+                                        <button class="handleGroupRequest" data-requestid="{{this.groupRequestId}}"
+                                            data-requeststatus="denied">Deny</button>
                                     </form>
                                 </div>
                             </div>
@@ -68,21 +69,22 @@
                             {{/if}}
                         </div>
                         <div class="requestContainer">
-                            {{#if confirmedGroups}}
+                            {{#if groupMembers}}
                             <h5>Confirmed</h5>
-                            {{#each confirmedGroups}}
+                            {{#each groupMembers}}
                             <div class="group">
                                 <div class="groupDescription">
-                                    <h6>{{this.requester}} is a member of {{this.groupName}}</h6>
+                                    <h6>{{this.userName}} is a member of {{this.groupName}}</h6>
                                     <form>
-                                        <button class="removeFromGroupRequest" data-requestid="{{this.groupId}}">Remove
+                                        <button class="removeMember" data-groupid="{{this.groupId}}"
+                                            data-userid="{{this.userIdToken}}">Remove
                                             Member</button>
                                     </form>
                                 </div>
                             </div>
                             {{/each}}
                             {{else}}
-                            <h5 class="text-center">There are no confirmed members in your groups.</h5>
+                            <h5 class="text-center">There are no members in your groups.</h5>
                             {{/if}}
                         </div>
                     </div>
@@ -452,6 +454,9 @@
             </div>
         </div>
     </div>
+    <p id="to-top" class="hide-override">
+        <a id="to-top-link" href="#">To Top &uarr;</a>
+    </p>
 </main>
 {{>footer}}
 {{>errorModal}}
@@ -460,3 +465,4 @@
 <script src="https://apis.google.com/js/platform.js" async defer></script>
 <script type="text/javascript" src="/js/auth.js"></script>
 <script type="text/javascript" src="/js/profile.js"></script>
+<script type="text/javascript" src="/js/scroll.js"></script>

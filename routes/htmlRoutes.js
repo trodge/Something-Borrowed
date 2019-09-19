@@ -1,6 +1,5 @@
 const db = require('../models');
 module.exports = function (app) {
-
     app.get('/', function (req, res) {
         res.locals.metaTags = {
             title: 'Something Borrowed',
@@ -51,48 +50,89 @@ module.exports = function (app) {
         let belongsTo = [];
         let partOfIds = [];
         db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
-            const groupIds = dbUser.Groups.map(group => group.groupId);
-            console.log('allGroups ' + JSON.stringify(dbUser));
-            for (let j = 0; j < dbUser.Groups.length; j++) {
-                if (dbUser.Groups[j].UserGroup.isAdmin === true) {
-                    administrates.push(dbUser.Groups[j].dataValues);
-                    partOfIds.push(dbUser.Groups[j].dataValues.groupId);
+            //   console.log('all results 1'+ JSON.stringify(dbUser));
+            //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
+            //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
+            //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
+            for (let group of dbUser.Groups) {
+                //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
+                if (group.UserGroup.isAdmin) {
+                    administrates.push(group);
                 } else {
-                    belongsTo.push(dbUser.Groups[j].dataValues);
-                    partOfIds.push(dbUser.Groups[j].dataValues.groupId);
+                    belongsTo.push(group);
                 }
             }
-            db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbRequest) {
-                console.log(JSON.stringify(dbRequest))
-                let pendingRequests = [];
-                let confirmedRequests = [];
-                for (let i = 0; i < dbRequest.length; i++) {
-                    if (dbRequest[i].dataValues.confirmed === false) {
-                        pendingRequests.push(dbRequest[i].dataValues);
-                    } else if (dbRequest[i].dataValues.confirmed === true && dbRequest[i].dataValues.denied === false) {
-                        confirmedRequests.push(dbRequest[i].dataValues);
+            const administratesIds = administrates.map(group => group.groupId);
+            const belongsToIds = belongsTo.map(group => group.groupId);
+            groupMembers = [];
+            db.Group.findAll({
+                where: { groupId: administratesIds },
+                include: db.User
+            }).then(dbGroups => {
+                // Find all groups this user administrates.
+                for (let group of dbGroups) {
+                    for (let member of group.Users) {
+                        if (member.userIdToken === userId) /* Don't list self. */ { continue; }
+                        member.groupId = group.groupId;
+                        member.groupName = group.groupName;
+                        groupMembers.push(member);
                     }
                 }
-                console.log('line 76              ' + pendingRequests);
-
-                db.Group.findAll({}).then(function (dbGroups) {
+                console.log(groupMembers);
+            });
+            db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbItemRequests) {
+                // Find all requests on items this user owns.
+                let pendingRequests = [];
+                let confirmedRequests = [];
+                for (let request of dbItemRequests) {
+                    if (!request.dataValues.confirmed) {
+                        pendingRequests.push(request.dataValues);
+                    } else if (request.dataValues.confirmed && !request.dataValues.denied) {
+                        confirmedRequests.push(request.dataValues);
+                    }
+                }
+                db.Group.findAll().then(function (dbGroups) {
                     let otherGroups = [];
-                    for (let k = 0; k < dbGroups.length; k++) {
-                        if (partOfIds.includes(dbGroups[k].dataValues.groupId) === false) {
-                            otherGroups.push(dbGroups[k].dataValues);
+                    for (let group of dbGroups) {
+                        let groupId = group.groupId;
+                        if (!administratesIds.includes(groupId) &&
+                            !belongsToIds.includes(groupId)) {
+                            otherGroups.push(group);
                         }
                     }
-                    db.GroupRequest.findAll({ where: { userIdToken: userId, status: 'pending' } }).then(function (dbGroupRequests) {
-                        console.log('line 86           ' + JSON.stringify(dbGroupRequests));
+                    //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
+                    db.GroupRequest.findAll({ include: [db.User, db.Group] }).then(function (dbGroupReqests) {
+                        let sentGroupReqests = [], recievedGroupRequests = [];
+                        for (groupRequest of dbGroupReqests) {
+                            groupRequest.requester = groupRequest.User.userName;
+                            groupRequest.groupName = groupRequest.Group.groupName;
+                            if (groupRequest.userIdToken === userId) { sentGroupReqests.push(groupRequest); }
+                            else if (administratesIds.includes(groupRequest.groupId)) { recievedGroupRequests.push(groupRequest); }
+                        }
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
                             description: 'See all your items available to borrow and add new items',
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
                         if (userId) {
-                            res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, groups: otherGroups, pending: pendingRequests, confirmed: confirmedRequests, yourPendingGroups: dbGroupRequests });
+                            res.render('profile', {
+                                loggedIn: Boolean(userId),
+                                user: dbUser,
+                                items: dbUser.Items,
+                                administrates: administrates,
+                                belongsTo: belongsTo,
+                                groups: otherGroups,
+                                pending: pendingRequests,
+                                confirmed: confirmedRequests,
+                                sentGroupReuqests: sentGroupReqests,
+                                recievedGroupRequests: recievedGroupRequests,
+                                groupMembers: groupMembers
+                            });
                         } else {
-                            res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
+                            res.render('unauthorized', {
+                                loggedIn: Boolean(userId),
+                                msg: 'You must be signed in to view your profile.'
+                            });
                         }
                     });
                 });
