@@ -64,45 +64,46 @@ module.exports = function (app) {
 
     app.post('/api/items', function (req, res) {
         let item = req.body;
-        console.log('REQBODY' + JSON.stringify(req.body));
-        let groupIds = req.body['groupsAvailable[]'];
+        console.log('POST to /api/items body: ' + JSON.stringify(req.body));
+        let groupIds = req.body.groupsAvailable;
         let groupIdsInt;
-        if (groupIds.isArray) {
-            groupIdsInt = groupIds.map(function (item) {
-                return parseInt(item);
-            });
-        } else {
-            groupIdsInt = [parseInt(groupIds)];
-        }
+        if (Array.isArray(groupIds)) { groupIdsInt = groupIds.map(i => parseInt(i)); }
+        else { groupIdsInt = [parseInt(groupIds)]; }
         console.log(groupIdsInt);
         item.userIdToken = req.cookies.userid;
-        db.Item.create(item).then(function (dbResult) {
-            dbResult.setGroups(groupIdsInt).then(function (dbGroups) {
-                res.json(dbGroups);
-            });
-        });
+        db.Item.create(item).then(dbItem =>
+            dbItem.setGroups(groupIdsInt).then(dbGroups => res.json(dbGroups))
+                .catch(err => res.json(err))
+        ).catch(err => res.json(err));
     });
 
     app.post('/api/groups', function (req, res) {
-        db.Group.create(req.body).then(group => {
+        db.Group.create(req.body).then(group =>
             db.User.findOne({
                 where: {
                     userIdToken: req.cookies.userid
                 }
-            }).then(user => {
-                user.addGroup(group, { through: { isAdmin: true } });
-                res.json(group);
-            }).catch(error => {
-                defer.reject(error);
-            });
-        }).catch(error => {
-            defer.reject(error);
+            }).then(user =>
+                user.addGroup(group, { through: { isAdmin: true } }).then(dbGroup => res.json(dbGroup))
+            ).catch(err => res.json(err))
+        ).catch(err => res.json(err));
+    });
+
+    app.put('/api/remove-member/:groupid', (req, res) => {
+        console.log(req.params);
+        console.log(req.body);
+        db.Group.findOne({
+            where: { groupId: parseInt(req.params.groupid) }, include: {
+                model: db.User, where: { userIdToken: req.body.userid }
+            }
+        }).then(dbGroup => {
+            const dbUser = dbGroup.Users[0];
+            console.log(dbUser);
+            dbGroup.removeUser(dbUser).then(dbResult => res.json(dbResult));
         });
     });
 
-
-
-    app.post('/api/itemrequests', function (req, res) {
+    app.post('/api/item-requests', function (req, res) {
         const requestInfo = req.body;
         console.log(req.body);
         const userId = req.cookies.userid;
@@ -117,8 +118,7 @@ module.exports = function (app) {
                 duration: requestInfo.duration,
                 exchange1: requestInfo.exchange1,
                 exchange2: requestInfo.exchange2,
-                exchange3: requestInfo.exchange3,
-                confirmed: false
+                exchange3: requestInfo.exchange3
             };
             db.ItemRequest.create(requestObject).then(function (dbRequest) {
                 console.log(JSON.stringify(dbRequest));
@@ -146,26 +146,19 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/itemrequests', function (req, res) {
-        let requestId = req.body.requestId;
-        let confirmedStatus = req.body.confirmed;
-        let deniedStatus = req.body.denied;
-        let updatedStatus = {
-            confirmed: confirmedStatus,
-            denied: deniedStatus,
-        };
-        db.ItemRequest.update(updatedStatus, { where: { id: requestId } }).then(function (dbRequest) {
+    app.put('/api/item-requests/:status', function (req, res) {
+        const requestId = req.body.requestId;
+        db.ItemRequest.update({ status: req.params.status },
+            { where: { id: requestId } }).then(function (dbRequest) {
             if (dbRequest.changedRows === 0) {
-                return res.sendStatus(404);
+                res.sendStatus(404);
             }
-            db.ItemRequest.findOne({ where: { id: requestId } }).then(function (dbRequestInfo) {
-                let status;
-                if (dbRequestInfo.denied === true) {
-                    status = 'denied';
-                } else {
-                    status = 'confirmed';
-                }
-                db.User.findOne({ where: { userIdToken: dbRequestInfo.requester } }).then(function (dbRequester) {
+            db.ItemRequest.findOne({
+                where: { id: requestId },
+                include: db.User
+            }).then(function (dbRequestInfo) {
+                const status = dbRequestInfo.dataValues.status;
+                dbRequestInfo.getUser().then(function (dbRequester) {
                     let to = dbRequester.userEmail;
                     const mailOptions = {
                         from: process.env.MAILER_ADDRESS,
@@ -181,18 +174,17 @@ module.exports = function (app) {
                             console.log('Email sent: ' + info.response);
                         }
                     });
-                    res.status(204).end();
+                    res.sendStatus(204);
                 });
             });
         });
     });
 
-    app.post('/api/group-requests', (req, res) => {
+    app.post('/api/group-request', (req, res) => {
         db.Group.findOne({ where: { groupId: req.body.groupId } }).then(dbGroup => {
             let groupRequest = {
                 groupId: dbGroup.groupId,
-                userIdToken: req.cookies.userid,
-                status: 'pending'
+                userIdToken: req.cookies.userid
             };
             console.log('dbGroup ' + JSON.stringify(dbGroup));
             db.GroupRequest.create(groupRequest).then(dbGroupRequest => {
@@ -223,31 +215,33 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/group-requests/:status', (req, res) => {
-        db.GroupRequest.update({ status: req.params.status },
-            { where: { groupRequestId: req.body.groupRequestId } }).then(dbGroupRequest => {
-            dbGroupRequest.getGroup().then(dbGroup => {
-                if (!dbGroupRequest.changedRows) { res.sendStatus(404); }
-                db.User.findOne({ where: { userIdToken: dbGroupRequest.userIdToken } }).then(dbRequester => {
-                    let to = dbRequester.userEmail;
-                    const mailOptions = {
-                        from: process.env.MAILER_ADDRESS,
-                        to: to,
-                        subject: `Group Request ${capitalize(req.params.status)}`,
-                        text: `Your request to join ${dbGroup.groupName} has been ${req.params.status}.`,
-                        html: `<p>Your request to borrow ${dbGroup.groupName} has been ${req.params.status}.</p>`
-                    };
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    });
-                    if (req.params.status === 'approved') {
-                        dbUser.addGroup(dbGroup);
-                    }
-                    res.sendStatus('200');
+    app.delete('/api/group-request/:status', (req, res) => {
+        const groupRequestId = req.body.groupRequestId;
+        db.GroupRequest.findOne({
+            where: {
+                groupRequestId: groupRequestId
+            },
+            include: [db.Group, db.User]
+        }).then(dbGroupRequest => {
+            const dbGroup = dbGroupRequest.Group;
+            const groupName = dbGroup.groupName;
+            const dbUser = dbGroupRequest.User;
+            const to = dbUser.userEmail;
+            const status = req.params.status;
+            const mailOptions = {
+                from: process.env.MAILER_ADDRESS,
+                to: to,
+                subject: `Group Request ${capitalize(status)}`,
+                text: `Your request to join ${groupName} has been ${status}.`,
+                html: `<p>Your request to join ${groupName} has been ${status}.</p>`
+            };
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) { console.log(error); }
+                else { console.log('Email sent: ' + info.response); }
+                db.GroupRequest.destroy({ where: { groupRequestId: groupRequestId } }).then(() => {
+                    if (status === 'approved') {
+                        dbGroup.addUser(dbUser).then(dbResponse => res.json(dbResponse));
+                    } else { res.sendStatus('200'); }
                 });
             });
         });
