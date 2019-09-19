@@ -60,6 +60,10 @@ module.exports = function (app) {
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
             //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
             //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
+            if (!dbUser) {
+                console.log('there is no user');
+                res.redirect('/profile/new');
+            }
             for (let group of dbUser.Groups) {
                 //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
                 if (group.UserGroup.isAdmin) {
@@ -103,7 +107,7 @@ module.exports = function (app) {
                         let groupId = group.groupId;
                         if (!administratesIds.includes(groupId) &&
                             !belongsToIds.includes(groupId)) {
-                                availableGroups.push(group);
+                            availableGroups.push(group);
                         }
                     }
                     //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
@@ -160,13 +164,19 @@ module.exports = function (app) {
                 description: 'Complete your new profile so you can save money through friend-to-friend lending',
                 keywords: 'lending, borrow, friend-to-friend, save'
             };
-            if (userId) {
+            if (dbUser.length === 0) {
                 res.render('createProfile', {
-                    loggedIn: Boolean(userId),
-                    user: dbUser[0].dataValues
+                    loggedIn: Boolean(userId)
                 });
             } else {
-                res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
+                if (userId) {
+                    res.render('createProfile', {
+                        loggedIn: Boolean(userId),
+                        user: dbUser[0].dataValues
+                    });
+                } else {
+                    res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
+                }
             }
         });
     });

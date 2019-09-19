@@ -39,6 +39,7 @@ module.exports = function (app) {
             res.send({ signedIn: true });
         } else {
             db.User.findAll({ where: { userIdToken: userId } }).then(function (pastUser) {
+                console.log('past user        ' + pastUser);
                 if (pastUser.length > 0) {
                     res.cookie('userid', userId).send({ registeredUser: userId });
                 } else {
