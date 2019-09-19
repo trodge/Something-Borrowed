@@ -15,6 +15,13 @@ module.exports = function (app) {
         const userId = req.cookies.userid;
         let administrates = [];
         let belongsTo = [];
+        if (!userId) {
+            // User not logged in.
+            res.render('unauthorized', {
+                loggedIn: Boolean(userId),
+                msg: 'You must be signed in to view your profile.'
+            });
+        }
         db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
             //   console.log('all results 1'+ JSON.stringify(dbUser));
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
@@ -80,26 +87,19 @@ module.exports = function (app) {
                             description: 'See all your items available to borrow and add new items',
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
-                        if (userId) {
-                            res.render('profile', {
-                                loggedIn: Boolean(userId),
-                                user: dbUser,
-                                items: dbUser.Items,
-                                administrates: administrates,
-                                belongsTo: belongsTo,
-                                availableGroups: otherGroups,
-                                pending: pendingRequests,
-                                confirmed: confirmedRequests,
-                                sentGroupRequests: sentGroupRequests,
-                                recievedGroupRequests: recievedGroupRequests,
-                                groupMembers: groupMembers
-                            });
-                        } else {
-                            res.render('unauthorized', {
-                                loggedIn: Boolean(userId),
-                                msg: 'You must be signed in to view your profile.'
-                            });
-                        }
+                        res.render('profile', {
+                            loggedIn: Boolean(userId),
+                            user: dbUser,
+                            items: dbUser.Items,
+                            administrates: administrates,
+                            belongsTo: belongsTo,
+                            availableGroups: otherGroups,
+                            pending: pendingRequests,
+                            confirmed: confirmedRequests,
+                            sentGroupRequests: sentGroupRequests,
+                            recievedGroupRequests: recievedGroupRequests,
+                            groupMembers: groupMembers
+                        });
                     });
                 });
             });
