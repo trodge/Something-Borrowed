@@ -1,7 +1,5 @@
 const db = require('../models');
 module.exports = function (app) {
-    // let currentCategories = [];
-
     app.get('/', function (req, res) {
         res.locals.metaTags = {
             title: 'Something Borrowed',
@@ -17,12 +15,12 @@ module.exports = function (app) {
         const userId = req.cookies.userid;
         let administrates = [];
         let belongsTo = [];
-        db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
+        db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item, db.User] }).then(dbUser => {
             //   console.log('all results 1'+ JSON.stringify(dbUser));
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
             //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
             //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
-            groupMembers = [];
+            console.log('dbUser.Groups:', dbUser.Groups);
             for (let group of dbUser.Groups) {
                 //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
                 if (group.UserGroup.isAdmin) {
@@ -30,14 +28,21 @@ module.exports = function (app) {
                 } else {
                     belongsTo.push(group);
                 }
-                for (let member of group.Users) {
+            }
+            const administratesIds = administrates.map(group => group.groupId);
+            const belongsToIds = belongsTo.map(group => group.groupId);
+            groupMembers = [];
+            db.Group.findAll({
+                where: { groupId: administratesIds.concat(belongsToids) },
+                include: db.User
+            }).then(dbGroup => {
+                for (let member of dbGroup.Users) {
                     member.groupId = group.groupId;
                     member.groupName = group.groupName;
                     groupMembers.push(member);
                 }
-            }
-            const administratesIds = administrates.map(group => group.groupId);
-            const belongsToIds = belongsTo.map(group => group.groupId);
+                console.log(groupMembers);
+            });
             db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbRequest) {
                 // console.log(JSON.stringify(dbRequest));
                 let pendingRequests = [];
@@ -64,10 +69,8 @@ module.exports = function (app) {
                         for (groupRequest of dbGroupReqests) {
                             groupRequest.requester = groupRequest.User.userName;
                             groupRequest.groupName = groupRequest.Group.groupName;
-                            if (groupRequest.userIdToken === userId)
-                            {sentGroupReqests.push(groupRequest);}
-                            else if (administratesIds.includes(groupRequest.groupId))
-                            {recievedGroupRequests.push(groupRequest);}
+                            if (groupRequest.userIdToken === userId) { sentGroupReqests.push(groupRequest); }
+                            else if (administratesIds.includes(groupRequest.groupId)) { recievedGroupRequests.push(groupRequest); }
                         }
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
