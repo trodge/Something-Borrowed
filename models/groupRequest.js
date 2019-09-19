@@ -7,8 +7,7 @@ module.exports = function (sequelize, DataTypes) {
             autoIncrement: true
         },
         groupId: {type: DataTypes.INTEGER, allowNull: false},
-        userIdToken: {type: DataTypes.STRING, allowNull: false},
-        status: {type: DataTypes.STRING}
+        userIdToken: {type: DataTypes.STRING, allowNull: false}
     });
     GroupRequest.associate = function (models) {
         GroupRequest.belongsTo(models.Group, {foreignKey: 'groupId'});

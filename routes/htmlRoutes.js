@@ -35,22 +35,24 @@ module.exports = function (app) {
                 where: { groupId: administratesIds },
                 include: db.User
             }).then(dbGroups => {
+                // Find all groups this user administrates.
                 for (let group of dbGroups)
                     for (let member of group.Users) {
+                        if (member.userIdToken == userId) /* Don't list self. */ continue;
                         member.groupId = group.groupId;
                         member.groupName = group.groupName;
                         groupMembers.push(member);
                     }
                 console.log(groupMembers);
             });
-            db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbRequest) {
-                // console.log(JSON.stringify(dbRequest));
+            db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbItemRequests) {
+                // Find all requests on items this user owns.
                 let pendingRequests = [];
                 let confirmedRequests = [];
-                for (let request of dbRequest) {
-                    if (request.dataValues.confirmed === false) {
+                for (let request of dbItemRequests) {
+                    if (!request.dataValues.confirmed) {
                         pendingRequests.push(request.dataValues);
-                    } else if (request.dataValues.confirmed === true && request.dataValues.denied === false) {
+                    } else if (request.dataValues.confirmed && !request.dataValues.denied) {
                         confirmedRequests.push(request.dataValues);
                     }
                 }
@@ -92,7 +94,10 @@ module.exports = function (app) {
                                 groupMembers: groupMembers
                             });
                         } else {
-                            res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
+                            res.render('unauthorized', {
+                                loggedIn: Boolean(userId),
+                                msg: 'You must be signed in to view your profile.'
+                            });
                         }
                     });
                 });

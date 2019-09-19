@@ -67,10 +67,8 @@ module.exports = function (app) {
         console.log('POST to /api/items body: ' + JSON.stringify(req.body));
         let groupIds = req.body.groupsAvailable;
         let groupIdsInt;
-        if (Array.isArray(groupIds))
-        {groupIdsInt = groupIds.map(i => parseInt(i));}
-        else
-        {groupIdsInt = [parseInt(groupIds)];}
+        if (Array.isArray(groupIds)) { groupIdsInt = groupIds.map(i => parseInt(i)); }
+        else { groupIdsInt = [parseInt(groupIds)]; }
         console.log(groupIdsInt);
         item.userIdToken = req.cookies.userid;
         db.Item.create(item).then(dbItem =>
@@ -95,11 +93,14 @@ module.exports = function (app) {
         console.log(req.params);
         console.log(req.body);
         db.Group.findOne({
-            where: { groupId: req.params.groupid }, include: {
+            where: { groupId: parseInt(req.params.groupid) }, include: {
                 model: db.User, where: { userIdToken: req.body.userid }
             }
-        }).then(dbGroup =>
-            dbGroup.removeUser(dbGroup.User)).then(dbResult => res.json(dbResult));
+        }).then(dbGroup => {
+            const dbUser = dbGroup.Users[0];
+            console.log(dbUser);
+            dbGroup.removeUser(dbUser).then(dbResult => res.json(dbResult));
+        });
     });
 
     app.post('/api/itemrequests', function (req, res) {
@@ -191,8 +192,7 @@ module.exports = function (app) {
         db.Group.findOne({ where: { groupId: req.body.groupId } }).then(dbGroup => {
             let groupRequest = {
                 groupId: dbGroup.groupId,
-                userIdToken: req.cookies.userid,
-                status: 'pending'
+                userIdToken: req.cookies.userid
             };
             console.log('dbGroup ' + JSON.stringify(dbGroup));
             db.GroupRequest.create(groupRequest).then(dbGroupRequest => {
@@ -244,15 +244,12 @@ module.exports = function (app) {
                 html: `<p>Your request to join ${groupName} has been ${status}.</p>`
             };
             transporter.sendMail(mailOptions, function (error, info) {
-                if (error)
-                {console.log(error);}
-                else
-                {console.log('Email sent: ' + info.response);}
+                if (error) { console.log(error); }
+                else { console.log('Email sent: ' + info.response); }
                 db.GroupRequest.destroy({ where: { groupRequestId: groupRequestId } }).then(() => {
                     if (status === 'approved') {
                         dbGroup.addUser(dbUser).then();
-                    } else
-                    {res.sendStatus('200');}
+                    } else { res.sendStatus('200'); }
                 });
             });
         });
