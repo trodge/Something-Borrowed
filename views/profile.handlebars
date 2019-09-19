@@ -169,6 +169,12 @@
                                     <p>{{this.exchange2}}</p>
                                     <p>{{this.exchange3}}</p>
                                     <form>
+                                        <div class="form-group">
+                                            <label for="itemMessage">Send a Message: </label>
+                                            <input type="text" id="itemMessage" class="form-control" placeholder="Type your message">
+                                        </div>
+
+                                        <button class="confirmRequest" data-requestid="{{this.id}}">Confirmed</button>
                                         <button class="confirmRequest" data-requestid="{{this.id}}">Confirmed</button>
                                         <button class="denyRequest" data-requestid="{{this.id}}">Deny</button>
                                     </form>

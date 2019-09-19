@@ -123,40 +123,43 @@ module.exports = function (app) {
         const requestInfo = req.body;
         console.log(req.body);
         const userId = req.cookies.userid;
-        db.Item.findOne({ where: { id: requestInfo.itemId } }).then(function (dbItem) {
-            console.log(JSON.stringify(dbItem));
-            let itemName = dbItem.itemName;
-            const requestObject = {
-                owner: dbItem.userIdToken,
-                requester: userId,
-                item: requestInfo.itemId,
-                itemName: dbItem.itemName,
-                duration: requestInfo.duration,
-                exchange1: requestInfo.exchange1,
-                exchange2: requestInfo.exchange2,
-                exchange3: requestInfo.exchange3,
-                confirmed: false
-            };
-            db.ItemRequest.create(requestObject).then(function (dbRequest) {
-                console.log(JSON.stringify(dbRequest));
-                db.User.findOne({ where: { userIdToken: dbItem.userIdToken } }).then(function (dbOwner) {
-                    db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
-                        let to = dbOwner.userEmail;
-                        const mailOptions = {
-                            from: process.env.MAILER_ADDRESS,
-                            to: to,
-                            subject: 'Pending Item Request',
-                            text: `${dbRequester.userName} has requested your ${itemName}. Go to your profile on Something Borrowed to view the request.`,
-                            html: `<p>${dbRequester.userName} has requested your ${itemName}. Click <a href="${profileLink}">here</a> to go to your profile and view the request.</p>`
-                        };
-                        transporter.sendMail(mailOptions, function (error, info) {
-                            if (error) {
-                                console.log(error);
-                            } else {
-                                console.log('Email sent: ' + info.response);
-                            }
+        db.User.findOne({where : {userIdToken: userId}}).then(function(dbUser) {
+            db.Item.findOne({ where: { id: requestInfo.itemId } }).then(function (dbItem) {
+                console.log(JSON.stringify(dbItem));
+                let itemName = dbItem.itemName;
+                const requestObject = {
+                    owner: dbItem.userIdToken,
+                    requester: userId,
+                    requesterName: dbUser.userName,
+                    item: requestInfo.itemId,
+                    itemName: dbItem.itemName,
+                    duration: requestInfo.duration,
+                    exchange1: requestInfo.exchange1,
+                    exchange2: requestInfo.exchange2,
+                    exchange3: requestInfo.exchange3,
+                    confirmed: false
+                };
+                db.ItemRequest.create(requestObject).then(function (dbRequest) {
+                    console.log(JSON.stringify(dbRequest));
+                    db.User.findOne({ where: { userIdToken: dbItem.userIdToken } }).then(function (dbOwner) {
+                        db.User.findOne({ where: { userIdToken: userId } }).then(function (dbRequester) {
+                            let to = dbOwner.userEmail;
+                            const mailOptions = {
+                                from: process.env.MAILER_ADDRESS,
+                                to: to,
+                                subject: 'Pending Item Request',
+                                text: `${dbRequester.userName} has requested your ${itemName}. Go to your profile on Something Borrowed to view the request.`,
+                                html: `<p>${dbRequester.userName} has requested your ${itemName}. Click <a href="${profileLink}">here</a> to go to your profile and view the request.</p>`
+                            };
+                            transporter.sendMail(mailOptions, function (error, info) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    console.log('Email sent: ' + info.response);
+                                }
+                            });
+                            res.json(dbRequest);
                         });
-                        res.json(dbRequest);
                     });
                 });
             });
@@ -218,6 +221,7 @@ module.exports = function (app) {
                     db.User.findOne({ where: { userIdToken: req.cookies.userid } }).then(function (dbRequester) {
                         console.log('dbRequester ' + JSON.stringify(dbRequester));
                         let to = dbAdministrator[0].userEmail;
+                        console.log('api line 224                 '+ to);
                         const mailOptions = {
                             from: process.env.MAILER_ADDRESS,
                             to: to,

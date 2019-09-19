@@ -59,7 +59,7 @@ $(document).ready(function () {
         $.ajax('/api/groups', {
             type: 'POST',
             data: groupInfo
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -77,7 +77,7 @@ $(document).ready(function () {
         $.ajax('/api/item-requests', {
             type: 'PUT',
             data: requestInfo
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -95,7 +95,7 @@ $(document).ready(function () {
         $.ajax('/api/item-requests', {
             type: 'PUT',
             data: requestInfo
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -111,7 +111,7 @@ $(document).ready(function () {
         $.ajax('/api/group-requests', {
             type: 'POST',
             data: requestInfo
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -127,7 +127,7 @@ $(document).ready(function () {
         $.ajax('/api/group-requests/confirmed', {
             type: 'PUT',
             data: requestInfo
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -143,7 +143,7 @@ $(document).ready(function () {
         $.ajax('/api/group-requests/denied', {
             type: 'PUT',
             data: requestInfo
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });

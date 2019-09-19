@@ -73,7 +73,7 @@ module.exports = function (app) {
                         confirmedRequests.push(dbRequest[i].dataValues);
                     }
                 }
-                console.log(pendingRequests);
+                console.log('line 76              ' + pendingRequests);
 
                 db.Group.findAll({}).then(function (dbGroups) {
                     let otherGroups = [];
@@ -82,15 +82,15 @@ module.exports = function (app) {
                             otherGroups.push(dbGroups[k].dataValues);
                         }
                     }
-                    db.GroupRequest.findAll({ where: { userIdToken: userId, status: 'pending' } }).then(function (dbGroupReqests) {
-                        console.log(dbGroupRequests);
+                    db.GroupRequest.findAll({ where: { userIdToken: userId, status: 'pending' } }).then(function (dbGroupRequests) {
+                        console.log('line 86           ' + JSON.stringify(dbGroupRequests));
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
                             description: 'See all your items available to borrow and add new items',
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
                         if (userId) {
-                            res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, groups: otherGroups, pending: pendingRequests, confirmed: confirmedRequests, yourPendingGroups: dbGroupReqests });
+                            res.render('profile', { loggedIn: Boolean(userId), user: dbUser, items: dbUser.Items, administrates: administrates, belongsTo: belongsTo, groups: otherGroups, pending: pendingRequests, confirmed: confirmedRequests, yourPendingGroups: dbGroupRequests });
                         } else {
                             res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must be signed in to view your profile.' });
                         }
@@ -153,6 +153,7 @@ module.exports = function (app) {
                             }
                         });
                 });
+                console.log('line 156         '+ JSON.stringify(dbItems));
                 res.render('items', {
                     category: categoryNames[`${keyCategory}`],
                     loggedIn: Boolean(userId),
