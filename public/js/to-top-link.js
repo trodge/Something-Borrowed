@@ -13,11 +13,9 @@
 
             if(pageHasVerticalScrollbar) {
                 $toTopParagraph.removeClass('hide');
-                console.log('SHOW');
             }
             else {
                 $toTopParagraph.addClass('hide');
-                console.log('HIDE');
             }
         };
 
