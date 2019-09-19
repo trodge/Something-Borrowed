@@ -137,6 +137,7 @@ module.exports = function (app) {
                             description: 'See all your items available to borrow and add new items',
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
+                        console.log('line 140                                       ' + JSON.stringify(itemRequests.sent.approved));
                         // Render profile.
                         if (userId) {
                             res.render('profile', {
