@@ -232,7 +232,7 @@ module.exports = function (app) {
             include: [db.Group, db.User]
         }).then(dbGroupRequest => {
             const dbGroup = dbGroupRequest.Group;
-            const groupName = Group.groupName;
+            const groupName = dbGroup.groupName;
             const dbUser = dbGroupRequest.User;
             const to = dbUser.userEmail;
             const status = req.params.status;
