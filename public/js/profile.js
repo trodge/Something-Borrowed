@@ -154,7 +154,7 @@ $(document).ready(function () {
         let request = {
             groupRequestId: dataset.requestid
         };
-        console.log(request);
+        console.log(request, dataset);
         $.ajax(`/api/group-request/${dataset.requeststatus}`, {
             method: 'DELETE',
             data: request
@@ -175,7 +175,7 @@ $(document).ready(function () {
             data: request
         }).then(response => {
             console.log(response);
-            //location.reload();
+            location.reload();
         });
     });
 });
