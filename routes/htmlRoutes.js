@@ -65,12 +65,12 @@ module.exports = function (app) {
                     }
                 }
                 db.Group.findAll().then(function (dbGroups) {
-                    let otherGroups = [];
+                    let availableGroups = [];
                     for (let group of dbGroups) {
                         let groupId = group.groupId;
                         if (!administratesIds.includes(groupId) &&
                             !belongsToIds.includes(groupId)) {
-                            otherGroups.push(group);
+                            availableGroups.push(group);
                         }
                     }
                     //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
@@ -82,18 +82,24 @@ module.exports = function (app) {
                             if (groupRequest.userIdToken === userId) { sentGroupRequests.push(groupRequest); }
                             else if (administratesIds.includes(groupRequest.groupId)) { recievedGroupRequests.push(groupRequest); }
                         }
+                        // Remove groups from available groups for which a request has already been sent.
+                        console.log(availableGroups);
+                        console.log(sentGroupRequests);
+                        availableGroups = availableGroups.filter(group =>
+                            !sentGroupRequests.find(request => request.groupId === group.groupId));
                         res.locals.metaTags = {
                             title: dbUser.userName + '\'s Profile',
                             description: 'See all your items available to borrow and add new items',
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
+                        // Render profile.
                         res.render('profile', {
                             loggedIn: Boolean(userId),
                             user: dbUser,
                             items: dbUser.Items,
                             administrates: administrates,
                             belongsTo: belongsTo,
-                            availableGroups: otherGroups,
+                            availableGroups: availableGroups,
                             pending: pendingRequests,
                             confirmed: confirmedRequests,
                             sentGroupRequests: sentGroupRequests,
