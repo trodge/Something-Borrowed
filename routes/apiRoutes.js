@@ -248,7 +248,7 @@ module.exports = function (app) {
                 else { console.log('Email sent: ' + info.response); }
                 db.GroupRequest.destroy({ where: { groupRequestId: groupRequestId } }).then(() => {
                     if (status === 'approved') {
-                        dbGroup.addUser(dbUser).then();
+                        dbGroup.addUser(dbUser).then(dbResponse => res.json(dbResponse));
                     } else { res.sendStatus('200'); }
                 });
             });
