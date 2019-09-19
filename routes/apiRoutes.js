@@ -243,36 +243,72 @@ module.exports = function (app) {
         });
     });
 
-    app.put('/api/group-requests/:status', (req, res) => {
-        db.GroupRequest.update({ status: req.params.status },
-            { where: { groupRequestId: req.body.groupRequestId } }).then(dbGroupRequest => {
-                dbGroupRequest.getGroup().then(dbGroup => {
-                    if (!dbGroupRequest.changedRows) { res.sendStatus(404); }
-                    db.User.findOne({ where: { userIdToken: dbGroupRequest.userIdToken } }).then(dbRequester => {
-                        let to = dbRequester.userEmail;
-                        const mailOptions = {
-                            from: process.env.MAILER_ADDRESS,
-                            to: to,
-                            subject: `Group Request ${capitalize(req.params.status)}`,
-                            text: `Your request to join ${dbGroup.groupName} has been ${req.params.status}.`,
-                            html: `<p>Your request to borrow ${dbGroup.groupName} has been ${req.params.status}.</p>`
-                        };
-                        transporter.sendMail(mailOptions, function (error, info) {
-                            if (error) {
-                                console.log(error);
-                            } else {
-                                console.log('Email sent: ' + info.response);
-                            }
-                        });
-                        if (req.params.status === 'confirmed') {
-                            dbUser.addGroup(dbGroup);
-                        }
-                        res.sendStatus('200');
-                    });
+
+
+    app.delete('/api/group-request/:status', (req, res) => {
+        const groupRequestId = req.body.groupRequestId;
+        db.GroupRequest.findOne({
+            where: {
+                groupRequestId: groupRequestId
+            },
+            include: [db.Group, db.User]
+        }).then(dbGroupRequest => {
+            const dbGroup = dbGroupRequest.Group;
+            const groupName = Group.groupName;
+            const dbUser = dbGroupRequest.User;
+            const to = dbUser.userEmail;
+            const status = req.params.status;
+            const mailOptions = {
+                from: process.env.MAILER_ADDRESS,
+                to: to,
+                subject: `Group Request ${capitalize(status)}`,
+                text: `Your request to join ${groupName} has been ${status}.`,
+                html: `<p>Your request to join ${groupName} has been ${status}.</p>`
+            };
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) { console.log(error); }
+                else { console.log('Email sent: ' + info.response); }
+                db.GroupRequest.destroy({ where: { groupRequestId: groupRequestId } }).then(() => {
+                    if (status === 'approved') {
+                        dbGroup.addUser(dbUser).then();
+                    } else { res.sendStatus('200'); }
                 });
             });
+        });
     });
 };
+
+
+//     app.put('/api/group-requests/:status', (req, res) => {
+//         db.GroupRequest.update({ status: req.params.status },
+//             { where: { groupRequestId: req.body.groupRequestId } }).then(dbGroupRequest => {
+//                 dbGroupRequest.getGroup().then(dbGroup => {
+//                     if (!dbGroupRequest.changedRows) { res.sendStatus(404); }
+//                     db.User.findOne({ where: { userIdToken: dbGroupRequest.userIdToken } }).then(dbRequester => {
+//                         let to = dbRequester.userEmail;
+//                         const mailOptions = {
+//                             from: process.env.MAILER_ADDRESS,
+//                             to: to,
+//                             subject: `Group Request ${capitalize(req.params.status)}`,
+//                             text: `Your request to join ${dbGroup.groupName} has been ${req.params.status}.`,
+//                             html: `<p>Your request to borrow ${dbGroup.groupName} has been ${req.params.status}.</p>`
+//                         };
+//                         transporter.sendMail(mailOptions, function (error, info) {
+//                             if (error) {
+//                                 console.log(error);
+//                             } else {
+//                                 console.log('Email sent: ' + info.response);
+//                             }
+//                         });
+//                         if (req.params.status === 'approved') {
+//                             dbUser.addGroup(dbGroup);
+//                         }
+//                         res.sendStatus('200');
+//                     });
+//                 });
+//             });
+//     });
+// };
 
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
