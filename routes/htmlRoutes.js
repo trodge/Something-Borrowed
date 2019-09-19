@@ -36,13 +36,14 @@ module.exports = function (app) {
                 include: db.User
             }).then(dbGroups => {
                 // Find all groups this user administrates.
-                for (let group of dbGroups)
+                for (let group of dbGroups) {
                     for (let member of group.Users) {
-                        if (member.userIdToken == userId) /* Don't list self. */ continue;
+                        if (member.userIdToken === userId) /* Don't list self. */ { continue; }
                         member.groupId = group.groupId;
                         member.groupName = group.groupName;
                         groupMembers.push(member);
                     }
+                }
                 console.log(groupMembers);
             });
             db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbItemRequests) {
