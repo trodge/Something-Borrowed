@@ -80,10 +80,10 @@ $(document).ready(function () {
 
     $('.editRequest').on('click', function(event) {
         event.preventDefault();
-        let dataset = event.target.dataset;
-        let request = {
-            groupRequestId: dataset.requestid
-        };
+        // let dataset = event.target.dataset;
+        // let request = {
+        //     groupRequestId: dataset.requestid
+        // };
         // $.ajax(`/api/item-requests/${dataset.requeststatus}`, {
         //     method: 'PUT',
         //     data: request
