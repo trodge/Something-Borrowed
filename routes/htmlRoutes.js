@@ -68,11 +68,11 @@ module.exports = function (app) {
                     }
                     //what we still need to render profile appropriately: show requests (group name and description) that the user has requested to join and are still pending, show requests to join groups where they are the administrator, show name of person requesting to join
                     db.GroupRequest.findAll({ include: [db.User, db.Group] }).then(function (dbGroupReqests) {
-                        let sentGroupReqests = [], recievedGroupRequests = [];
+                        let sentGroupRequests = [], recievedGroupRequests = [];
                         for (groupRequest of dbGroupReqests) {
                             groupRequest.requester = groupRequest.User.userName;
                             groupRequest.groupName = groupRequest.Group.groupName;
-                            if (groupRequest.userIdToken === userId) { sentGroupReqests.push(groupRequest); }
+                            if (groupRequest.userIdToken === userId) { sentGroupRequests.push(groupRequest); }
                             else if (administratesIds.includes(groupRequest.groupId)) { recievedGroupRequests.push(groupRequest); }
                         }
                         res.locals.metaTags = {
@@ -87,10 +87,10 @@ module.exports = function (app) {
                                 items: dbUser.Items,
                                 administrates: administrates,
                                 belongsTo: belongsTo,
-                                groups: otherGroups,
+                                availableGroups: otherGroups,
                                 pending: pendingRequests,
                                 confirmed: confirmedRequests,
-                                sentGroupReuqests: sentGroupReqests,
+                                sentGroupRequests: sentGroupRequests,
                                 recievedGroupRequests: recievedGroupRequests,
                                 groupMembers: groupMembers
                             });
