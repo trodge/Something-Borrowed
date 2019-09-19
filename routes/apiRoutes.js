@@ -150,34 +150,34 @@ module.exports = function (app) {
         const requestId = req.body.requestId;
         db.ItemRequest.update({ status: req.params.status },
             { where: { id: requestId } }).then(function (dbRequest) {
-                if (dbRequest.changedRows === 0) {
-                    res.sendStatus(404);
-                }
-                db.ItemRequest.findOne({
-                    where: { id: requestId },
-                    include: db.User
-                }).then(function (dbRequestInfo) {
-                    const status = dbRequestInfo.dataValues.status;
-                    dbRequestInfo.getUser().then(function (dbRequester) {
-                        let to = dbRequester.userEmail;
-                        const mailOptions = {
-                            from: process.env.MAILER_ADDRESS,
-                            to: to,
-                            subject: `Item Request ${capitalize(status)}`,
-                            text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
-                            html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
-                        };
-                        transporter.sendMail(mailOptions, function (error, info) {
-                            if (error) {
-                                console.log(error);
-                            } else {
-                                console.log('Email sent: ' + info.response);
-                            }
-                        });
-                        res.sendStatus(204);
+            if (dbRequest.changedRows === 0) {
+                res.sendStatus(404);
+            }
+            db.ItemRequest.findOne({
+                where: { id: requestId },
+                include: db.User
+            }).then(function (dbRequestInfo) {
+                const status = dbRequestInfo.dataValues.status;
+                dbRequestInfo.getUser().then(function (dbRequester) {
+                    let to = dbRequester.userEmail;
+                    const mailOptions = {
+                        from: process.env.MAILER_ADDRESS,
+                        to: to,
+                        subject: `Item Request ${capitalize(status)}`,
+                        text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
+                        html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
+                    };
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log('Email sent: ' + info.response);
+                        }
                     });
+                    res.sendStatus(204);
                 });
             });
+        });
     });
 
     app.post('/api/group-request', (req, res) => {

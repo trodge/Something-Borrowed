@@ -67,9 +67,9 @@ module.exports = function (app) {
                 // Find all requests on items this user owns.
                 for (let request of dbItemRequests) {
                     if (request.dataValues.requester === userId)
-                        itemRequests.sent[request.status].push(request.dataValues);
+                    {itemRequests.sent[request.status].push(request.dataValues);}
                     else if (request.dataValues.owner === userId)
-                        itemRequests.received[request.status].push(request.dataValues);
+                    {itemRequests.received[request.status].push(request.dataValues);}
                 }
                 db.Group.findAll().then(function (dbGroups) {
                     let availableGroups = [];
