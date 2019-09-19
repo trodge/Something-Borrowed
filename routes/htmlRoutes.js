@@ -11,6 +11,39 @@ module.exports = function (app) {
         });
     });
 
+    app.get('/about', function (req, res) {
+        res.locals.metaTags = {
+            title: 'About Something Borrowed',
+            description: 'Helping you save money through friend-to-friend lending; don\'t buy when you can borrow!',
+            keywords: 'lending, borrow, friend-to-friend, save'
+        };
+        res.render('about', {
+            loggedIn: Boolean(req.cookies.userid)
+        });
+    });
+
+    app.get('/contact', function (req, res) {
+        res.locals.metaTags = {
+            title: 'Contact Something Borrowed',
+            description: 'Submit this contact form to get in touch with us.',
+            keywords: 'lending, borrow, friend-to-friend, save, contact'
+        };
+        res.render('contact', {
+            loggedIn: Boolean(req.cookies.userid)
+        });
+    });
+
+    app.get('/terms', function (req, res) {
+        res.locals.metaTags = {
+            title: 'Something Borrowed Terms',
+            description: 'Created as a proof of concept for UW Coding Bootcamp.',
+            keywords: 'lending, borrow, friend-to-friend, save, terms'
+        };
+        res.render('terms', {
+            loggedIn: Boolean(req.cookies.userid)
+        });
+    });
+
     app.get('/profile', function (req, res) {
         const userId = req.cookies.userid;
         let administrates = [];
@@ -27,6 +60,10 @@ module.exports = function (app) {
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
             //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
             //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
+            if (!dbUser) {
+                console.log('there is no user');
+                res.redirect('/profile/new');
+            }
             for (let group of dbUser.Groups) {
                 //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
                 if (group.UserGroup.isAdmin) {
@@ -100,22 +137,29 @@ module.exports = function (app) {
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
                         // Render profile.
-                        res.render('profile', {
-                            loggedIn: Boolean(userId),
-                            user: dbUser,
-                            items: dbUser.Items,
-                            administrates: administrates,
-                            belongsTo: belongsTo,
-                            availableGroups: availableGroups,
-                            pendingItemRequests: itemRequests.received.pending,
-                            approvedItemRequests: itemRequests.received.approved,
-                            pendingSentItemRequests: itemRequests.sent.pending,
-                            approvedSentItemRequests: itemRequests.sent.approved,
-                            deniedSentItemRequests: itemRequests.sent.denied,
-                            sentGroupRequests: sentGroupRequests,
-                            recievedGroupRequests: recievedGroupRequests,
-                            groupMembers: groupMembers
-                        });
+                        if (userId) {
+                            res.render('profile', {
+                                loggedIn: Boolean(userId),
+                                user: dbUser,
+                                items: dbUser.Items,
+                                administrates: administrates,
+                                belongsTo: belongsTo,
+                                availableGroups: availableGroups,
+                                pendingItemRequests: itemRequests.received.pending,
+                                approvedItemRequests: itemRequests.received.approved,
+                                pendingSentItemRequests: itemRequests.sent.pending,
+                                approvedSentItemRequests: itemRequests.sent.approved,
+                                deniedSentItemRequests: itemRequests.sent.denied,
+                                sentGroupRequests: sentGroupRequests,
+                                recievedGroupRequests: recievedGroupRequests,
+                                groupMembers: groupMembers
+                            });
+                        } else {
+                            res.render('unauthorized', {
+                                loggedIn: Boolean(userId),
+                                msg: 'You must be signed in to view your profile.'
+                            });
+                        }
                     });
                 });
             });
@@ -130,13 +174,19 @@ module.exports = function (app) {
                 description: 'Complete your new profile so you can save money through friend-to-friend lending',
                 keywords: 'lending, borrow, friend-to-friend, save'
             };
-            if (userId) {
+            if (dbUser.length === 0) {
                 res.render('createProfile', {
-                    loggedIn: Boolean(userId),
-                    user: dbUser[0].dataValues
+                    loggedIn: Boolean(userId)
                 });
             } else {
-                res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
+                if (userId) {
+                    res.render('createProfile', {
+                        loggedIn: Boolean(userId),
+                        user: dbUser[0].dataValues
+                    });
+                } else {
+                    res.render('unauthorized', { loggedIn: Boolean(userId), msg: 'You must sign in with Google before being able to complete your profile.', user: dbUser[0].dataValues });
+                }
             }
         });
     });

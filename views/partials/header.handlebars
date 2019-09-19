@@ -15,10 +15,13 @@
     </div>
     <nav class="mainMenu">
         <ul>
-            <li class="currentPage"><a href="/">Home</a></li>
-            {{#if loggedIn}}<li><a href="/profile">Profile</a></li>{{/if}}
-            <li><a href="/items/all">Items</a></li>
+            <li><a class="nav" href="/">Home</a></li>
+            <li><a class="nav" href="/about">About</a></li>
+            {{#if loggedIn}}<li><a class="nav" href="/profile">Profile</a></li>{{/if}}
+            {{#if loggedIn}}<li><a class="nav" href="/items/all">Items</a></li>{{/if}}
         </ul>
     </nav>
+    {{#if loggedIn}}
     {{>search}}
+    {{/if}}
 </header>
