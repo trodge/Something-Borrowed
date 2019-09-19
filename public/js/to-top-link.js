@@ -35,10 +35,10 @@
         // Call method to find out if page has vertical
         // scroll bar and if yes display "To Top" link
         findOutIfPageHasVerticalScrollBar();
-    
+
         // Call method on resize
         $(window).on('resize', findOutIfPageHasVerticalScrollBar);
 
     });
-
+    
 }
