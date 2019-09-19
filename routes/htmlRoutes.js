@@ -15,12 +15,11 @@ module.exports = function (app) {
         const userId = req.cookies.userid;
         let administrates = [];
         let belongsTo = [];
-        db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item, db.User] }).then(dbUser => {
+        db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
             //   console.log('all results 1'+ JSON.stringify(dbUser));
             //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
             //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
             //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
-            console.log('dbUser.Groups:', dbUser.Groups);
             for (let group of dbUser.Groups) {
                 //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
                 if (group.UserGroup.isAdmin) {
@@ -33,14 +32,15 @@ module.exports = function (app) {
             const belongsToIds = belongsTo.map(group => group.groupId);
             groupMembers = [];
             db.Group.findAll({
-                where: { groupId: administratesIds.concat(belongsToids) },
+                where: { groupId: administratesIds },
                 include: db.User
-            }).then(dbGroup => {
-                for (let member of dbGroup.Users) {
-                    member.groupId = group.groupId;
-                    member.groupName = group.groupName;
-                    groupMembers.push(member);
-                }
+            }).then(dbGroups => {
+                for (let group of dbGroups)
+                    for (let member of group.Users) {
+                        member.groupId = group.groupId;
+                        member.groupName = group.groupName;
+                        groupMembers.push(member);
+                    }
                 console.log(groupMembers);
             });
             db.ItemRequest.findAll({ where: { owner: userId } }).then(function (dbRequest) {

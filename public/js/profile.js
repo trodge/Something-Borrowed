@@ -131,6 +131,7 @@ $(document).ready(function () {
             location.reload();
         });
     });
+
     $('.removeMember').click(event => {
         event.preventDefault();
         let dataset = event.target.dataset;
@@ -142,7 +143,7 @@ $(document).ready(function () {
             data: request
         }).then(response => {
             console.log(response);
-            location.reload();
+            //location.reload();
         });
     });
 });

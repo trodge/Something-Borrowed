@@ -92,6 +92,8 @@ module.exports = function (app) {
     });
 
     app.put('/api/remove-member/:groupid', (req, res) => {
+        console.log(req.params);
+        console.log(req.body);
         db.Group.findOne({
             where: { groupId: req.params.groupid }, include: {
                 model: db.User, where: { userIdToken: req.body.userid }
