@@ -15,10 +15,20 @@
     </div>
     <nav class="mainMenu">
         <ul>
+            <li class="menuControlMobile expand" data-toggle="collapse" data-target="#mobileMenu"
+                role="button" aria-expanded="false" aria-controls="mobileMenu">
+                Menu
+                <span class="arrowContainer">
+                    <img class="expandArrow" src="/images/expandArrow.svg" alt="expand menu">
+                    <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse menu">
+                </span>
+            </li>
+            <span class="collapse" id="mobileMenu">
             <li><a class="nav" href="/">Home</a></li>
             <li><a class="nav" href="/about">About</a></li>
             {{#if loggedIn}}<li><a class="nav" href="/profile">Profile</a></li>{{/if}}
             {{#if loggedIn}}<li><a class="nav" href="/items/all">Items</a></li>{{/if}}
+            </span>
         </ul>
     </nav>
     {{#if loggedIn}}

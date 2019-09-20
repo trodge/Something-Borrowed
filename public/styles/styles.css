@@ -356,3 +356,65 @@ button {
 .user-photo {
   border-radius: 50%;
 }
+
+.menuControlMobile {
+    color: white;
+    font-weight: bold;
+    display: none;
+    background-color: #001455 !important;
+}
+
+.menuControlMobile {
+  
+}
+
+@media screen and (max-width: 650px) { 
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 500px) { 
+  #logoContainer a h1 {
+    display: none;
+  }
+  #logoContainer a {
+    width: 100%;
+    justify-content: center;
+  }
+  #logo {
+    margin: .5rem;
+    width: 35%;
+  }
+  header .flexContainer {
+    flex-direction: column;
+  }
+  #accountControls {
+    width: 100%;
+  } 
+   #accountControls button {
+    width: 100%;
+    border-radius: 0;
+    background-color: #56565a;
+    margin: 0;
+  }
+}
+
+@media screen and (max-width: 375px) { 
+  .mainMenu ul {
+    flex-direction: column;
+    align-items: center;
+  }
+  .menuControlMobile {
+    display: flex;
+  }
+  .mainMenu ul li {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: .5rem 1rem;
+  }
+  #mobileMenu {
+    width: 100%;
+  }
+}
