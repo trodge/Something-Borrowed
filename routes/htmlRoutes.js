@@ -61,8 +61,9 @@ module.exports = function (app) {
             //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
             //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
             if (!dbUser) {
-                console.log('there is no user');
-                res.redirect('/profile/new');
+                res.clearCookie('userid').render('index', {
+                    loggedIn: Boolean(req.cookies.userid)
+                });
             }
             for (let group of dbUser.Groups) {
                 //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
@@ -136,6 +137,7 @@ module.exports = function (app) {
                             description: 'See all your items available to borrow and add new items',
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
+                        console.log('line 140                                       ' + JSON.stringify(itemRequests.sent.approved));
                         // Render profile.
                         if (userId) {
                             res.render('profile', {
@@ -175,8 +177,8 @@ module.exports = function (app) {
                 keywords: 'lending, borrow, friend-to-friend, save'
             };
             if (dbUser.length === 0) {
-                res.render('createProfile', {
-                    loggedIn: Boolean(userId)
+                res.clearCookie('userid').render('index', {
+                    loggedIn: Boolean(req.cookies.userid)
                 });
             } else {
                 if (userId) {
@@ -207,6 +209,12 @@ module.exports = function (app) {
             video: 'Video Games'
         };
         db.User.findOne({ where: { userIdToken: userId }, include: db.Group }).then(dbUser => {
+            if (!dbUser) {
+                console.log('there is no user');
+                res.clearCookie('userid').render('index', {
+                    loggedIn: Boolean(req.cookies.userid)
+                });
+            }
             const groupIds = dbUser.Groups.map(group => group.groupId);
             console.log(groupIds);
             db.Group.findAll({
@@ -220,7 +228,7 @@ module.exports = function (app) {
                     dbGroup.Items.forEach(
                         item => {
                             if ((selectedCategory === 'all' || item.itemCategory === selectedCategory) &&
-                                !itemIds.has(item.id)) {
+                                !itemIds.has(item.id) && item.userIdToken !== userId) {
                                 dbItems.push(item);
                                 itemIds.add(item.id);
                             }

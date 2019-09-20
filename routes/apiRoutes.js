@@ -138,7 +138,8 @@ module.exports = function (app) {
                 duration: requestInfo.duration,
                 exchange1: requestInfo.exchange1,
                 exchange2: requestInfo.exchange2,
-                exchange3: requestInfo.exchange3
+                exchange3: requestInfo.exchange3,
+                notes: requestInfo.notes
             };
             db.ItemRequest.create(requestObject).then(function (dbRequest) {
                 console.log(JSON.stringify(dbRequest));
@@ -178,25 +179,35 @@ module.exports = function (app) {
                 include: db.User
             }).then(function (dbRequestInfo) {
                 const status = dbRequestInfo.dataValues.status;
-                dbRequestInfo.getUser().then(function (dbRequester) {
-                    let to = dbRequester.userEmail;
-                    const mailOptions = {
-                        from: process.env.MAILER_ADDRESS,
-                        to: to,
-                        subject: `Item Request ${capitalize(status)}`,
-                        text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
-                        html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
-                    };
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    });
-                    res.sendStatus(204);
+                let to = dbRequestInfo.User.userEmail;
+                const mailOptions = {
+                    from: process.env.MAILER_ADDRESS,
+                    to: to,
+                    subject: `Item Request ${capitalize(status)}`,
+                    text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
+                    html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
                 });
+                res.sendStatus(204);
             });
+        });
+    });
+
+    app.delete('/api/item-requests', function (req, res) {
+        const requestId = req.body.id;
+        db.ItemRequest.destroy({ where: { id: requestId } }).then(function (dbDeleted) {
+            console.log('line 205                                ' + JSON.stringify(dbDeleted));
+            if (dbDeleted === 0) {
+                res.sendStatus(404);
+            } else {
+                res.sendStatus(200);
+            }
         });
     });
 
