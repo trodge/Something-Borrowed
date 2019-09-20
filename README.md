@@ -5,7 +5,7 @@
 [example.com](http://example.com/)
 
 ## Group Members
-- Christina Chon
-- Matt Jennings
-- Lexi Winstanley
-- Thomas Rodgers
+- [Christina Chon - GitHub](https://github.com/christinachon)
+- [Matt Jennings - GitHub](https://github.com/Hollyw00d)
+- [Lexi Winstanley - GitHub](https://github.com/lexi-winstanley)
+- [Thomas Rodgers - GitHub](https://github.com/trodge)
