@@ -2,7 +2,7 @@
 <main>
     <h2>{{user.userName}}</h2>
     <p><img class="user-photo" src="{{user.userImage}}" alt="{{user.userName}} photo" /></p>
-    <div class="container">
+    <div class="subMain">
         <div class="section">
             <div class="sectionHeader">
                 <h3>Requests</h3>
@@ -26,22 +26,24 @@
             <div class="sectionContents">
                 <div id="groupRequests" class="collapse profileDisplay">
                     <div class="requestsDisplay">
-                        <h4>Your Requests to Join Groups</h4>
+                        <h4>Your Pending Requests to Join Groups</h4>
                         <div class="requestContainer">
                             {{#if sentGroupRequests}}
-                            <h5>Pending</h5>
-                            {{#each sentGroupRequests}}
-                            <div class="group">
-                                <div class="groupDescription">
-                                    <h6>{{this.groupName}}</h6>
-                                    <p>{{this.groupDescription}}</p>
-                                    <form>
-                                        <button class="handleGroupRequest" data-requestid="{{this.groupRequestId}}"
-                                            data-requeststatus="canceled">Cancel</button>
-                                    </form>
+                            <div class="resultsHolder">
+                                {{#each sentGroupRequests}}
+                                <div class="group">
+                                    <div class="groupDescription">
+                                        <h6>{{this.groupName}}</h6>
+                                        <p>{{this.groupDescription}}</p>
+                                        <form>
+                                            <button class="handleGroupRequest orange-btn curvedCorners"
+                                                data-requestid="{{this.groupRequestId}}"
+                                                data-requeststatus="canceled">Cancel</button>
+                                        </form>
+                                    </div>
                                 </div>
+                                {{/each}}
                             </div>
-                            {{/each}}
                             {{else}}
                             <h5 class="text-center">You have no pending requests to join groups.</h5>
                             {{/if}}
@@ -50,44 +52,49 @@
                     <div class="requestsDisplay">
                         <h4>Requests to Join Your Groups</h4>
                         <div class="requestContainer">
-                            {{#if recievedGroupRequests}}
                             <h5>Pending</h5>
+                            {{#if recievedGroupRequests}}
+                            <div class="resultsHolder"></div>
                             {{#each recievedGroupRequests}}
                             <div class="group">
                                 <div class="groupDescription">
                                     <h6>{{this.requester}} to join {{this.groupName}}</h6>
                                     <form>
-                                        <button class="handleGroupRequest" data-requestid="{{this.groupRequestId}}"
+                                        <button class="handleGroupRequest orange-btn curvedCorners"
+                                            data-requestid="{{this.groupRequestId}}"
                                             data-requeststatus="approved">Confirm</button>
-                                        <button class="handleGroupRequest" data-requestid="{{this.groupRequestId}}"
+                                        <button class="handleGroupRequest orange-btn curvedCorners"
+                                            data-requestid="{{this.groupRequestId}}"
                                             data-requeststatus="denied">Deny</button>
                                     </form>
                                 </div>
                             </div>
                             {{/each}}
-                            {{else}}
-                            <h5 class="text-center">There are no pending requests to join your groups.</h5>
-                            {{/if}}
                         </div>
-                        <div class="requestContainer">
-                            {{#if groupMembers}}
-                            <h5>Confirmed</h5>
+                        {{else}}
+                        <h5 class="text-center">There are no pending requests to join your groups.</h5>
+                        {{/if}}
+                    </div>
+                    <div class="requestContainer">
+                        {{#if groupMembers}}
+                        <h5>Confirmed</h5>
+                        <div class="resultsHolder">
                             {{#each groupMembers}}
                             <div class="group">
                                 <div class="groupDescription">
                                     <h6>{{this.userName}} is a member of {{this.groupName}}</h6>
                                     <form>
-                                        <button class="removeMember" data-groupid="{{this.groupId}}"
-                                            data-userid="{{this.userIdToken}}">Remove
+                                        <button class="removeMember orange-btn curvedCorners"
+                                            data-groupid="{{this.groupId}}" data-userid="{{this.userIdToken}}">Remove
                                             Member</button>
                                     </form>
                                 </div>
                             </div>
                             {{/each}}
-                            {{else}}
-                            <h5 class="text-center">There are no members in your groups.</h5>
-                            {{/if}}
                         </div>
+                        {{else}}
+                        <h5 class="text-center">There are no members in your groups.</h5>
+                        {{/if}}
                     </div>
                 </div>
                 <div id="itemRequests" class="collapse profileDisplay">
@@ -96,21 +103,25 @@
                         <div class="requestContainer">
                             {{#if pendingSentItemRequests}}
                             <h5>Pending</h5>
-                            {{#each pendingSentItemRequests}}
-                            <div class="item">
-                                <div class="itemDescription">
-                                    <h6>{{this.itemName}}</h6>
-                                    <p>{{this.exchange1}}</p>
-                                    <p>{{this.exchange2}}</p>
-                                    <p>{{this.exchange3}}</p>
-                                    <p>{{this.notes}}</p>
-                                    <form>
-                                        <button class="editRequest" data-requestid="{{this.id}}">Edit</button>
-                                        <button class="deleteRequest" data-requestid="{{this.id}}">Delete</button>
-                                    </form>
+                            <div class="resultsHolder">
+                                {{#each pendingSentItemRequests}}
+                                <div class="item">
+                                    <div class="itemDescription">
+                                        <h6>{{this.itemName}}</h6>
+                                        <p>{{this.exchange1}}</p>
+                                        <p>{{this.exchange2}}</p>
+                                        <p>{{this.exchange3}}</p>
+                                        <p>{{this.notes}}</p>
+                                        <form>
+                                            <button class="editRequest orange-btn curvedCorners"
+                                                data-requestid="{{this.id}}">Edit</button>
+                                            <button class="deleteRequest orange-btn curvedCorners"
+                                                data-requestid="{{this.id}}">Delete</button>
+                                        </form>
+                                    </div>
                                 </div>
+                                {{/each}}
                             </div>
-                            {{/each}}
                             {{else}}
                             <h5 class="text-center">You have no pending requests. Find items to request to borrow <a
                                     href="/items/all">here</a></h5>
@@ -119,70 +130,50 @@
                         <div class="requestContainer">
                             {{#if approvedSentItemRequests}}
                             <h5>Confirmed</h5>
-                            {{#each approvedSentItemRequests}}
-                            <div class="item">
-                                <div class="itemDescription">
-                                    <h6>{{this.itemName}}</h6>
-                                    <p>{{this.exchange1}}</p>
-                                    <p>{{this.exchange2}}</p>
-                                    <p>{{this.exchange3}}</p>
-                                    <p>{{this.notes}}</p>
-                                    {{!-- <form>
-                                        <button class="editRequest" data-requestid="{{this.id}}">Edit</button>
-                                        <button class="deleteRequest" data-requestid="{{this.id}}">Delete</button>
-                                    </form> --}}
+                            <div class="resultsHolder">
+                                {{#each approvedSentItemRequests}}
+                                <div class="item">
+                                    <div class="itemDescription">
+                                        <h6>{{this.itemName}}</h6>
+                                        <p>{{this.exchange1}}</p>
+                                        <p>{{this.exchange2}}</p>
+                                        <p>{{this.exchange3}}</p>
+                                        <p>{{this.notes}}</p>
+                                    </div>
                                 </div>
+                                {{/each}}
                             </div>
-                            {{/each}}
                             {{else}}
                             <h5 class="text-center">You have no confirmed requests. Find items to request to borrow <a
                                     href="/items/all">here</a></h5>
                             {{/if}}
                         </div>
-                        {{!-- <div class="requestContainer">
-                            {{#if deniedSentItemRequests}}
-                            <h5>Denied</h5>
-                            {{#each deniedSentItemRequests}}
-                            <div class="item">
-                                <div class="itemDescription">
-                                    <h6>{{this.itemName}}</h6>
-                                    <p>{{this.exchange1}}</p>
-                                    <p>{{this.exchange2}}</p>
-                                    <p>{{this.exchange3}}</p>
-                                    <form>
-                                        <button class="editRequest" data-requestid="{{this.id}}">Edit</button>
-                                        <button class="deleteRequest" data-requestid="{{this.id}}">Delete</button>
-                                    </form>
-                                </div>
-                            </div>
-                            {{/each}}
-                            {{else}}
-                            <h5 class="text-center">You have no denied requests.</h5>
-                            {{/if}}
-                        </div> --}}
                     </div>
                     <div class="requestsDisplay">
                         <h4>Requests for Your Items</h4>
                         <div class="requestContainer">
                             {{#if pendingItemRequests}}
                             <h5>Pending</h5>
-                            {{#each pendingItemRequests}}
-                            <div class="item">
-                                <div class="itemDescription">
-                                    <h6>{{this.itemName}}</h6>
-                                    <p>{{this.exchange1}}</p>
-                                    <p>{{this.exchange2}}</p>
-                                    <p>{{this.exchange3}}</p>
-                                    <p>{{this.notes}}</p>
-                                    <form>
-                                        <button class="handleItemRequest" data-requestid="{{this.id}}"
-                                            data-requeststatus="approved">Approve</button>
-                                        <button class="denyRequest" data-requestid="{{this.id}}"
-                                            data-requeststatus="denied">Deny</button>
-                                    </form>
+                            <div class="resultsHolder">
+                                {{#each pendingItemRequests}}
+                                <div class="item">
+                                    <div class="itemDescription">
+                                        <h6>{{this.itemName}}</h6>
+                                        <p>{{this.exchange1}}</p>
+                                        <p>{{this.exchange2}}</p>
+                                        <p>{{this.exchange3}}</p>
+                                        <p>{{this.notes}}</p>
+                                        <form>
+                                            <button class="handleItemRequest orange-btn curvedCorners"
+                                                data-requestid="{{this.id}}"
+                                                data-requeststatus="approved">Confirm</button>
+                                            <button class="denyRequest orange-btn curvedCorners"
+                                                data-requestid="{{this.id}}" data-requeststatus="denied">Deny</button>
+                                        </form>
+                                    </div>
                                 </div>
+                                {{/each}}
                             </div>
-                            {{/each}}
                             {{else}}
                             <h5 class="text-center">There are no pending requests for your items.</h5>
                             {{/if}}
@@ -191,17 +182,19 @@
                         <div class="requestContainer">
                             {{#if approvedItemRequests}}
                             <h5>Confirmed</h5>
-                            {{#each approvedItemRequests}}
-                            <div class="item">
-                                <div class="itemDescription">
-                                    <h6>{{this.itemName}}</h6>
-                                    <p>{{this.exchange1}}</p>
-                                    <p>{{this.exchange2}}</p>
-                                    <p>{{this.exchange3}}</p>
-                                    <p>{{this.notes}}</p>
+                            <div class="resultsHolder">
+                                {{#each approvedItemRequests}}
+                                <div class="item">
+                                    <div class="itemDescription">
+                                        <h6>{{this.itemName}}</h6>
+                                        <p>{{this.exchange1}}</p>
+                                        <p>{{this.exchange2}}</p>
+                                        <p>{{this.exchange3}}</p>
+                                        <p>{{this.notes}}</p>
+                                    </div>
                                 </div>
+                                {{/each}}
                             </div>
-                            {{/each}}
                             {{else}}
                             <h5 class="text-center">There are no confirmed requests for your items.</h5>
                             {{/if}}
@@ -346,11 +339,11 @@
                     <div class="itemsDisplay">
                         {{#each items}}
                         <div class="item">
-                            <div class="itemImage"><img src="{{this.itemImage}}"></div>
                             <div class="itemDescription">
                                 <h4 class="text-center">{{this.itemName}}</h3>
                                     <p>{{this.itemDescription}}</p>
                             </div>
+                            <div class="itemImage"><img src="{{this.itemImage}}"></div>
                         </div>
                         {{/each}}
                     </div>
@@ -436,18 +429,20 @@
                 <div id="allGroups" class="collapse profileDisplay">
                     {{#if availableGroups}}
                     <h4>Available:</h4>
-                    {{#each availableGroups}}
-                    <div class="group">
-                        <div class="groupDescription">
-                            <h5>{{this.groupName}}</h4>
-                                <p>{{this.groupDescription}}</p>
+                    <div class="resultsHolder">
+                        {{#each availableGroups}}
+                        <div class="group">
+                            <div class="groupDescription">
+                                <h5>{{this.groupName}}</h4>
+                                    <p>{{this.groupDescription}}</p>
+                            </div>
+                            <form>
+                                <button class="requestGroup orange-btn curvedCorners" data-requestid="{{this.groupId}}"
+                                    data-toggle="modal" data-target="#submittedModal">Request to Join</button>
+                            </form>
                         </div>
-                        <form>
-                            <button class="requestGroup orange-btn curvedCorners" data-requestid="{{this.groupId}}"
-                                data-toggle="modal" data-target="#submittedModal">Request to Join</button>
-                        </form>
+                        {{/each}}
                     </div>
-                    {{/each}}
                     {{else}}
                     <h5 class="text-center">You already belong to all available groups.</h5>
                     {{/if}}
