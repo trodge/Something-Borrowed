@@ -97,12 +97,12 @@ module.exports = function (app) {
                 }
             };
             db.ItemRequest.findAll({
-                include: [{ model: db.User, as: 'holder' }, { model: db.User, as: 'applicant' }]
+                include: [db.Item, { model: db.User, as: 'holder' }, { model: db.User, as: 'applicant' }]
             }).then(function (dbItemRequests) {
                 // Find all requests on items.
                 for (let itemRequest of dbItemRequests) {
+                    itemRequest.dataValues.itemName = itemRequest.Item.dataValues.itemName;
                     itemRequest.dataValues.ownerName = itemRequest.holder.dataValues.userName;
-                    console.log('itemRequest.dataValues.ownerName:', itemRequest.dataValues.ownerName);
                     itemRequest.dataValues.requesterName = itemRequest.applicant.dataValues.userName;
                     if (itemRequest.dataValues.requester === userId) {
                         // User is requester.

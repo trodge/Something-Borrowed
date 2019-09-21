@@ -18,10 +18,6 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        itemName: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
         duration: {
             type: DataTypes.STRING,
             allowNull: false
@@ -36,8 +32,9 @@ module.exports = function (sequelize, DataTypes) {
         }
     });
     ItemRequest.associate = function (models) {
-        ItemRequest.belongsTo(models.User, {foreignKey: 'owner', as: 'holder'});
-        ItemRequest.belongsTo(models.User, {foreignKey: 'requester', as: 'applicant'});
+        ItemRequest.belongsTo(models.User, { foreignKey: 'owner', as: 'holder' });
+        ItemRequest.belongsTo(models.User, { foreignKey: 'requester', as: 'applicant' });
+        ItemRequest.belongsTo(models.Item, { foreignKey: 'item', onDelete: 'cascade' });
     };
     return ItemRequest;
 };
