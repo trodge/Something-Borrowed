@@ -112,7 +112,6 @@ module.exports = function (app) {
                         itemRequests.received[itemRequest.dataValues.status].push(itemRequest.dataValues);
                     }
                 }
-                console.log('itemRequests:', itemRequests);
                 db.Group.findAll().then(function (dbGroups) {
                     let availableGroups = [];
                     for (let group of dbGroups) {
