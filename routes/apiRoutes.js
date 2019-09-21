@@ -206,7 +206,7 @@ module.exports = function (app) {
         let chatHistory;
         db.ItemRequest.findOne({
             where: { id: requestId },
-            include: [{ model: db.User, as: 'holder' }, { model: db.User, as: 'applicant' }]
+            include: [db.Item, { model: db.User, as: 'holder' }, { model: db.User, as: 'applicant' }]
         }).then(function (dbItemRequest) {
             // dbItemRequest contains owner and requester of item as holder and applicant.
             const senderIsOwner = userId === dbItemRequest.owner;
