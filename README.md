@@ -1,8 +1,16 @@
 # Project-2 - Something Borrowed
-## Description
-1. Website where you can "Get the stuff you want for free".
-2. Website located at:  
+## Website Location
+Website located at:  
 [something--borrowed.herokuapp.com](https://something--borrowed.herokuapp.com)
+
+## Overall Concept
+Able to create friend groups and
+put up items to request to borrow.
+
+## Motivation
+1. Save money
+2. Don’t buy things you need only once or twice
+3. Be able to view friends’ items
 
 ## Group Members
 - [Christina Chon - GitHub](https://github.com/christinachon)
