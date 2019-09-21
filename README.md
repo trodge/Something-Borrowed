@@ -1,7 +1,7 @@
 # Project-2 - Something Borrowed
 ## Website Location
 Website located at:  
-[something--borrowed.herokuapp.com](https://something--borrowed.herokuapp.com)
+[something---borrowed.herokuapp.com](https://something---borrowed.herokuapp.com)
 
 ## Overall Concept
 Able to create friend groups and
