@@ -4,9 +4,9 @@
   border-color: initial !important;
 }
 
-.container {
-  margin:auto;
-}
+ * {
+   box-sizing: border-box;
+ }
 
 html, body {
   width: 100%;
@@ -28,6 +28,11 @@ a:hover {
   text-decoration: none;
 }
 
+p {
+  overflow-wrap: break-word;
+  margin: .25rem 0;
+}
+
 header {
   flex: none;
 }
@@ -35,6 +40,10 @@ header {
 main {
   flex: 1;
   margin: 2rem 2rem;
+}
+
+.subMain {
+  margin: 0 2rem;
 }
 
 #homeContainer {
@@ -313,7 +322,6 @@ button {
 }
 
 .profileDisplay {
-  background-color: rgba(86,86,90,.3);
   border-bottom: solid .15rem #001455;
   padding: 2rem;
 }
@@ -329,20 +337,61 @@ button {
   justify-content: space-between;
 }
 
+.resultsHolder {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
 .item {
-  width: 30%;
+  width: calc(33% - 2rem);
+  padding: 1rem;
+  text-align: center;
+  margin: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-self: stretch;
+  background-color: rgba(86,86,90,.3);
+  border-radius: .25rem;
+}
+
+.item button {
+  margin-top: 1.5rem;
+  align-self: center;
+}
+
+.itemImage {
+  height: 15rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .itemImage img {
-  width: 100%;
+  max-height: 15rem;
+  max-width: 100%;
+}
+
+.itemDescription {
+  flex: 1;
 }
 
 #addGroup {
   align-self: flex-end;
   border-radius: .25rem;
 }
+
 #to-top {
-  padding-top: 40px;
+  padding-top: 2rem;
+}
+
+#to-top a {
+  color: #001455;
+}
+
+#to-top a:hover {
+  color: #f4681a;
 }
 
 .hide {
@@ -355,4 +404,266 @@ button {
 
 .user-photo {
   border-radius: 50%;
+  width: 100%;
+}
+
+.mobileShow {
+  display: none !important;
+}
+
+.menuControlMobile {
+    color: white;
+    font-weight: bold;
+    display: none;
+    background-color: #001455 !important;
+}
+
+.groupsDisplay {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flexColumn {
+  width: 50%;
+}
+
+
+.textLink {
+  color: #f4841a;
+}
+
+.textLink:hover {
+  color: #f4681a;
+}
+
+.message {
+  text-align: left;
+}
+
+.newLines{
+  white-space: pre-wrap;
+  text-align: left;
+  margin: 0;
+  background-color: white;
+  border-radius: .25rem;
+  margin-bottom: .5rem;
+}
+
+.messageLabel {
+  text-align: left;
+  margin-bottom: .25rem;
+  width: 100%;
+}
+
+.newMessage {
+  border-radius: .3rem;
+}
+
+.subHeader {
+  border-bottom: solid .15rem #f4681a;
+}
+
+.requestContainer {
+  margin: .75rem 2rem;
+}
+
+.userImageHolder {
+  width: 15%;
+}
+
+.mobileCollapse {
+  display: none;
+}
+
+.bold {
+  font-weight: bold;
+  color: #f4841a;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-body button {
+  align-self: center;
+}
+
+.modal-body form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.g-signin2 {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  border-radius: .25rem;
+}
+
+.abcRioButtonContentWrapper {
+  border: solid .15rem #f4841a;
+}
+
+@media screen and (max-width: 1050px) { 
+  .subMain .item {
+    width: calc(50% - 2rem);
+  }
+}
+
+@media screen and (max-width: 900px) { 
+  .item {
+    width: calc(50% - 2rem);
+  }
+}
+
+@media screen and (max-width: 750px) { 
+  .subMain .item {
+    width: calc(100%);
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media screen and (max-width: 650px) { 
+  h1 {
+    font-size: 2rem;
+  }
+  .item {
+    width: calc(100%);
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .itemImage {
+    height: auto;
+    max-height: 20rem;
+  }
+  .subMain h5 {
+    font-size: 1.15rem;
+  }
+  .subHeader {
+    font-size: 1.25rem !important;
+  }
+}
+
+@media screen and (max-width: 600px) { 
+  .sectionHeader {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .sectionHeader h3 {
+    width: 100%;
+    flex: none;
+    margin: 0 0 .5rem 0;
+  }
+  .shorten {
+    display: none;
+  }
+  .userImageHolder {
+    width: 25%;
+  }
+  .groupsDisplay {
+    flex-direction: column;
+  }
+  .flexColumn {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 500px) { 
+  h2 {
+    font-size: 1.5rem;
+  }
+  h3 {
+    font-size: 1.5rem;
+  }
+  h4 {
+    font-size: 1.35rem;
+  }
+  #logoContainer a h1 {
+    display: none;
+  }
+  #logoContainer a {
+    width: 100%;
+    justify-content: center;
+  }
+  #logo {
+    margin: .5rem;
+    width: 35%;
+  }
+  header .flexContainer {
+    flex-direction: column;
+  }
+  #accountControls {
+    width: 100%;
+  } 
+   #accountControls button {
+    width: 100%;
+    border-radius: 0;
+    background-color: #56565a;
+    margin: 0;
+  }
+  .requestContainer {
+    margin: .75rem 1rem;
+  }
+  .profileDisplay {
+    padding: 1rem;
+  }
+  .profileForm {
+    padding: 1rem;
+  }
+  .subMain {
+    margin: 0;
+  }
+  .desktop {
+    display: none;
+  }
+  .mobileCollapse {
+    display: flex;
+    border-radius: 0;
+    border-bottom: solid .15rem #001455;
+  }
+  .sectionContents {
+    border-radius: .25rem .25rem .25rem .25rem;
+  }
+  .shorten {
+    display: block;
+  }
+}
+
+@media screen and (max-width: 375px) { 
+  .userImageHolder {
+    width: 50%;
+    margin: 0 auto;
+  }
+  .mainMenu ul {
+    flex-direction: column;
+    align-items: center;
+  }
+  .menuControlMobile {
+    display: flex;
+  }
+  .mainMenu ul li {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: .5rem 1rem;
+  }
+  #mobileMenu {
+    width: 100%;
+  }
+  .mobileHide {
+    display: none !important;
+  }
+  .mobileShow {
+    display: flex !important;
+  }
+  #search {
+    background-color: #f4681a;
+  }
+  #search:hover {
+    background-color: #f4841a;
+  }
 }

@@ -39,7 +39,6 @@ function signOut() {
 function doSignOut(auth2) {
     document.cookie = 'userid=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
     auth2.signOut().then(function () {
-        console.log('User signed out.');
         auth2.disconnect();
         window.location.href = '/';
     });

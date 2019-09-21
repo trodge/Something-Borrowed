@@ -3,27 +3,15 @@
         <div class="modal-content">
             <div class="modal-body">
                 <form>
-                    <div class="formGroup">
+                    <div class="form-group">
                         <label for="duration">Desired Duration (Required): </label>
-                        <input type="text" id="duration" class="formInput" placeholder="Duration">
+                        <input type="text" id="duration" class="form-control" placeholder="Duration">
                     </div>
-                    <div class="formGroup">
-                        <label for="exchange1">Suggested Exchange 1 (Required): </label>
-                        <input type="text" id="exchange1" class="formInput" placeholder="First Choice">
+                    <div class="form-group">
+                        <label for="notes">Message to Owner: </label>
+                        <textarea id="notes" class="form-control" placeholder="Include suggested exchange location and time"></textarea>
                     </div>
-                    <div class="formGroup">
-                        <label for="exchange2">Suggested Exchange 2 (Required): </label>
-                        <input type="text" id="exchange2" class="formInput" placeholder="Second Choice">
-                    </div>
-                    <div class="formGroup">
-                        <label for="exchange3">Suggested Exchange 3 (Required): </label>
-                        <input type="text" id="exchange3" class="formInput" placeholder="Third Choice">
-                    </div>
-                    <div class="formGroup">
-                        <label for="notes">Additional Notes (Optional): </label>
-                        <input type="text" id="notes" class="formInput" placeholder="Additional notes for owner">
-                    </div>
-                    <button id="submitRequest" data-dismiss="modal">Submit Request</button>
+                    <button id="submitRequest" class="orange-btn curvedCorners" data-dismiss="modal">Submit Request</button>
                 </form>
             </div>
         </div>
