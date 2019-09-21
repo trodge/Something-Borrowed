@@ -171,32 +171,32 @@ module.exports = function (app) {
         const requestId = req.body.requestId;
         db.ItemRequest.update({ status: req.params.status },
             { where: { id: requestId } }).then(function (dbRequest) {
-                if (dbRequest.changedRows === 0) {
-                    res.sendStatus(404);
-                }
-                db.ItemRequest.findOne({
-                    where: { id: requestId },
-                    include: db.User
-                }).then(function (dbRequestInfo) {
-                    const status = dbRequestInfo.dataValues.status;
-                    let to = dbRequestInfo.User.userEmail;
-                    const mailOptions = {
-                        from: process.env.MAILER_ADDRESS,
-                        to: to,
-                        subject: `Item Request ${capitalize(status)}`,
-                        text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
-                        html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
-                    };
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log('Email sent: ' + info.response);
-                        }
-                    });
-                    res.sendStatus(204);
+            if (dbRequest.changedRows === 0) {
+                res.sendStatus(404);
+            }
+            db.ItemRequest.findOne({
+                where: { id: requestId },
+                include: db.User
+            }).then(function (dbRequestInfo) {
+                const status = dbRequestInfo.dataValues.status;
+                let to = dbRequestInfo.User.userEmail;
+                const mailOptions = {
+                    from: process.env.MAILER_ADDRESS,
+                    to: to,
+                    subject: `Item Request ${capitalize(status)}`,
+                    text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
+                    html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
+                    }
                 });
+                res.sendStatus(204);
             });
+        });
     });
 
     app.put('/api/item-requests-message', function (req, res) {
@@ -220,32 +220,32 @@ module.exports = function (app) {
                 console.log('chat           ' + chatHistory);
                 db.ItemRequest.update({ notes: chatHistory },
                     { where: { id: requestId } }).then(function (dbRequest) {
-                        if (dbRequest.changedRows === 0) {
-                            res.sendStatus(404);
-                        }
-                        db.ItemRequest.findOne({
-                            where: { id: requestId },
-                            include: db.User
-                        }).then(function (dbRequestInfo) {
-                            console.log('line 214                  ' + JSON.stringify(dbRequestInfo));
-                            let to = dbRequestInfo.User.userEmail;
-                            const mailOptions = {
-                                from: process.env.MAILER_ADDRESS,
-                                to: [to, ownerEmail],
-                                subject: `Item Request Message`,
-                                text: `There has been a message in regards to borrowing ${dbRequestInfo.itemName}.`,
-                                html: `<p>There has been a message in regards to borrowing ${dbRequestInfo.itemName}.</p>`
-                            };
-                            transporter.sendMail(mailOptions, function (error, info) {
-                                if (error) {
-                                    console.log(error);
-                                } else {
-                                    console.log('Email sent: ' + info.response);
-                                }
-                            });
-                            res.sendStatus(204);
+                    if (dbRequest.changedRows === 0) {
+                        res.sendStatus(404);
+                    }
+                    db.ItemRequest.findOne({
+                        where: { id: requestId },
+                        include: db.User
+                    }).then(function (dbRequestInfo) {
+                        console.log('line 214                  ' + JSON.stringify(dbRequestInfo));
+                        let to = dbRequestInfo.User.userEmail;
+                        const mailOptions = {
+                            from: process.env.MAILER_ADDRESS,
+                            to: [to, ownerEmail],
+                            subject: `Item Request Message`,
+                            text: `There has been a message in regards to borrowing ${dbRequestInfo.itemName}.`,
+                            html: `<p>There has been a message in regards to borrowing ${dbRequestInfo.itemName}.</p>`
+                        };
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log('Email sent: ' + info.response);
+                            }
                         });
+                        res.sendStatus(204);
                     });
+                });
 
 
 
