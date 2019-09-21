@@ -80,16 +80,21 @@ $(document).ready(function () {
 
     $('.editRequest').on('click', function(event) {
         event.preventDefault();
-        // let dataset = event.target.dataset;
-        // let request = {
-        //     groupRequestId: dataset.requestid
-        // };
-        // $.ajax(`/api/item-requests/${dataset.requeststatus}`, {
-        //     method: 'PUT',
-        //     data: request
-        // }).then(function (/*response*/) {
-        //     location.reload();
-        // });
+        let dataset = event.target.dataset;
+        // $(`#chat${dataset.requestid}`).text() + '\nRequester:' + 
+        let chat = $(`#message${dataset.requestid}`).val().trim();
+        console.log(chat);
+        let request = {
+            requestId: dataset.requestid, 
+            messages: chat
+        };
+        
+        $.ajax(`/api/item-requests-message`, {
+            method: 'PUT',
+            data: request
+        }).then(function (/*response*/) {
+            location.reload();
+        });
     });
 
     $('.deleteRequest').on('click', function(event) {

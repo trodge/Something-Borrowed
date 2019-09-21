@@ -54,26 +54,27 @@
                         <div class="requestContainer">
                             <h5>Pending</h5>
                             {{#if recievedGroupRequests}}
-                            <div class="resultsHolder"></div>
-                            {{#each recievedGroupRequests}}
-                            <div class="group">
-                                <div class="groupDescription">
-                                    <h6>{{this.requester}} to join {{this.groupName}}</h6>
-                                    <form>
-                                        <button class="handleGroupRequest orange-btn curvedCorners"
-                                            data-requestid="{{this.groupRequestId}}"
-                                            data-requeststatus="approved">Confirm</button>
-                                        <button class="handleGroupRequest orange-btn curvedCorners"
-                                            data-requestid="{{this.groupRequestId}}"
-                                            data-requeststatus="denied">Deny</button>
-                                    </form>
+                            <div class="resultsHolder">
+                                {{#each recievedGroupRequests}}
+                                <div class="group">
+                                    <div class="groupDescription">
+                                        <h6>{{this.requester}} to join {{this.groupName}}</h6>
+                                        <form>
+                                            <button class="handleGroupRequest orange-btn curvedCorners"
+                                                data-requestid="{{this.groupRequestId}}"
+                                                data-requeststatus="approved">Confirm</button>
+                                            <button class="handleGroupRequest orange-btn curvedCorners"
+                                                data-requestid="{{this.groupRequestId}}"
+                                                data-requeststatus="denied">Deny</button>
+                                        </form>
+                                    </div>
                                 </div>
+                                {{/each}}
                             </div>
-                            {{/each}}
+                            {{else}}
+                            <h5 class="text-center">There are no pending requests to join your groups.</h5>
+                            {{/if}}
                         </div>
-                        {{else}}
-                        <h5 class="text-center">There are no pending requests to join your groups.</h5>
-                        {{/if}}
                     </div>
                     <div class="requestContainer">
                         {{#if groupMembers}}
@@ -108,11 +109,12 @@
                                 <div class="item">
                                     <div class="itemDescription">
                                         <h6>{{this.itemName}}</h6>
-                                        <p>{{this.exchange1}}</p>
-                                        <p>{{this.exchange2}}</p>
-                                        <p>{{this.exchange3}}</p>
-                                        <p>{{this.notes}}</p>
+                                        <p>Messages: </p>
+                                        <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
                                         <form>
+                                            <input type="text" id="message{{this.id}}" class="form-control">
+
+
                                             <button class="editRequest orange-btn curvedCorners"
                                                 data-requestid="{{this.id}}">Edit</button>
                                             <button class="deleteRequest orange-btn curvedCorners"
@@ -124,7 +126,7 @@
                             </div>
                             {{else}}
                             <h5 class="text-center">You have no pending requests. Find items to request to borrow <a
-                                    href="/items/all">here</a></h5>
+                                    class="textLink" href="/items/all">here</a></h5>
                             {{/if}}
                         </div>
                         <div class="requestContainer">
@@ -135,9 +137,7 @@
                                 <div class="item">
                                     <div class="itemDescription">
                                         <h6>{{this.itemName}}</h6>
-                                        <p>{{this.exchange1}}</p>
-                                        <p>{{this.exchange2}}</p>
-                                        <p>{{this.exchange3}}</p>
+                                        <p>{{this.notes}}</p>
                                         <p>{{this.notes}}</p>
                                     </div>
                                 </div>
@@ -145,7 +145,7 @@
                             </div>
                             {{else}}
                             <h5 class="text-center">You have no confirmed requests. Find items to request to borrow <a
-                                    href="/items/all">here</a></h5>
+                                    class="textLink" href="/items/all">here</a></h5>
                             {{/if}}
                         </div>
                     </div>
@@ -159,11 +159,12 @@
                                 <div class="item">
                                     <div class="itemDescription">
                                         <h6>{{this.itemName}}</h6>
-                                        <p>{{this.exchange1}}</p>
-                                        <p>{{this.exchange2}}</p>
-                                        <p>{{this.exchange3}}</p>
-                                        <p>{{this.notes}}</p>
+                                        <p>Messages: </p>
+                                        <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
                                         <form>
+                                            <input type="text" id="message{{this.id}}" class="form-control">
+                                            <button class="editRequest orange-btn curvedCorners"
+                                                data-requestid="{{this.id}}">Message</button>
                                             <button class="handleItemRequest orange-btn curvedCorners"
                                                 data-requestid="{{this.id}}"
                                                 data-requeststatus="approved">Confirm</button>
@@ -187,10 +188,8 @@
                                 <div class="item">
                                     <div class="itemDescription">
                                         <h6>{{this.itemName}}</h6>
-                                        <p>{{this.exchange1}}</p>
-                                        <p>{{this.exchange2}}</p>
-                                        <p>{{this.exchange3}}</p>
-                                        <p>{{this.notes}}</p>
+                                        <p>Messages: </p>
+                                        <p class="newLines">{{this.notes}}</p>
                                     </div>
                                 </div>
                                 {{/each}}
@@ -450,9 +449,6 @@
             </div>
         </div>
     </div>
-    <p id="to-top" class="hide-override">
-        <a id="to-top-link" href="#">To Top &uarr;</a>
-    </p>
     {{>toTopLink}}
 </main>
 {{>footer}}

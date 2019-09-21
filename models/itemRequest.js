@@ -14,6 +14,13 @@ module.exports = function (sequelize, DataTypes) {
                 len: [1]
             }
         },
+        requesterName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                len: [1]
+            }
+        },
         item: {
             type: DataTypes.INTEGER,
             allowNull: false
@@ -26,20 +33,8 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING,
             allowNull: false
         },
-        exchange1: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        exchange2: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        exchange3: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
         notes: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: true
         },
         status: {

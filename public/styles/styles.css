@@ -423,6 +423,18 @@ button {
   width: 50%;
 }
 
+.subMain h5 {
+color: #f4841a;
+}
+
+.textLink {
+  color: #f4681a;
+}
+
+.textLink:hover {
+  color: #f4841a;
+}
+
 @media screen and (max-width: 900px) { 
   .item {
     width: calc(50% - 2rem);
@@ -493,5 +505,11 @@ button {
   }
   .mobileShow {
     display: flex !important;
+  }
+  #search {
+    background-color: #f4681a;
+  }
+  #search:hover {
+    background-color: #f4841a;
   }
 }
