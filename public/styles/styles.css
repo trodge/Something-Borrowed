@@ -30,6 +30,7 @@ a:hover {
 
 p {
   overflow-wrap: break-word;
+  margin: .25rem 0;
 }
 
 header {
@@ -351,6 +352,8 @@ button {
   flex-direction: column;
   justify-content: space-between;
   align-self: stretch;
+  background-color: rgba(86,86,90,.3);
+  border-radius: .25rem;
 }
 
 .item button {
@@ -423,17 +426,46 @@ button {
   width: 50%;
 }
 
-.subMain h5 {
-color: #f4841a;
-}
 
 .textLink {
-  color: #f4681a;
+  color: #f4841a;
 }
 
 .textLink:hover {
-  color: #f4841a;
+  color: #f4681a;
 }
+
+.message {
+  text-align: left;
+}
+
+.newLines{
+  white-space: pre-wrap;
+  text-align: left;
+  margin: 0;
+  background-color: white;
+  border-radius: .25rem;
+  margin-bottom: .5rem;
+}
+
+.messageLabel {
+  text-align: left;
+  margin-bottom: .25rem;
+  width: 100%;
+}
+
+.newMessage {
+  border-radius: .3rem;
+}
+
+.subHeader {
+  border-bottom: solid .15rem #f4681a;
+}
+
+.requestContainer {
+  margin: .75rem 2rem;
+}
+
 
 @media screen and (max-width: 900px) { 
   .item {

@@ -31,8 +31,8 @@
                             {{#if sentGroupRequests}}
                             <div class="resultsHolder">
                                 {{#each sentGroupRequests}}
-                                <div class="group">
-                                    <div class="groupDescription">
+                                <div class="item">
+                                    <div class="itemDescription">
                                         <h6>{{this.groupName}}</h6>
                                         <p>{{this.groupDescription}}</p>
                                         <form>
@@ -52,12 +52,12 @@
                     <div class="requestsDisplay">
                         <h4>Requests to Join Your Groups</h4>
                         <div class="requestContainer">
-                            <h5>Pending</h5>
+                            <h5 class="subHeader">Pending</h5>
                             {{#if recievedGroupRequests}}
                             <div class="resultsHolder">
                                 {{#each recievedGroupRequests}}
-                                <div class="group">
-                                    <div class="groupDescription">
+                                <div class="item">
+                                    <div class="itemDescription">
                                         <h6>{{this.requester}} to join {{this.groupName}}</h6>
                                         <form>
                                             <button class="handleGroupRequest orange-btn curvedCorners"
@@ -77,12 +77,12 @@
                         </div>
                     </div>
                     <div class="requestContainer">
+                        <h5 class="subHeader">Confirmed</h5>
                         {{#if groupMembers}}
-                        <h5>Confirmed</h5>
                         <div class="resultsHolder">
                             {{#each groupMembers}}
-                            <div class="group">
-                                <div class="groupDescription">
+                            <div class="item">
+                                <div class="itemDescription">
                                     <h6>{{this.userName}} is a member of {{this.groupName}}</h6>
                                     <form>
                                         <button class="removeMember orange-btn curvedCorners"
@@ -102,25 +102,30 @@
                     <div class="requestsDisplay">
                         <h4>Your Requests for Items</h4>
                         <div class="requestContainer">
+                            <h5 class="subHeader">Pending</h5>
                             {{#if pendingSentItemRequests}}
-                            <h5>Pending</h5>
                             <div class="resultsHolder">
                                 {{#each pendingSentItemRequests}}
                                 <div class="item">
                                     <div class="itemDescription">
                                         <h6>{{this.itemName}}</h6>
-                                        <p>Messages: </p>
-                                        <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
-                                        <form>
-                                            <input type="text" id="message{{this.id}}" class="form-control">
-
-
-                                            <button class="editRequest orange-btn curvedCorners"
-                                                data-requestid="{{this.id}}">Edit</button>
-                                            <button class="deleteRequest orange-btn curvedCorners"
-                                                data-requestid="{{this.id}}">Delete</button>
-                                        </form>
+                                        <div class="messageContainer">
+                                            <p class="message">Message History: </p>
+                                            <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
+                                        </div>
                                     </div>
+                                    <form>
+                                        <label for="message{{this.id}}" class="messageLabel">New Message: </label>
+                                        <textarea type="text" id="message{{this.id}}"
+                                            class="form-control newMessage"></textarea>
+
+
+                                        <button class="editRequest orange-btn curvedCorners"
+                                            data-requestid="{{this.id}}">Send</button>
+                                        <button class="deleteRequest orange-btn curvedCorners"
+                                            data-requestid="{{this.id}}">Delete</button>
+                                    </form>
+
                                 </div>
                                 {{/each}}
                             </div>
@@ -130,15 +135,17 @@
                             {{/if}}
                         </div>
                         <div class="requestContainer">
+                            <h5 class="subHeader">Confirmed</h5>
                             {{#if approvedSentItemRequests}}
-                            <h5>Confirmed</h5>
                             <div class="resultsHolder">
                                 {{#each approvedSentItemRequests}}
                                 <div class="item">
                                     <div class="itemDescription">
                                         <h6>{{this.itemName}}</h6>
-                                        <p>{{this.notes}}</p>
-                                        <p>{{this.notes}}</p>
+                                        <div class="messageContainer">
+                                            <p class="message">Message History: </p>
+                                            <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
+                                        </div>
                                     </div>
                                 </div>
                                 {{/each}}
@@ -152,26 +159,32 @@
                     <div class="requestsDisplay">
                         <h4>Requests for Your Items</h4>
                         <div class="requestContainer">
+                            <h5 class="subHeader">Pending</h5>
                             {{#if pendingItemRequests}}
-                            <h5>Pending</h5>
+
                             <div class="resultsHolder">
                                 {{#each pendingItemRequests}}
                                 <div class="item">
                                     <div class="itemDescription">
                                         <h6>{{this.itemName}}</h6>
-                                        <p>Messages: </p>
-                                        <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
-                                        <form>
-                                            <input type="text" id="message{{this.id}}" class="form-control">
-                                            <button class="editRequest orange-btn curvedCorners"
-                                                data-requestid="{{this.id}}">Message</button>
-                                            <button class="handleItemRequest orange-btn curvedCorners"
-                                                data-requestid="{{this.id}}"
-                                                data-requeststatus="approved">Confirm</button>
-                                            <button class="denyRequest orange-btn curvedCorners"
-                                                data-requestid="{{this.id}}" data-requeststatus="denied">Deny</button>
-                                        </form>
+                                        <div class="messageContainer">
+                                            <p class="message">Message History: </p>
+                                            <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
+                                        </div>
                                     </div>
+                                    <form>
+                                        <label for="message{{this.id}}" class="messageLabel">Your Message: </label>
+
+                                        <textarea type="text" id="message{{this.id}}"
+                                            class="form-control newMessage"></textarea>
+                                        <button class="editRequest orange-btn curvedCorners"
+                                            data-requestid="{{this.id}}">Send Message</button>
+                                        <button class="handleItemRequest orange-btn curvedCorners"
+                                            data-requestid="{{this.id}}" data-requeststatus="approved">Confirm</button>
+                                        <button class="denyRequest orange-btn curvedCorners"
+                                            data-requestid="{{this.id}}" data-requeststatus="denied">Deny</button>
+                                    </form>
+
                                 </div>
                                 {{/each}}
                             </div>
@@ -181,15 +194,18 @@
                         </div>
 
                         <div class="requestContainer">
+                            <h5 class="subHeader">Confirmed</h5>
                             {{#if approvedItemRequests}}
-                            <h5>Confirmed</h5>
+
                             <div class="resultsHolder">
                                 {{#each approvedItemRequests}}
                                 <div class="item">
                                     <div class="itemDescription">
                                         <h6>{{this.itemName}}</h6>
-                                        <p>Messages: </p>
-                                        <p class="newLines">{{this.notes}}</p>
+                                        <div class="messageContainer">
+                                            <p class="message">Message History: </p>
+                                            <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
+                                        </div>
                                     </div>
                                 </div>
                                 {{/each}}
@@ -340,7 +356,7 @@
                         <div class="item">
                             <div class="itemDescription">
                                 <h4 class="text-center">{{this.itemName}}</h3>
-                                    <p>{{this.itemDescription}}</p>
+                                    <p>Description: {{this.itemDescription}}</p>
                             </div>
                             <div class="itemImage"><img src="{{this.itemImage}}"></div>
                         </div>
@@ -430,8 +446,8 @@
                     <h4>Available:</h4>
                     <div class="resultsHolder">
                         {{#each availableGroups}}
-                        <div class="group">
-                            <div class="groupDescription">
+                        <div class="item">
+                            <div class="itemDescription">
                                 <h5>{{this.groupName}}</h4>
                                     <p>{{this.groupDescription}}</p>
                             </div>
