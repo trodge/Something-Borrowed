@@ -127,14 +127,13 @@ module.exports = function (app) {
         const requestInfo = req.body;
         console.log(req.body);
         const userId = req.cookies.userid;
-        db.User.findOne({where : {userIdToken: userId}}).then(function(dbCurrentUser) {
+        db.User.findOne({ where: { userIdToken: userId } }).then(function (dbCurrentUser) {
             db.Item.findOne({ where: { id: requestInfo.itemId } }).then(function (dbItem) {
                 console.log(JSON.stringify(dbItem));
                 let itemName = dbItem.itemName;
                 const requestObject = {
                     owner: dbItem.userIdToken,
                     requester: userId,
-                    requesterName: dbCurrentUser.userName,
                     item: requestInfo.itemId,
                     itemName: dbItem.itemName,
                     duration: requestInfo.duration,
@@ -170,22 +169,23 @@ module.exports = function (app) {
     app.put('/api/item-requests/:status', function (req, res) {
         const requestId = req.body.requestId;
         db.ItemRequest.update({ status: req.params.status },
-            { where: { id: requestId } }).then(function (dbRequest) {
-            if (dbRequest.changedRows === 0) {
+            { where: { id: requestId } }).then(function (dbResponse) {
+            if (dbResponse.changedRows === 0) {
                 res.sendStatus(404);
             }
             db.ItemRequest.findOne({
                 where: { id: requestId },
-                include: db.User
-            }).then(function (dbRequestInfo) {
-                const status = dbRequestInfo.dataValues.status;
-                let to = dbRequestInfo.User.userEmail;
+                include: [{ model: db.User, as: 'holder' }, { model: db.User, as: 'applicant' }]
+            }).then(function (dbItemRequest) {
+                console.log('item-requests/:status dbItemRequest:', dbItemRequest);
+                const status = dbItemRequest.dataValues.status;
+                const ownerName = dbItemRequest.holder.dataValues.userName;
                 const mailOptions = {
                     from: process.env.MAILER_ADDRESS,
-                    to: to,
+                    to: dbItemRequest.applicant.dataValues.userEmail,
                     subject: `Item Request ${capitalize(status)}`,
-                    text: `Your request to borrow ${dbRequestInfo.itemName} has been ${status}.`,
-                    html: `<p>Your request to borrow ${dbRequestInfo.itemName} has been ${status}</p>`
+                    text: `${ownerName} has ${status} your request to borrow ${dbItemRequest.itemName}.`,
+                    html: `<p>${ownerName} has ${status} your request to borrow ${dbItemRequest.itemName}.</p>`
                 };
                 transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
@@ -206,49 +206,41 @@ module.exports = function (app) {
         let chatHistory;
         db.ItemRequest.findOne({
             where: { id: requestId },
-            include: db.User
-        }).then(function (dbPreRequestInfo) {
-            db.User.findOne({ where: { userIdToken: dbPreRequestInfo.owner } }).then(function (dbOwnerInfo) {
-                let ownerName = dbOwnerInfo.userName;
-                let ownerEmail = dbOwnerInfo.userEmail;
-                if (userId === dbPreRequestInfo.owner) {
-                    chatHistory = dbPreRequestInfo.notes + '\n' + ownerName + ': ' + message;
-                } else {
-                    chatHistory = dbPreRequestInfo.notes + '\n' + dbPreRequestInfo.User.userName + ': ' + message;
+            include: [{ model: db.User, as: 'holder' }, { model: db.User, as: 'applicant' }]
+        }).then(function (dbItemRequest) {
+            // dbItemRequest contains owner and requester of item as holder and applicant.
+            const senderIsOwner = userId === dbItemRequest.owner;
+            // dbSender and dbReciever are User objects.
+            const dbSender = senderIsOwner ?
+                dbItemRequest.holder.dataValues : dbItemRequest.applicant.dataValues;
+            const dbReciever = senderIsOwner ?
+                dbItemRequest.applicant.dataValues : dbItemRequest.holder.dataValues;
+            const senderName = dbSender.userName;
+            // Append new message to chat history.
+            chatHistory = dbItemRequest.notes + '\n' + senderName + ': ' + message;
+            console.log('chat           ' + chatHistory);
+            // Update item request to include new message in notes.
+            db.ItemRequest.update({ notes: chatHistory },
+                { where: { id: requestId } }).then(function (dbResponse) {
+                if (dbResponse.changedRows === 0) {
+                    res.sendStatus(404);
                 }
-
-                console.log('chat           ' + chatHistory);
-                db.ItemRequest.update({ notes: chatHistory },
-                    { where: { id: requestId } }).then(function (dbRequest) {
-                    if (dbRequest.changedRows === 0) {
-                        res.sendStatus(404);
+                // Send email to user to whom message was sent.
+                const mailOptions = {
+                    from: process.env.MAILER_ADDRESS,
+                    to: dbReciever.userEmail,
+                    subject: `Item Request Message`,
+                    text: `There has been a message in regards to borrowing ${dbItemRequest.itemName}.`,
+                    html: `<p>There has been a message in regards to borrowing ${dbItemRequest.itemName}.</p>`
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log('Email sent: ' + info.response);
                     }
-                    db.ItemRequest.findOne({
-                        where: { id: requestId },
-                        include: db.User
-                    }).then(function (dbRequestInfo) {
-                        console.log('line 214                  ' + JSON.stringify(dbRequestInfo));
-                        let to = dbRequestInfo.User.userEmail;
-                        const mailOptions = {
-                            from: process.env.MAILER_ADDRESS,
-                            to: [to, ownerEmail],
-                            subject: `Item Request Message`,
-                            text: `There has been a message in regards to borrowing ${dbRequestInfo.itemName}.`,
-                            html: `<p>There has been a message in regards to borrowing ${dbRequestInfo.itemName}.</p>`
-                        };
-                        transporter.sendMail(mailOptions, function (error, info) {
-                            if (error) {
-                                console.log(error);
-                            } else {
-                                console.log('Email sent: ' + info.response);
-                            }
-                        });
-                        res.sendStatus(204);
-                    });
                 });
-
-
-
+                res.sendStatus(204);
             });
         });
     });

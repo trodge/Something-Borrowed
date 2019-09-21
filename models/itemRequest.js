@@ -14,13 +14,6 @@ module.exports = function (sequelize, DataTypes) {
                 len: [1]
             }
         },
-        requesterName: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                len: [1]
-            }
-        },
         item: {
             type: DataTypes.INTEGER,
             allowNull: false
@@ -43,8 +36,8 @@ module.exports = function (sequelize, DataTypes) {
         }
     });
     ItemRequest.associate = function (models) {
-        ItemRequest.belongsTo(models.User, {foreignKey: 'owner'});
-        ItemRequest.belongsTo(models.User, {foreignKey: 'requester'});
+        ItemRequest.belongsTo(models.User, {foreignKey: 'owner', as: 'holder'});
+        ItemRequest.belongsTo(models.User, {foreignKey: 'requester', as: 'applicant'});
     };
     return ItemRequest;
 };

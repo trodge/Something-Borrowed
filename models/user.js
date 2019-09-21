@@ -38,8 +38,8 @@ module.exports = function (sequelize, DataTypes) {
         User.belongsToMany(models.Group, {
             through: models.UserGroup
         });
-        User.hasMany(models.ItemRequest, {foreignKey: 'userIdToken', onDelete: 'cascade'});
-        User.hasMany(models.GroupRequest, {foreignKey: 'userIdToken', onDelete: 'cascade'});
+        User.hasMany(models.ItemRequest, {foreignKey: 'userIdToken', as: 'holder', onDelete: 'cascade'});
+        User.hasMany(models.GroupRequest, {foreignKey: 'userIdToken', as: 'applicant', onDelete: 'cascade'});
     };
     return User;
 };

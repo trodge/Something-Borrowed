@@ -92,17 +92,27 @@ module.exports = function (app) {
                 },
                 received: {
                     pending: [],
-                    approved: []
+                    approved: [],
+                    denied: []
                 }
             };
-            db.ItemRequest.findAll({ include: db.User }).then(function (dbItemRequests) {
-                // Find all requests on items this user owns.
-                for (let request of dbItemRequests) {
-                    if (request.dataValues.requester === userId)
-                    {itemRequests.sent[request.status].push(request.dataValues);}
-                    else if (request.dataValues.owner === userId)
-                    {itemRequests.received[request.status].push(request.dataValues);}
+            db.ItemRequest.findAll({
+                include: [{ model: db.User, as: 'holder' }, { model: db.User, as: 'applicant' }]
+            }).then(function (dbItemRequests) {
+                // Find all requests on items.
+                for (let itemRequest of dbItemRequests) {
+                    itemRequest.dataValues.ownerName = itemRequest.holder.dataValues.userName;
+                    console.log('itemRequest.dataValues.ownerName:', itemRequest.dataValues.ownerName);
+                    itemRequest.dataValues.requesterName = itemRequest.applicant.dataValues.userName;
+                    if (itemRequest.dataValues.requester === userId) {
+                        // User is requester.
+                        itemRequests.sent[itemRequest.dataValues.status].push(itemRequest.dataValues);
+                    } else if (itemRequest.dataValues.owner === userId) {
+                        // User is owner.
+                        itemRequests.received[itemRequest.dataValues.status].push(itemRequest.dataValues);
+                    }
                 }
+                console.log('itemRequests:', itemRequests);
                 db.Group.findAll().then(function (dbGroups) {
                     let availableGroups = [];
                     for (let group of dbGroups) {
