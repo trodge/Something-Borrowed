@@ -1,5 +1,10 @@
 $(document).ready(function () {
     $('#submitRequest').on('click', function (event) {
+        if ($('#duration').val().trim() === '' || $('#itemName').val().trim() === ' ') {
+            $('#errorModal').modal('show');
+            $('#errorMessage').text('Please enter a duration');
+            return;
+        }
         event.preventDefault();
         const requestInfo = {
             itemId: $('#request').data('itemid'),

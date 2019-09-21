@@ -81,7 +81,6 @@ $(document).ready(function () {
     $('.editRequest').on('click', function(event) {
         event.preventDefault();
         let dataset = event.target.dataset;
-        // $(`#chat${dataset.requestid}`).text() + '\nRequester:' + 
         let chat = $(`#message${dataset.requestid}`).val().trim();
         console.log(chat);
         let request = {
@@ -123,7 +122,7 @@ $(document).ready(function () {
         $.ajax('/api/group-request', {
             method: 'POST',
             data: requestInfo
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });

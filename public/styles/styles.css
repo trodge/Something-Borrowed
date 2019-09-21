@@ -480,6 +480,33 @@ button {
   color: #f4841a;
 }
 
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-body button {
+  align-self: center;
+}
+
+.modal-body form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.g-signin2 {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  border-radius: .25rem;
+}
+
+.abcRioButtonContentWrapper {
+  border: solid .15rem #f4841a;
+}
+
 @media screen and (max-width: 1050px) { 
   .subMain .item {
     width: calc(50% - 2rem);
