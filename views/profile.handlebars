@@ -1,12 +1,12 @@
 {{>header}}
 <main>
     <h2>{{user.userName}}</h2>
-    <p><img class="user-photo" src="{{user.userImage}}" alt="{{user.userName}} photo" /></p>
+    <div class="userImageHolder"><img class="user-photo" src="{{user.userImage}}" alt="{{user.userName}} photo" /></div>
     <div class="subMain">
         <div class="section">
             <div class="sectionHeader">
                 <h3>Requests</h3>
-                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#itemRequests"
+                <a class="orange-btn expand middle desktop" data-toggle="collapse" data-target="#itemRequests"
                     href="#itemRequests" role="button" aria-expanded="false" aria-controls="itemRequests">
                     Items
                     <span class="arrowContainer">
@@ -14,8 +14,8 @@
                         <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse item requests">
                     </span>
                 </a>
-                <a class="orange-btn expand" data-toggle="collapse" data-target="#groupRequests" href="#groupRequests"
-                    role="button" aria-expanded="false" aria-controls="groupRequests">
+                <a class="orange-btn expand desktop" data-toggle="collapse" data-target="#groupRequests"
+                    href="#groupRequests" role="button" aria-expanded="false" aria-controls="groupRequests">
                     Groups
                     <span class="arrowContainer">
                         <img class="expandArrow" src="/images/expandArrow.svg" alt="expand group requests">
@@ -24,6 +24,14 @@
                 </a>
             </div>
             <div class="sectionContents">
+                <a class="orange-btn expand mobileCollapse" data-toggle="collapse" data-target="#groupRequests"
+                    href="#groupRequests" role="button" aria-expanded="false" aria-controls="groupRequests">
+                    Groups
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand group requests">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse group requests">
+                    </span>
+                </a>
                 <div id="groupRequests" class="collapse profileDisplay">
                     <div class="requestsDisplay">
                         <h4>Your Pending Requests to Join Groups</h4>
@@ -98,6 +106,14 @@
                         {{/if}}
                     </div>
                 </div>
+                <a class="orange-btn expand mobileCollapse" data-toggle="collapse" data-target="#itemRequests"
+                    href="#itemRequests" role="button" aria-expanded="false" aria-controls="itemRequests">
+                    Items
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand item requests">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse item requests">
+                    </span>
+                </a>
                 <div id="itemRequests" class="collapse profileDisplay">
                     <div class="requestsDisplay">
                         <h4>Your Requests for Items</h4>
@@ -221,17 +237,17 @@
         <div class="section">
             <div class="sectionHeader">
                 <h3>Items</h3>
-                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#newItem" href="#newItem"
-                    role="button" aria-expanded="false" aria-controls="newItem">
-                    Add New
+                <a class="orange-btn expand middle desktop" data-toggle="collapse" data-target="#newItem"
+                    href="#newItem" role="button" aria-expanded="false" aria-controls="newItem">
+                    <span class="shorten">Add&nbsp;</span>New
                     <span class="arrowContainer">
                         <img class="expandArrow" src="/images/expandArrow.svg" alt="expand add new item form">
                         <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse add new item form">
                     </span>
                 </a>
-                <a class="orange-btn expand" data-toggle="collapse" data-target="#items" href="#items" role="button"
-                    aria-expanded="false" aria-controls="items">
-                    View All
+                <a class="orange-btn expand desktop" data-toggle="collapse" data-target="#items" href="#items"
+                    role="button" aria-expanded="false" aria-controls="items">
+                    <span class="shorten">View&nbsp;</span>All
                     <span class="arrowContainer">
                         <img class="expandArrow" src="/images/expandArrow.svg" alt="expand all items">
                         <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse all items">
@@ -239,6 +255,14 @@
                 </a>
             </div>
             <div class="sectionContents">
+                <a class="orange-btn expand mobileCollapse" data-toggle="collapse" data-target="#newItem"
+                    href="#newItem" role="button" aria-expanded="false" aria-controls="newItem">
+                    <span class="shorten">Add&nbsp;</span>New
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand add new item form">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse add new item form">
+                    </span>
+                </a>
                 <div id="newItem" class="collapse">
                     {{#if administrates}}
                     <form class="profileForm">
@@ -349,6 +373,14 @@
 
 
                 </div>
+                <a class="orange-btn expand mobileCollapse" data-toggle="collapse" data-target="#items" href="#items"
+                    role="button" aria-expanded="false" aria-controls="items">
+                    <span class="shorten">View&nbsp;</span>All
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand all items">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse all items">
+                    </span>
+                </a>
                 <div id="items" class="collapse profileDisplay">
                     {{#if items}}
                     <div class="itemsDisplay">
@@ -371,25 +403,25 @@
         <div class="section">
             <div class="sectionHeader">
                 <h3>Groups</h3>
-                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#newGroup" href="#newGroup"
-                    role="button" aria-expanded="false" aria-controls="newGroup">
-                    Add New
+                <a class="orange-btn expand middle desktop" data-toggle="collapse" data-target="#newGroup"
+                    href="#newGroup" role="button" aria-expanded="false" aria-controls="newGroup">
+                    <span class="shorten">Add&nbsp;</span>New
                     <span class="arrowContainer">
                         <img class="expandArrow" src="/images/expandArrow.svg" alt="expand add new group form">
                         <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse add new group form">
                     </span>
                 </a>
-                <a class="orange-btn expand middle" data-toggle="collapse" data-target="#groups" href="#groups"
+                <a class="orange-btn expand middle desktop" data-toggle="collapse" data-target="#groups" href="#groups"
                     role="button" aria-expanded="false" aria-controls="groups">
-                    View Yours
+                    <span class="shorten">View&nbsp;</span>Yours
                     <span class="arrowContainer">
                         <img class="expandArrow" src="/images/expandArrow.svg" alt="expand your groups">
                         <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse your groups">
                     </span>
                 </a>
-                <a class="orange-btn expand" data-toggle="collapse" data-target="#allGroups" href="#allGroups"
+                <a class="orange-btn expand desktop" data-toggle="collapse" data-target="#allGroups" href="#allGroups"
                     role="button" aria-expanded="false" aria-controls="allGroups">
-                    View Available
+                    <span class="shorten">View&nbsp;</span>Available
                     <span class="arrowContainer">
                         <img class="expandArrow" src="/images/expandArrow.svg" alt="expand all groups">
                         <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse all groups">
@@ -397,6 +429,14 @@
                 </a>
             </div>
             <div class="sectionContents">
+                <a class="orange-btn expand mobileCollapse" data-toggle="collapse" data-target="#newGroup"
+                    href="#newGroup" role="button" aria-expanded="false" aria-controls="newGroup">
+                    <span class="shorten">Add&nbsp;</span>New
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand add new group form">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse add new group form">
+                    </span>
+                </a>
                 <div id="newGroup" class="collapse">
                     <form class="profileForm">
                         <div class="form-group">
@@ -411,6 +451,14 @@
                         <button id="addGroup" class="orange-btn">Add</button>
                     </form>
                 </div>
+                <a class="orange-btn expand mobileCollapse" data-toggle="collapse" data-target="#groups" href="#groups"
+                    role="button" aria-expanded="false" aria-controls="groups">
+                    <span class="shorten">View&nbsp;</span>Yours
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand your groups">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse your groups">
+                    </span>
+                </a>
                 <div id="groups" class="collapse profileDisplay">
                     <div class="groupsDisplay">
                         {{#if administrates}}
@@ -441,6 +489,14 @@
                         {{/if}}
                     </div>
                 </div>
+                <a class="orange-btn expand mobileCollapse" data-toggle="collapse" data-target="#allGroups"
+                    href="#allGroups" role="button" aria-expanded="false" aria-controls="allGroups">
+                    <span class="shorten">View&nbsp;</span>Available
+                    <span class="arrowContainer">
+                        <img class="expandArrow" src="/images/expandArrow.svg" alt="expand all groups">
+                        <img class="collapseArrow" src="/images/collapseArrow.svg" alt="collapse all groups">
+                    </span>
+                </a>
                 <div id="allGroups" class="collapse profileDisplay">
                     {{#if availableGroups}}
                     <h4>Available:</h4>

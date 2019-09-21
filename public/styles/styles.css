@@ -404,6 +404,7 @@ button {
 
 .user-photo {
   border-radius: 50%;
+  width: 100%;
 }
 
 .mobileShow {
@@ -466,10 +467,36 @@ button {
   margin: .75rem 2rem;
 }
 
+.userImageHolder {
+  width: 15%;
+}
+
+.mobileCollapse {
+  display: none;
+}
+
+.bold {
+  font-weight: bold;
+  color: #f4841a;
+}
+
+@media screen and (max-width: 1050px) { 
+  .subMain .item {
+    width: calc(50% - 2rem);
+  }
+}
 
 @media screen and (max-width: 900px) { 
   .item {
     width: calc(50% - 2rem);
+  }
+}
+
+@media screen and (max-width: 750px) { 
+  .subMain .item {
+    width: calc(100%);
+    margin-left: 0;
+    margin-right: 0;
   }
 }
 
@@ -478,17 +505,55 @@ button {
     font-size: 2rem;
   }
   .item {
-    width: calc(100% - 2rem);
+    width: calc(100%);
+    margin-left: 0;
+    margin-right: 0;
   }
   .itemImage {
     height: auto;
     max-height: 20rem;
+  }
+  .subMain h5 {
+    font-size: 1.15rem;
+  }
+  .subHeader {
+    font-size: 1.25rem !important;
+  }
+}
+
+@media screen and (max-width: 600px) { 
+  .sectionHeader {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .sectionHeader h3 {
+    width: 100%;
+    flex: none;
+    margin: 0 0 .5rem 0;
+  }
+  .shorten {
+    display: none;
+  }
+  .userImageHolder {
+    width: 25%;
+  }
+  .groupsDisplay {
+    flex-direction: column;
+  }
+  .flexColumn {
+    width: 100%;
   }
 }
 
 @media screen and (max-width: 500px) { 
   h2 {
     font-size: 1.5rem;
+  }
+  h3 {
+    font-size: 1.5rem;
+  }
+  h4 {
+    font-size: 1.35rem;
   }
   #logoContainer a h1 {
     display: none;
@@ -513,9 +578,39 @@ button {
     background-color: #56565a;
     margin: 0;
   }
+  .requestContainer {
+    margin: .75rem 1rem;
+  }
+  .profileDisplay {
+    padding: 1rem;
+  }
+  .profileForm {
+    padding: 1rem;
+  }
+  .subMain {
+    margin: 0;
+  }
+  .desktop {
+    display: none;
+  }
+  .mobileCollapse {
+    display: flex;
+    border-radius: 0;
+    border-bottom: solid .15rem #001455;
+  }
+  .sectionContents {
+    border-radius: .25rem .25rem .25rem .25rem;
+  }
+  .shorten {
+    display: block;
+  }
 }
 
 @media screen and (max-width: 375px) { 
+  .userImageHolder {
+    width: 50%;
+    margin: 0 auto;
+  }
   .mainMenu ul {
     flex-direction: column;
     align-items: center;
