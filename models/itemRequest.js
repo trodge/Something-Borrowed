@@ -14,19 +14,8 @@ module.exports = function (sequelize, DataTypes) {
                 len: [1]
             }
         },
-        requesterName: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                len: [1]
-            }
-        },
         item: {
             type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        itemName: {
-            type: DataTypes.STRING,
             allowNull: false
         },
         duration: {
@@ -43,8 +32,9 @@ module.exports = function (sequelize, DataTypes) {
         }
     });
     ItemRequest.associate = function (models) {
-        ItemRequest.belongsTo(models.User, {foreignKey: 'owner'});
-        ItemRequest.belongsTo(models.User, {foreignKey: 'requester'});
+        ItemRequest.belongsTo(models.User, { foreignKey: 'owner', as: 'holder' });
+        ItemRequest.belongsTo(models.User, { foreignKey: 'requester', as: 'applicant' });
+        ItemRequest.belongsTo(models.Item, { foreignKey: 'item', onDelete: 'cascade' });
     };
     return ItemRequest;
 };

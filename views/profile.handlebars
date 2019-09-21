@@ -124,7 +124,7 @@
                                 {{#each pendingSentItemRequests}}
                                 <div class="item">
                                     <div class="itemDescription">
-                                        <h6>{{this.itemName}}</h6>
+                                        <h6>{{this.ownerName}}'s {{this.itemName}}</h6>
                                         <div class="messageContainer">
                                             <p class="message">Message History: </p>
                                             <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
@@ -134,14 +134,11 @@
                                         <label for="message{{this.id}}" class="messageLabel">New Message: </label>
                                         <textarea type="text" id="message{{this.id}}"
                                             class="form-control newMessage"></textarea>
-
-
                                         <button class="editRequest orange-btn curvedCorners"
                                             data-requestid="{{this.id}}">Send</button>
                                         <button class="deleteRequest orange-btn curvedCorners"
                                             data-requestid="{{this.id}}">Delete</button>
                                     </form>
-
                                 </div>
                                 {{/each}}
                             </div>
@@ -157,7 +154,7 @@
                                 {{#each approvedSentItemRequests}}
                                 <div class="item">
                                     <div class="itemDescription">
-                                        <h6>{{this.itemName}}</h6>
+                                        <h6>{{this.ownerName}}'s {{this.itemName}}</h6>
                                         <div class="messageContainer">
                                             <p class="message">Message History: </p>
                                             <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
@@ -171,18 +168,38 @@
                                     class="textLink" href="/items/all">here</a></h5>
                             {{/if}}
                         </div>
+                        <div class="requestContainer">
+                            <h5 class="subHeader">Denied</h5>
+                            {{#if deniedSentItemRequests}}
+                            <div class="resultsHolder">
+                                {{#each deniedSentItemRequests}}
+                                <div class="item">
+                                    <div class="itemDescription">
+                                        <h6>{{this.ownerName}}'s {{this.itemName}}</h6>
+                                        <div class="messageContainer">
+                                            <p class="message">Message History: </p>
+                                            <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{/each}}
+                            </div>
+                            {{else}}
+                            <h5 class="text-center">You have no denied requests. Find items to request to borrow <a
+                                    class="textLink" href="/items/all">here</a></h5>
+                            {{/if}}
+                        </div>
                     </div>
                     <div class="requestsDisplay">
                         <h4>Requests for Your Items</h4>
                         <div class="requestContainer">
                             <h5 class="subHeader">Pending</h5>
                             {{#if pendingItemRequests}}
-
                             <div class="resultsHolder">
                                 {{#each pendingItemRequests}}
                                 <div class="item">
                                     <div class="itemDescription">
-                                        <h6>{{this.itemName}}</h6>
+                                        <h6>{{this.requesterName}} asked to borrow your {{this.itemName}}.</h6>
                                         <div class="messageContainer">
                                             <p class="message">Message History: </p>
                                             <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>
@@ -197,7 +214,7 @@
                                             data-requestid="{{this.id}}">Send Message</button>
                                         <button class="handleItemRequest orange-btn curvedCorners"
                                             data-requestid="{{this.id}}" data-requeststatus="approved">Confirm</button>
-                                        <button class="denyRequest orange-btn curvedCorners"
+                                        <button class="handleItemRequest orange-btn curvedCorners"
                                             data-requestid="{{this.id}}" data-requeststatus="denied">Deny</button>
                                     </form>
 
@@ -217,7 +234,7 @@
                                 {{#each approvedItemRequests}}
                                 <div class="item">
                                     <div class="itemDescription">
-                                        <h6>{{this.itemName}}</h6>
+                                        <h6>You allowed {{this.requesterName}} to borrow your {{this.itemName}}.</h6>
                                         <div class="messageContainer">
                                             <p class="message">Message History: </p>
                                             <p id="chat{{this.id}}" class="newLines">{{this.notes}}</p>

@@ -39,6 +39,7 @@ module.exports = function (sequelize, DataTypes) {
             foreignKey: 'userIdToken'
         });
         Item.belongsToMany(models.Group, { through: 'ItemGroup' });
+        Item.hasMany(models.ItemRequest, { foreignKey: 'id' });
     };
     return Item;
 };
