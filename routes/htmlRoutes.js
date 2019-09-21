@@ -49,24 +49,18 @@ module.exports = function (app) {
         let administrates = [];
         let belongsTo = [];
         if (!userId) {
-            // User not logged in.
             res.render('unauthorized', {
                 loggedIn: Boolean(userId),
                 msg: 'You must be signed in to view your profile.'
             });
         }
         db.User.findOne({ where: { userIdToken: userId }, include: [db.Group, db.Item] }).then(dbUser => {
-            //   console.log('all results 1'+ JSON.stringify(dbUser));
-            //   console.log('all results 2'+ JSON.stringify(dbUser.Items));
-            //   console.log('all results 3'+ JSON.stringify(dbUser.Groups));
-            //   console.log('all results 4'+ JSON.stringify(dbUser.Groups));
             if (!dbUser) {
                 res.clearCookie('userid').render('index', {
                     loggedIn: Boolean(req.cookies.userid)
                 });
             }
             for (let group of dbUser.Groups) {
-                //   console.log(JSON.stringify(dbUser.Groups[j].UserGroup.isAdmin));
                 if (group.UserGroup.isAdmin) {
                     administrates.push(group);
                 } else {
@@ -128,8 +122,6 @@ module.exports = function (app) {
                             else if (administratesIds.includes(groupRequest.groupId)) { recievedGroupRequests.push(groupRequest); }
                         }
                         // Remove groups from available groups for which a request has already been sent.
-                        console.log(availableGroups);
-                        console.log(sentGroupRequests);
                         availableGroups = availableGroups.filter(group =>
                             !sentGroupRequests.find(request => request.groupId === group.groupId));
                         res.locals.metaTags = {
@@ -137,8 +129,6 @@ module.exports = function (app) {
                             description: 'See all your items available to borrow and add new items',
                             keywords: 'lending, borrow, friend-to-friend, save, view items, add items'
                         };
-                        console.log('line 140                                       ' + JSON.stringify(itemRequests.received.pending));
-                        // Render profile.
                         if (userId) {
                             res.render('profile', {
                                 loggedIn: Boolean(userId),
@@ -210,13 +200,11 @@ module.exports = function (app) {
         };
         db.User.findOne({ where: { userIdToken: userId }, include: db.Group }).then(dbUser => {
             if (!dbUser) {
-                console.log('there is no user');
                 res.clearCookie('userid').render('index', {
                     loggedIn: Boolean(req.cookies.userid)
                 });
             }
             const groupIds = dbUser.Groups.map(group => group.groupId);
-            console.log(groupIds);
             db.Group.findAll({
                 where: {
                     groupId: groupIds
@@ -249,13 +237,11 @@ module.exports = function (app) {
         const searchQuery = req.params.query;
         db.User.findOne({ include: db.Group }).then(dbUser => {
             const groupIds = dbUser.Groups.map(group => group.groupId);
-            console.log(groupIds);
             db.Group.findAll({
                 where: {
                     groupId: groupIds
                 }, include: db.Item
             }).then(dbGroups => {
-                console.log(dbGroups);
                 itemIds = new Set();
                 dbItems = [];
                 dbGroups.forEach(dbGroup => {

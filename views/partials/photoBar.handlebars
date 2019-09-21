@@ -1,7 +1,12 @@
 <div class="hero-image">
     <div class="hero-text">
+        {{#if loggedIn}}
         <h1>Something Borrowed</h1>
         <p class="lead">Get the stuff you want for free.</p>
-        <button class="welcome-btn">Join Today!</button>
+        {{else}}
+        <h1>Something Borrowed</h1>
+        <p class="lead">Get the stuff you want for free.</p>
+        <button class="welcome-btn" data-toggle="modal" data-target="#signInModal">Join Today!</button>
+        {{/if}}
     </div>
 </div>

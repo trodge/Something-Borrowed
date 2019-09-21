@@ -26,12 +26,10 @@ $(document).ready(function () {
             contactEmail: email,
             contactMessage: message
         };
-        console.log(contactData);
         $.ajax('/api/contact', {
             type: 'POST',
             data: contactData
-        }).then(function (response) {
-            console.log(response);
+        }).then(function () {
             $('#contactSentModal').modal('show');
             $('#contactName').val('');
             $('#contactPhone').val('');

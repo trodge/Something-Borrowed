@@ -34,7 +34,6 @@ $(document).ready(function () {
             $('#errorMessage').text('You must select at least one group this item will be available to.');
             return;
         }
-        console.log(groupIds);
         const item = {
             itemName: $('#itemName').val().trim(),
             itemImage: itemUrl,
@@ -45,7 +44,7 @@ $(document).ready(function () {
         $.ajax('/api/items', {
             method: 'POST',
             data: item
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -59,7 +58,7 @@ $(document).ready(function () {
         $.ajax('/api/groups', {
             method: 'POST',
             data: groupInfo
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -73,7 +72,7 @@ $(document).ready(function () {
         $.ajax(`/api/item-requests/${dataset.requeststatus}`, {
             method: 'PUT',
             data: request
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -82,16 +81,14 @@ $(document).ready(function () {
         event.preventDefault();
         let dataset = event.target.dataset;
         let chat = $(`#message${dataset.requestid}`).val().trim();
-        console.log(chat);
         let request = {
             requestId: dataset.requestid, 
             messages: chat
         };
-        
         $.ajax(`/api/item-requests-message`, {
             method: 'PUT',
             data: request
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -102,11 +99,10 @@ $(document).ready(function () {
         let request = {
             id: dataset.requestid
         };
-        console.log(request);
         $.ajax(`/api/item-requests`, {
             method: 'DELETE',
             data: request
-        }).then(function (/*response*/) {
+        }).then(function () {
             location.reload();
         });
     });
@@ -114,8 +110,6 @@ $(document).ready(function () {
     $('.requestGroup').on('click', function (event) {
         event.preventDefault();
         let requestId = event.target.dataset.requestid;
-        console.log(event);
-        console.log(requestId);
         let requestInfo = {
             groupId: requestId
         };
@@ -133,12 +127,10 @@ $(document).ready(function () {
         let request = {
             groupRequestId: dataset.requestid
         };
-        console.log(request, dataset);
         $.ajax(`/api/group-request/${dataset.requeststatus}`, {
             method: 'DELETE',
             data: request
         }).then(response => {
-            console.log(response);
             location.reload();
         });
     });
@@ -153,7 +145,6 @@ $(document).ready(function () {
             method: 'PUT',
             data: request
         }).then(response => {
-            console.log(response);
             location.reload();
         });
     });
