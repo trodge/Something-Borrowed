@@ -130,7 +130,7 @@ $(document).ready(function () {
         $.ajax(`/api/group-request/${dataset.requeststatus}`, {
             method: 'DELETE',
             data: request
-        }).then(response => {
+        }).then(function() {
             location.reload();
         });
     });
@@ -144,7 +144,7 @@ $(document).ready(function () {
         $.ajax(`/api/remove-member/${dataset.groupid}`, {
             method: 'PUT',
             data: request
-        }).then(response => {
+        }).then(function() {
             location.reload();
         });
     });
