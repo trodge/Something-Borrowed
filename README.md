@@ -1,4 +1,4 @@
-# Project-2 - Something Borrowed
+# Something Borrowed
 ## Website Location
 Website located at:  
 [something---borrowed.herokuapp.com](https://something---borrowed.herokuapp.com)
